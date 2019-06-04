@@ -2,7 +2,12 @@
 #include "Memory.h"
 
 
+
+// Private Instances
+
 Stack(MemoryBlock) StaticBlock = { NULL, { NULL, 0U }, 0U };
+
+
 
 // Functions
 
@@ -32,11 +37,14 @@ fn returns(void) AddressTable_Add(Ptr(AddressTable) _addressTable, Ptr(void) _ad
 	{
 		_addressTable->tableLength++;
 
-		_addressTable->addresses = realloc(_addressTable->addresses, sizeof(Ptr(void)) * _addressTable->tableLength);
+		Ptr(void) reallocIntermediary = realloc(_addressTable->addresses, sizeof(Ptr(void)) * _addressTable->tableLength);
+
+		if (reallocIntermediary != NULL)
+		{
+			_addressTable->addresses = reallocIntermediary;
+		}
 
 		_addressTable->addresses[_addressTable->tableLength - 1] = _addressToAdd;
-
-
 	}
 
 	return;
@@ -71,7 +79,18 @@ fn returns(Ptr(void)) Internal_ScopedAllocate(Ptr(MemoryBlock) _scopedBlock, Dat
 	}
 	else
 	{
-		_scopedBlock->address = realloc(_scopedBlock->address, _scopedBlock->size + _sizeOfAllocation);
+		Ptr(void) reallocIntermediary = realloc(_scopedBlock->address, _scopedBlock->size + _sizeOfAllocation);
+
+		if (reallocIntermediary != NULL)
+		{
+			_scopedBlock->address = reallocIntermediary;
+		}
+		else
+		{
+			perror("Failed to reallocate static block. Exiting...");
+
+			exit(1);
+		}
 
 		Ptr(void) newLocation = (Ptr(Byte))_scopedBlock->address + _scopedBlock->size;
 
@@ -106,7 +125,18 @@ fn returns(Ptr(void)) Internal_StaticAllocate(DataSize _sizeOfAllocation)
 	}
 	else
 	{
-		StaticBlock.address = realloc(StaticBlock.address, StaticBlock.size + _sizeOfAllocation);
+		Ptr(void) reallocIntermediary = realloc(StaticBlock.address, StaticBlock.size + _sizeOfAllocation);
+
+		if (reallocIntermediary != NULL)
+		{
+			StaticBlock.address = reallocIntermediary;
+		}
+		else
+		{
+			perror("Failed to reallocate static block. Exiting...");
+
+			exit(1);
+		}
 
 		Ptr(void) newLocation = (Ptr(Byte))StaticBlock.address + StaticBlock.size;
 

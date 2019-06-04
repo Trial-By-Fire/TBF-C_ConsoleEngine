@@ -76,7 +76,6 @@ fn returns(void) SetupEngineModules parameters(void)
 	SetupRenderer();
 }
 
-
 fn returns(void) Launch_V3 parameters(void)
 {
 	SetupEngineModules();

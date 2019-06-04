@@ -115,29 +115,6 @@ _getch
 #define print(_string) \
 puts(_string)
 
-//#define alias(_typeToAlias) \
-//typedef _typeToAlias
-
-/////////////////////////////////////////////
-
-
-//Enums
-
-/*enum ExecFlags_Enum
-{
-	ExecFlags_Success = 0
-}*/;
-
-////////////////////////////////////////////
-
-
-//Alias
-
-//alias(enum ExecFlags_Enum) ExecFlags;
-
-//alias(_Bool) bool;
-
-/////////////////////////////////////////////
 
 
 // EntryPoint: Where you define the execution of your program. (Its also a function. All execution is within some function)
