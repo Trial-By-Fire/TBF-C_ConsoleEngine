@@ -20,9 +20,9 @@
 
 
 
-// Instances
+// Private Instances
 
-Stack(bool) Exist;   // Used by the cycler to the determine if the engine should persist.
+Global(bool) Exist;   // Used by the cycler to the determine if the engine should persist.
 
 
 
@@ -41,12 +41,12 @@ fn returns(void) Cycler parameters(void)
 
 		if (KeyboardHit())
 		{
-			_Input.lastKeyPressed = (char)GetKeyPress();
+			Input_.lastKeyPressed = (char)GetKeyPress();
 		}
 
 		// Process Input
 
-		if (_Input.lastKeyPressed == 'q')
+		if (Input_.lastKeyPressed == 'q')
 		{
 			Exist = false;
 		}

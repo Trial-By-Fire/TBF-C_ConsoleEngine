@@ -177,9 +177,10 @@ struct ConsoleData_Def
 
 
 
-// Globals ------------------------------------------------------------------------------------------
+// Static Data ------------------------------------------------------------------------------------------
 
-Ptr(MemoryBlock) Stack;
+Ptr(MemoryBlock) DataArray  ;
+Ptr(uInt64     ) byteLocaton;
 
 Ptr(bool) Exist;
 
@@ -205,32 +206,32 @@ fn returns(void     ) Deallocate     parameters(Ptr(void) _addressToData   );
 
 fn returns(void) Stack_Alloc parameters(void)
 {
-	Stack = AllocateMemory(sizeof(MemoryBlock));
+	DataArray = AllocateMemory(sizeof(MemoryBlock));
 
-	Stack->size = SizeOf_Data;
+	DataArray->size = SizeOf_Data;
 
-	Stack->address = AllocateMemory(Stack->size);
+	DataArray->address = AllocateMemory(DataArray->size);
 
 	return;
 }
 
 fn returns(void) Stack_Dealloc parameters(void)
 {
-	if (Stack->size > 0)
+	if (DataArray->size > 0)
 	{
-		Deallocate(Stack->address);
+		Deallocate(DataArray->address);
 	}
 
-	Deallocate(Stack);
+	Deallocate(DataArray);
 
 	return;
 }
 
 fn returns(Ptr(void)) Stack_AddressAt(Ptr(uInt64) _byteLocation)
 {
-	if (val(_byteLocation) <= Stack->size)
+	if (val(_byteLocation) <= DataArray->size)
 	{
-		return ((Ptr(Byte))Stack->address) + val(_byteLocation);
+		return ((Ptr(Byte))DataArray->address) + val(_byteLocation);
 	}
 	else
 	{
@@ -470,43 +471,43 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	Stack_Alloc();
 
-	Ptr(uInt64) _byteLocation = AllocateMemory(sizeof(uInt64));
+	byteLocaton = AllocateMemory(sizeof(uInt64));
 
 	// Exist
 
-	val(_byteLocation) = 0U;
+	val(byteLocaton) = 0U;
 
-	Exist = Stack_AddressAt(_byteLocation);
+	Exist = Stack_AddressAt(byteLocaton);
 
 	val(Exist) = true;
 
 	// Start Message
 
-	val(_byteLocation) += 1U;
+	val(byteLocaton) += 1U;
 
-	StartMessage = Stack_AddressAt(_byteLocation);
+	StartMessage = Stack_AddressAt(byteLocaton);
 
 	SetupStartMessage();
 
 	// Timing
 
-	val(_byteLocation) += sizeof(CString);
+	val(byteLocaton) += sizeof(CString);
 
-	Timing = Stack_AddressAt(_byteLocation);
+	Timing = Stack_AddressAt(byteLocaton);
 
 	SetupTiming();
 
 	// Input
 
-	val(_byteLocation) += sizeof(TimingData);
+	val(byteLocaton) += sizeof(TimingData);
 
-	Input = Stack_AddressAt(_byteLocation);
+	Input = Stack_AddressAt(byteLocaton);
 
 	// Render
 
-	val(_byteLocation) += sizeof(InputData);
+	val(byteLocaton) += sizeof(InputData);
 
-	Renderer = Stack_AddressAt(_byteLocation);
+	Renderer = Stack_AddressAt(byteLocaton);
 
 	SetupRenderer();
 
@@ -514,7 +515,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	EngineCycler();
 
-	Deallocate(_byteLocation);
+	Deallocate(byteLocaton);
 
 	Stack_Dealloc();
 

@@ -40,9 +40,13 @@ const are put in read only memory.
 #define readonly \
 const
 
-// Explicit specification to use a stack allocated object.
+// Statck Data (Block Scope Declares)
 #define Stack(_type) \
 _type
+
+// Global Data (File Scope Declares)
+#define Global(_type) \
+
 
 // Stores the address for a data instance of the specified type.
 #define Ptr(_type) \
@@ -62,7 +66,7 @@ _type*
 
 // Aliases
 
-// Used as the return value for the result code code of execution.
+// Used as the return value for the result code of execution.
 alias(enum ExecFlags_Def) as ExecFlags;
 
 

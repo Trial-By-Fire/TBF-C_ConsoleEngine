@@ -14,10 +14,10 @@
 
 // Aliases
 
-alias(signed            char) as int8 ;   // 8-bit  Signed Integer
-alias(signed short      int ) as int16;   // 16-bit Signed Integer
-alias(signed long       int ) as int32;   // 32-bit Signed Integer
-alias(signed long  long int ) as int64;   // 64-bit Signed Integer
+alias(signed            char) as sInt8 ;   // 8-bit  Signed Integer
+alias(signed short      int ) as sInt16;   // 16-bit Signed Integer
+alias(signed long       int ) as sInt32;   // 32-bit Signed Integer
+alias(signed long  long int ) as sInt64;   // 64-bit Signed Integer
 
 alias(unsigned            char) as uInt8 ;
 alias(unsigned short      int ) as uInt16;

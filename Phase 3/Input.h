@@ -12,7 +12,7 @@
 
 // Aliases
 
-alias(struct InputData_Def) as InputData  ;
+alias(struct InputData_Def) as InputData;
 
 
 
@@ -25,10 +25,9 @@ struct InputData_Def
 
 
 
-// Instances
+// Public Instances
 
-Stack(InputData) _Input;
-
+Global(InputData) Input_;
 
 
 // Functions

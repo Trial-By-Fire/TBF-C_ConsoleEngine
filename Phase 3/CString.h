@@ -26,9 +26,9 @@ struct CString_Def
 
 
 
-// Instances
+// Public Instances
 
-Stack(CString) StartMessage;   // Contains Hello World! message.
+Global(CString) StartMessage;   // Contains Hello World! message.
 
 
 

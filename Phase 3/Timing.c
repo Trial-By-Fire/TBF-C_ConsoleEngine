@@ -25,8 +25,8 @@ struct TimingData_Def
 	LARGE_INTEGER Snapshot_End     ;
 	LARGE_INTEGER Frequency        ;
 
-	int64   Elapsed_Ticks;
-	floatEP Elapsed_Micro;
+	sInt64   Elapsed_Ticks;
+	floatEP  Elapsed_Micro;
 
 	floatEP deltaTime;
 
@@ -37,9 +37,9 @@ struct TimingData_Def
 
 
 
-// Instances
+// Private Instances
 
-Stack(TimingData) Timing;
+Global(TimingData) Timing;
 
 
 

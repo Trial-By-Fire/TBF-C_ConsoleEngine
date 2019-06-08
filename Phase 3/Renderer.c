@@ -42,9 +42,9 @@ struct ConsoleData_Def
 
 
 
-// Instances
+// Private Instances
 
-Stack(ConsoleData) Renderer;
+Global(ConsoleData) Renderer;
 
 
 
@@ -111,7 +111,7 @@ fn returns(void) ProcessRenderer parameters(void)
 		printf("Tick Elasped        : %llu  \n", ElapsedTicks()         );
 		printf("Timer      (Seconds): %.7Lf \n", RefreshTimer()         );
 		printf("Delta Time (Seconds): %.7Lf \n", DeltaTime   ()         );
-		printf("Key Pressed         :  %c   \n", _Input  .lastKeyPressed);
+		printf("Key Pressed         :  %c   \n", Input_  .lastKeyPressed);
 	}
 
 	return;

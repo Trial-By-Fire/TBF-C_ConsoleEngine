@@ -134,21 +134,17 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 	sizeof(HANDLE) + sizeof(DWORD) + sizeof(COORD) + sizeof(CSBI) + sizeof(DWORD) + sizeof(bool) * 2 + sizeof(uInt)
 		
 	/*
-	All data is allocated to a memory space, this can either be a predefined structure called a stack from the heap, or the raw heap.
+	All data is allocated to a memory space, this can be either a reserved segement of data called a static space, or structures called a stack and heap.
 	The data instance is that data that is allocated at runtime, its ussually called an object as well.
 
-	The heap is just a reserved space of memory your operating system gives you to use for your program.
+	The heap is just a reserved space of memory your operating system gives you to use for your program. (Part of your app's addressable space)
 
-	The stack is a structured area of the heap the compiler of your program makes for you automatic data instances (where they exist for the life-time of their scope).
+	The stack is a structured area of memory the compiler of your program makes for you automatic data instances (where they exist for the life-time of their scope).
 
-	All data instances in the heap have an address to their location. This is so that you can find your way to the data and be able to mess with it. (Otherwise its lost and a "leak" occurs)
-
-	This also includes stuff you declare to the stack structure.
-
-	Here we'll make memory block with an undefined data structure for all our data instances for this program.
-
-	Since were going to use a boolean and 13 characters, we'll allocate that many bytes of memory.
+	All data instances in the heap have an address to their location(so does the stack and static memory locations).
+	This is so that you can find your way to the data and be able to mess with it. (Otherwise its lost and a "leak" occurs)
 	*/
+	
 	Ptr(void) memoryBlock;
 
 	memoryBlock = AllocateMemory( sizeof(bool) + SizeOf_HelloWorld + SizeOf_TimeData + SizeOf_InputSystem + SizeOf_ConsoleData );
@@ -219,8 +215,8 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 	Ptr(floatEP      ) deltaTime           ;   //In Seconds.
 
 	timeSnapshot_Initial = (Ptr(LARGE_INTEGER))(message              + 13);
-	timeSnapshot_End     =                         (timeSnapshot_Initial + 1 );
-	timeFrequency        =                         (timeSnapshot_End     + 1 );
+	timeSnapshot_End     =                     (timeSnapshot_Initial + 1 );
+	timeFrequency        =                     (timeSnapshot_End     + 1 );
 	cycle_TicksElapsed   = (Ptr(int64        ))(timeFrequency        + 1 );
 	cycle_Microseconds   = (Ptr(floatEP      ))(cycle_TicksElapsed   + 1 );
 	deltaTime            = (Ptr(floatEP      ))(cycle_Microseconds   + 1 );

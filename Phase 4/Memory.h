@@ -71,8 +71,8 @@ Internal_StaticAllocate(sizeof(_type) + _numberToAllocate)
 Internal_ScopedAllocate(getAddress(scopedBlock), sizeof(_type) * _numberToAllocate)
 
 
-#define SmartScope                                       \
-{                                                        \
+#define SmartScope                                        \
+{                                                         \
 	MemoryBlock scopedBlock = { NULL, { NULL, 0U }, 0U };
 
 
