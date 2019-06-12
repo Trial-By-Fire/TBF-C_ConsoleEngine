@@ -204,7 +204,7 @@ fn returns(void     ) Deallocate     parameters(Ptr(void) _addressToData   );
 
 // The Stack ---------------------------------------------------------------------------------------
 
-fn returns(void) Stack_Alloc parameters(void)
+fn returns(void) Data_Alloc parameters(void)
 {
 	DataArray = AllocateMemory(sizeof(MemoryBlock));
 
@@ -215,7 +215,7 @@ fn returns(void) Stack_Alloc parameters(void)
 	return;
 }
 
-fn returns(void) Stack_Dealloc parameters(void)
+fn returns(void) Data_Dealloc parameters(void)
 {
 	if (DataArray->size > 0)
 	{
@@ -227,7 +227,7 @@ fn returns(void) Stack_Dealloc parameters(void)
 	return;
 }
 
-fn returns(Ptr(void)) Stack_AddressAt(Ptr(uInt64) _byteLocation)
+fn returns(Ptr(void)) Data_AddressAt(Ptr(uInt64) _byteLocation)
 {
 	if (val(_byteLocation) <= DataArray->size)
 	{
@@ -469,7 +469,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 {
 	// Stack
 
-	Stack_Alloc();
+	Data_Alloc();
 
 	byteLocaton = AllocateMemory(sizeof(uInt64));
 
@@ -477,7 +477,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	val(byteLocaton) = 0U;
 
-	Exist = Stack_AddressAt(byteLocaton);
+	Exist = Data_AddressAt(byteLocaton);
 
 	val(Exist) = true;
 
@@ -485,7 +485,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	val(byteLocaton) += 1U;
 
-	StartMessage = Stack_AddressAt(byteLocaton);
+	StartMessage = Data_AddressAt(byteLocaton);
 
 	SetupStartMessage();
 
@@ -493,7 +493,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	val(byteLocaton) += sizeof(CString);
 
-	Timing = Stack_AddressAt(byteLocaton);
+	Timing = Data_AddressAt(byteLocaton);
 
 	SetupTiming();
 
@@ -501,13 +501,13 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	val(byteLocaton) += sizeof(TimingData);
 
-	Input = Stack_AddressAt(byteLocaton);
+	Input = Data_AddressAt(byteLocaton);
 
 	// Render
 
 	val(byteLocaton) += sizeof(InputData);
 
-	Renderer = Stack_AddressAt(byteLocaton);
+	Renderer = Data_AddressAt(byteLocaton);
 
 	SetupRenderer();
 
@@ -517,7 +517,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	Deallocate(byteLocaton);
 
-	Stack_Dealloc();
+	Data_Dealloc();
 
 	printf("Exiting Game Engine: Press enter key to contiue.");
 
