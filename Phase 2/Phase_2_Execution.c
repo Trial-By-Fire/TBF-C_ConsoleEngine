@@ -40,7 +40,7 @@ main
 // Used to clearly state a function declare.
 #define fn
 
-// Used to clearly state paramater declare.
+// Used to clearly state parameter declare.
 #define parameters
 
 // States what the function will return data if any. (Put void if you don't want to return data).
@@ -125,6 +125,8 @@ struct MemoryBlock_Def
 {
 	Ptr(void) address;
 
+	uInt64 byteLocation;
+
 	DataSize size;
 };
 
@@ -180,7 +182,6 @@ struct ConsoleData_Def
 // Static Data ------------------------------------------------------------------------------------------
 
 Ptr(MemoryBlock) DataArray  ;
-Ptr(uInt64     ) byteLocaton;
 
 Ptr(bool) Exist;
 
@@ -196,48 +197,10 @@ Ptr(ConsoleData) Renderer;
 
 // Functions ---------------------------------------------------------------------------------------
 
-// Foward Declarations
+// Forward Declarations
 
 fn returns(Ptr(void)) AllocateMemory parameters(DataSize  _amountToAllocate);
 fn returns(void     ) Deallocate     parameters(Ptr(void) _addressToData   );
-
-
-// The Stack ---------------------------------------------------------------------------------------
-
-fn returns(void) Data_Alloc parameters(void)
-{
-	DataArray = AllocateMemory(sizeof(MemoryBlock));
-
-	DataArray->size = SizeOf_Data;
-
-	DataArray->address = AllocateMemory(DataArray->size);
-
-	return;
-}
-
-fn returns(void) Data_Dealloc parameters(void)
-{
-	if (DataArray->size > 0)
-	{
-		Deallocate(DataArray->address);
-	}
-
-	Deallocate(DataArray);
-
-	return;
-}
-
-fn returns(Ptr(void)) Data_AddressAt(Ptr(uInt64) _byteLocation)
-{
-	if (val(_byteLocation) <= DataArray->size)
-	{
-		return ((Ptr(Byte))DataArray->address) + val(_byteLocation);
-	}
-	else
-	{
-		return NULL;
-	}
-}
 
 
 // Start Message -----------------------------------------------------------------------------------
@@ -325,6 +288,50 @@ fn returns(void) Deallocate parameters(Ptr(void) _addressToData)
 	free(_addressToData);
 
 	return;
+}
+
+
+// Memory Block ---------------------------------------------------------------------------------------
+
+fn returns(void) Data_Alloc parameters(void)
+{
+	DataArray = AllocateMemory(sizeof(MemoryBlock));
+
+	DataArray->size = SizeOf_Data;
+
+	DataArray->address = AllocateMemory(DataArray->size);
+
+	DataArray->byteLocation = 0U;
+
+	return;
+}
+
+fn returns(void) Data_Dealloc parameters(void)
+{
+	if (DataArray->size > 0)
+	{
+		Deallocate(DataArray->address);
+	}
+
+	Deallocate(DataArray);
+
+	return;
+}
+
+fn returns(Ptr(void)) Data_AssignMemory(DataSize _sizeofDataType)
+{
+	if (DataArray->byteLocation <= DataArray->size)
+	{
+		Ptr(void) addressAssigned = ((Ptr(Byte))DataArray->address) + DataArray->byteLocation;
+
+		DataArray->byteLocation += _sizeofDataType;
+
+		return addressAssigned;
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 
@@ -471,43 +478,31 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	Data_Alloc();
 
-	byteLocaton = AllocateMemory(sizeof(uInt64));
-
 	// Exist
 
-	val(byteLocaton) = 0U;
-
-	Exist = Data_AddressAt(byteLocaton);
+	Exist = Data_AssignMemory(sizeof(Exist));
 
 	val(Exist) = true;
 
 	// Start Message
 
-	val(byteLocaton) += 1U;
-
-	StartMessage = Data_AddressAt(byteLocaton);
+	StartMessage = Data_AssignMemory(sizeof(CString));
 
 	SetupStartMessage();
 
 	// Timing
 
-	val(byteLocaton) += sizeof(CString);
-
-	Timing = Data_AddressAt(byteLocaton);
+	Timing = Data_AssignMemory(sizeof(TimingData));
 
 	SetupTiming();
 
 	// Input
 
-	val(byteLocaton) += sizeof(TimingData);
-
-	Input = Data_AddressAt(byteLocaton);
+	Input = Data_AssignMemory(sizeof(InputData));
 
 	// Render
 
-	val(byteLocaton) += sizeof(InputData);
-
-	Renderer = Data_AddressAt(byteLocaton);
+	Renderer = Data_AssignMemory(sizeof(Renderer));
 
 	SetupRenderer();
 
@@ -515,11 +510,12 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	EngineCycler();
 
-	Deallocate(byteLocaton);
+
+	// Exit Sequence
 
 	Data_Dealloc();
 
-	printf("Exiting Game Engine: Press enter key to contiue.");
+	printf("Exiting Game Engine: Press enter key to continue.");
 
 	getchar();
 
