@@ -22,7 +22,10 @@
 
 // Private Instances
 
-Global(bool) Exist;   // Used by the cycler to the determine if the engine should persist.
+BSS
+(
+	bool Exist;   // Used by the cycler to the determine if the engine should persist.
+)
 
 
 

@@ -21,10 +21,13 @@ I'm going to choose to separate my code into my own sectors for the sake of orga
 // Windows Library
 
 #include <conio.h>
+//#include <Windows.h>
 #include <Windows.h>
+//#include 
 
 //Eds Cancer
 #include "FloatCompare.h"
+//#include <concrt.h>
 
 ////////////////////////////////////////////
 
@@ -96,7 +99,7 @@ CONSOLE_SCREEN_BUFFER_INFO
 //Used to clearly state a function declare.
 #define fn
 
-//Used to clearly state paramater declare.
+//Used to clearly state parameter declare.
 #define parameters
 
 // States what the function will return data if any. (Put void if you don't want to return data).
@@ -134,8 +137,8 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 	sizeof(HANDLE) + sizeof(DWORD) + sizeof(COORD) + sizeof(CSBI) + sizeof(DWORD) + sizeof(bool) * 2 + sizeof(uInt)
 		
 	/*
-	All data is allocated to a memory space, this can be either a reserved segement of data called a static space, or structures called a stack and heap.
-	The data instance is that data that is allocated at runtime, its ussually called an object as well.
+	All data is allocated to a memory space, this can be either a reserved segment of data called a static space, or structures called a stack and heap.
+	The data instance is that data that is allocated at runtime, its usually called an object as well.
 
 	The heap is just a reserved space of memory your operating system gives you to use for your program. (Part of your app's addressable space)
 

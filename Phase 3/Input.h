@@ -15,23 +15,29 @@
 alias(struct InputData_Def) as InputData;
 
 
+alias (char) as Key;
+
+
 
 // Structures
 
 struct InputData_Def
 {
-	char lastKeyPressed;
+	Key lastKeyPressed;
 };
 
 
 
 // Public Instances
 
-Global(InputData) Input_;
+BSS
+(
+	InputData Input_;
+)
 
 
 // Functions
 
 fn returns(bool) KeyboardHit parameters(void);
 
-fn returns(int) GetKeyPress parameters(void);
+fn returns(Key ) GetKeyPress parameters(void);

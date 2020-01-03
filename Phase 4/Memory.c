@@ -5,29 +5,33 @@
 
 // Private Instances
 
-Stack(MemoryBlock) StaticBlock = { NULL, { NULL, 0U }, 0U };
+Data
+(
+	MemoryBlock StaticBlock = ,
+	{ NULL, { NULL, 0U }, 0U };
+)
 
 
 
 // Functions
 
-fn returns(Ptr(void)) AllocateMemory parameters(DataSize _amountToAllocate)
+fn returns( Ptr(void) ) AllocateMemory parameters(DataSize _amountToAllocate)
 {
-	return malloc(_amountToAllocate);
+	return Heap( malloc(_amountToAllocate) );
 }
 
 fn returns(void) Deallocate parameters(Ptr(void) _addressToData)
 {
-	free(_addressToData);
+	Heap( free(_addressToData) );
 
 	return;
 }
 
-fn returns(void) AddressTable_Add(Ptr(AddressTable) _addressTable, Ptr(void) _addressToAdd)
+fn returns(void) AddressTable_Add parameters(Ptr(AddressTable) _addressTable, Ptr(void) _addressToAdd)
 {
 	if (_addressTable->addresses == NULL)
 	{
-		_addressTable->addresses = AllocateMemory( sizeof(Ptr(void)) );
+		_addressTable->addresses = Heap( AllocateMemory( sizeof(Ptr(void)) ) );
 
 		_addressTable->addresses[0] = _addressToAdd;
 
@@ -37,7 +41,7 @@ fn returns(void) AddressTable_Add(Ptr(AddressTable) _addressTable, Ptr(void) _ad
 	{
 		_addressTable->tableLength++;
 
-		Ptr(void) reallocIntermediary = realloc(_addressTable->addresses, sizeof(Ptr(void)) * _addressTable->tableLength);
+		Ptr(void) reallocIntermediary = Heap( realloc(_addressTable->addresses, sizeof(Ptr(void)) * _addressTable->tableLength) );
 
 		if (reallocIntermediary != NULL)
 		{
@@ -50,7 +54,7 @@ fn returns(void) AddressTable_Add(Ptr(AddressTable) _addressTable, Ptr(void) _ad
 	return;
 }
 
-fn returns(Ptr(void)) AddresssTable_LastAddress(Ptr(AddressTable) _addressTable)
+fn returns( Ptr(void) ) AddresssTable_LastAddress parameters(Ptr(AddressTable) _addressTable)
 {
 	return _addressTable->addresses[_addressTable->tableLength - 1];
 }
@@ -59,7 +63,7 @@ fn returns(void) AddressTable_Deallocate parameters(Ptr(AddressTable) _addressTa
 {
 	if (_addressTable->addresses != NULL)
 	{
-		Deallocate(_addressTable->addresses);
+		Heap( Deallocate(_addressTable->addresses) );
 	}
 
 	return;
@@ -69,17 +73,17 @@ fn returns(Ptr(void)) Internal_ScopedAllocate(Ptr(MemoryBlock) _scopedBlock, Dat
 {
 	if (_scopedBlock->address == NULL)
 	{
-		_scopedBlock->address = AllocateMemory(_sizeOfAllocation);
+		_scopedBlock->address = Heap( AllocateMemory(_sizeOfAllocation) );
 
 		_scopedBlock->size = _sizeOfAllocation;
 
-		AddressTable_Add(getAddress(_scopedBlock->objectTable), _scopedBlock->address);
+		Heap( AddressTable_Add(getAddress(_scopedBlock->objectTable), _scopedBlock->address) );
 
 		return _scopedBlock->address;
 	}
 	else
 	{
-		Ptr(void) reallocIntermediary = realloc(_scopedBlock->address, _scopedBlock->size + _sizeOfAllocation);
+		Ptr(void) reallocIntermediary = Heap( realloc(_scopedBlock->address, _scopedBlock->size + _sizeOfAllocation) );
 
 		if (reallocIntermediary != NULL)
 		{
@@ -94,7 +98,7 @@ fn returns(Ptr(void)) Internal_ScopedAllocate(Ptr(MemoryBlock) _scopedBlock, Dat
 
 		Ptr(void) newLocation = (Ptr(Byte))_scopedBlock->address + _scopedBlock->size;
 
-		AddressTable_Add(getAddress(_scopedBlock->objectTable), newLocation);
+		Heap( AddressTable_Add(getAddress(_scopedBlock->objectTable), newLocation) );
 
 		_scopedBlock->size += _sizeOfAllocation;
 
@@ -104,9 +108,9 @@ fn returns(Ptr(void)) Internal_ScopedAllocate(Ptr(MemoryBlock) _scopedBlock, Dat
 
 fn returns(void) ScopedDeallocate(Ptr(MemoryBlock) _scopedBlock)
 {
-	Deallocate(_scopedBlock->address);
+	Heap( Deallocate(_scopedBlock->address) );
 
-	AddressTable_Deallocate(getAddress(_scopedBlock->objectTable));
+	Heap( AddressTable_Deallocate(getAddress(_scopedBlock->objectTable)) );
 
 	return;
 }
@@ -115,17 +119,17 @@ fn returns(Ptr(void)) Internal_StaticAllocate(DataSize _sizeOfAllocation)
 {
 	if (StaticBlock.address == NULL)
 	{
-		StaticBlock.address = AllocateMemory(_sizeOfAllocation);
+		StaticBlock.address = Heap( AllocateMemory(_sizeOfAllocation) );
 
 		StaticBlock.size = _sizeOfAllocation;
 
-		AddressTable_Add(getAddress(StaticBlock.objectTable), StaticBlock.address);
+		Heap( AddressTable_Add(getAddress(StaticBlock.objectTable), StaticBlock.address) );
 
 		return StaticBlock.address;
 	}
 	else
 	{
-		Ptr(void) reallocIntermediary = realloc(StaticBlock.address, StaticBlock.size + _sizeOfAllocation);
+		Ptr(void) reallocIntermediary = Heap( realloc(StaticBlock.address, StaticBlock.size + _sizeOfAllocation) );
 
 		if (reallocIntermediary != NULL)
 		{
@@ -140,7 +144,7 @@ fn returns(Ptr(void)) Internal_StaticAllocate(DataSize _sizeOfAllocation)
 
 		Ptr(void) newLocation = (Ptr(Byte))StaticBlock.address + StaticBlock.size;
 
-		AddressTable_Add(getAddress(StaticBlock.objectTable), newLocation);
+		Heap( AddressTable_Add(getAddress(StaticBlock.objectTable), newLocation) );
 
 		StaticBlock.size += _sizeOfAllocation;
 
@@ -150,9 +154,9 @@ fn returns(Ptr(void)) Internal_StaticAllocate(DataSize _sizeOfAllocation)
 
 fn returns(void) StaticDeallocate parameters(void)
 {
-	Deallocate(StaticBlock.address);
+	Heap( Deallocate(StaticBlock.address) );
 
-	AddressTable_Deallocate(getAddress(StaticBlock.objectTable));
+	Heap( AddressTable_Deallocate(getAddress(StaticBlock.objectTable)) );
 
 	return;
 }

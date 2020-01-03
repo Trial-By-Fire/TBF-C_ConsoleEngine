@@ -70,24 +70,51 @@ _type*
 #define val(_address) \
 *_address
 
+// Specifies that this datatype is intended to be allocated within the data segement. 
+// (It will allocate and format the memory for you before starting the program)
+#define Data(_typeOfData) \
+_typeOfData
+
+// Specifies that this datatype is intended to be allocated within the BSS segement. 
+// (It will allocate the memory only but will not format it for you before starting the program)
+#define BSS(_typeOfData) \
+_typeOfData
+
+// Specify that this datatype is intended to allocated (and possibly formatted if specified to) within the stack. 
+// (To be used within the function its within scope for)
+#define Stack(_typeOfData) \
+_typeOfData
+
+// Specify that you are interfacing with the heap. (Directly managing unmanaged memory given by the operating system)
+#define Heap(_heapOperation) \
+_heapOperation
+
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
 
 
 
 // Aliases (Typedefs) ------------------------------------------------------------------------------
 
+// C Standard Types
+
 alias(char) as Byte;
+
+alias(size_t) as DataSize;
+
+alias(long double) as floatEP;
 
 alias(long long int) as int64;
 
 alias(unsigned           int) as uInt  ;
 alias(unsigned long long int) as uInt64;
 
-alias(long double) as floatEP;
+alias (char) as Key;
 
-alias(size_t) as DataSize;
+// Microsoft
 
 alias(CONSOLE_SCREEN_BUFFER_INFO) as CSBI;
+
+// TBF
 
 alias(enum ExecFlags_Def) as ExecFlags;
 
@@ -144,7 +171,7 @@ struct TimingData_Def
 
 struct InputData_Def
 {
-	char lastKeyPressed;
+	Key lastKeyPressed;
 };
 
 struct ConsoleData_Def
@@ -181,15 +208,18 @@ struct ConsoleData_Def
 
 // Static Data ------------------------------------------------------------------------------------------
 
-Ptr(MemoryBlock) DataArray  ;
+BSS
+(
+	Ptr(MemoryBlock) DataArray;
 
-Ptr(bool) Exist;
+	Ptr(bool) Exist;
 
-Ptr(CString) StartMessage;
+	Ptr(CString) StartMessage;
 
-Ptr(TimingData ) Timing  ;
-Ptr(InputData  ) Input   ;
-Ptr(ConsoleData) Renderer;
+	Ptr(TimingData ) Timing  ;
+	Ptr(InputData  ) Input   ;
+	Ptr(ConsoleData) Renderer;
+)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -205,11 +235,11 @@ fn returns(void     ) Deallocate     parameters(Ptr(void) _addressToData   );
 
 // Start Message -----------------------------------------------------------------------------------
 
-fn returns(void) SetupStartMessage(void)
+fn returns(void) SetupStartMessage parameters(void)
 {
 	StartMessage->length = 13U;
 
-	StartMessage->array = AllocateMemory(StartMessage->length);
+	StartMessage->array = Heap( AllocateMemory(StartMessage->length) );
 
 	StartMessage->array[0 ] = 'H' ;
 	StartMessage->array[1 ] = 'e' ;
@@ -224,6 +254,8 @@ fn returns(void) SetupStartMessage(void)
 	StartMessage->array[10] = 'd' ;
 	StartMessage->array[11] = '!' ;
 	StartMessage->array[12] = '\0';
+
+	return;
 }
 
 
@@ -256,10 +288,14 @@ fn returns(void) ProcessCycleTiming parameters(void)
 	)
 	{
 		Renderer->refreshTimer += + 0.000001L;
+
+		return;
 	}
 	else
 	{
 		Renderer->refreshTimer += Timing->deltaTime;
+
+		return;
 	}
 }
 
@@ -270,9 +306,9 @@ fn returns(bool) KeyboardHit parameters(void)
 	return _kbhit();
 }
 
-fn returns(int) GetKeyPress parameters(void)
+fn returns(Key) GetKeyPress parameters(void)
 {
-	return _getch();
+	return (Key)_getch();
 }
 
 
@@ -280,12 +316,12 @@ fn returns(int) GetKeyPress parameters(void)
 
 fn returns(Ptr(void)) AllocateMemory parameters(DataSize _amountToAllocate)
 {
-	return malloc(_amountToAllocate);
+	return Heap( malloc(_amountToAllocate) );
 }
 
 fn returns(void) Deallocate parameters(Ptr(void) _addressToData)
 {
-	free(_addressToData);
+	Heap( free(_addressToData) );
 
 	return;
 }
@@ -295,11 +331,11 @@ fn returns(void) Deallocate parameters(Ptr(void) _addressToData)
 
 fn returns(void) Data_Alloc parameters(void)
 {
-	DataArray = AllocateMemory(sizeof(MemoryBlock));
+	DataArray = Heap( AllocateMemory(sizeof(MemoryBlock)) );
 
 	DataArray->size = SizeOf_Data;
 
-	DataArray->address = AllocateMemory(DataArray->size);
+	DataArray->address = Heap( AllocateMemory(DataArray->size) );
 
 	DataArray->byteLocation = 0U;
 
@@ -310,19 +346,19 @@ fn returns(void) Data_Dealloc parameters(void)
 {
 	if (DataArray->size > 0)
 	{
-		Deallocate(DataArray->address);
+		Heap( Deallocate(DataArray->address) );
 	}
 
-	Deallocate(DataArray);
+	Heap( Deallocate(DataArray) );
 
 	return;
 }
 
-fn returns(Ptr(void)) Data_AssignMemory(DataSize _sizeofDataType)
+fn returns(Ptr(void)) Data_AssignMemory parameters(DataSize _sizeofDataType)
 {
 	if (DataArray->byteLocation <= DataArray->size)
 	{
-		Ptr(void) addressAssigned = ((Ptr(Byte))DataArray->address) + DataArray->byteLocation;
+		Ptr(void) addressAssigned = ( (Ptr(Byte))DataArray->address ) + DataArray->byteLocation;
 
 		DataArray->byteLocation += _sizeofDataType;
 
@@ -381,6 +417,12 @@ fn returns(void) ClearRender parameters()
 		SetConsoleCursorPosition(Renderer->handle, Renderer->zeroCell);
 
 		//Successfuly cleared. Returning to originating routine.
+
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -418,6 +460,41 @@ fn returns(bool) ShouldRender parameters(void)
 	}
 }
 
+// Prepare Modules ---------------------------------------------------------------------------------
+
+fn returns(void) PrepareModules parameters(void)
+{
+	// Exist
+
+	Exist = Data_AssignMemory(sizeof(Exist));
+
+	val(Exist) = true;
+
+	// Start Message
+
+	StartMessage = Data_AssignMemory(sizeof(CString));
+
+	SetupStartMessage();
+
+	// Timing
+
+	Timing = Data_AssignMemory(sizeof(TimingData));
+
+	SetupTiming();
+
+	// Input
+
+	Input = Data_AssignMemory(sizeof(InputData));
+
+	// Render
+
+	Renderer = Data_AssignMemory(sizeof(Renderer));
+
+	SetupRenderer();
+
+	return;
+}
+
 // Engine Cycle ------------------------------------------------------------------------------------
 
 fn returns(void) EngineCycler parameters(void)
@@ -430,7 +507,7 @@ fn returns(void) EngineCycler parameters(void)
 
 		if (KeyboardHit())
 		{
-			Input->lastKeyPressed = (char)GetKeyPress();
+			Input->lastKeyPressed = GetKeyPress();
 		}
 
 		// Process Input
@@ -476,35 +553,11 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 {
 	// Stack
 
-	Data_Alloc();
+	Heap( Data_Alloc() );
 
-	// Exist
+	// Setup engine components.
 
-	Exist = Data_AssignMemory(sizeof(Exist));
-
-	val(Exist) = true;
-
-	// Start Message
-
-	StartMessage = Data_AssignMemory(sizeof(CString));
-
-	SetupStartMessage();
-
-	// Timing
-
-	Timing = Data_AssignMemory(sizeof(TimingData));
-
-	SetupTiming();
-
-	// Input
-
-	Input = Data_AssignMemory(sizeof(InputData));
-
-	// Render
-
-	Renderer = Data_AssignMemory(sizeof(Renderer));
-
-	SetupRenderer();
+	PrepareModules();
 
 	// Core Engine Loop
 
@@ -513,7 +566,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	// Exit Sequence
 
-	Data_Dealloc();
+	Heap( Data_Dealloc() );
 
 	printf("Exiting Game Engine: Press enter key to continue.");
 

@@ -40,14 +40,6 @@ const are put in read only memory.
 #define readonly \
 const
 
-// Statck Data (Block Scope Declares)
-#define Stack(_type) \
-_type
-
-// Global Data (File Scope Declares)
-#define Global(_type) \
-
-
 // Stores the address for a data instance of the specified type.
 #define Ptr(_type) \
 _type*
@@ -59,6 +51,28 @@ _type*
 // Gets the data instance (instantiated object) from the specified address.
 #define val(_address) \
 *_address
+
+// Specifies that this datatype is intended to be allocated within the data segement. 
+// (It will allocate and format the memory for you before starting the program)
+#define Data(_typeOfData, ...) \
+_typeOfData __VA_ARGS__
+
+//#define Data(_typeOfData) \
+//_typeOfData
+
+// Specifies that this datatype is intended to be allocated within the BSS segement. 
+// (It will allocate the memory only but will not format it for you before starting the program)
+#define BSS(_typeOfData) \
+_typeOfData
+
+// Specify that this datatype is intended to allocated (and possibly formatted if specified to) within the stack. 
+// (To be used within the function its within scope for)
+#define Stack(_typeOfData, ...) \
+_typeOfData __VA_ARGS__
+
+// Specify that you are interfacing with the heap. (Directly managing unmanaged memory given by the operating system)
+#define Heap(_heapOperation) \
+_heapOperation
 
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
 

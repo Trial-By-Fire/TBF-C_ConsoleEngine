@@ -39,7 +39,10 @@ struct TimingData_Def
 
 // Private Instances
 
-Global(TimingData) Timing;
+BSS
+(
+	TimingData Timing;
+)
 
 
 
@@ -82,10 +85,14 @@ fn returns(void) ProcessCycleTiming parameters(void)
 	)
 	{
 		Timing.refreshTimer += + 0.000001L;
+
+		return;
 	}
 	else
 	{
 		Timing.refreshTimer += Timing.deltaTime;
+
+		return;
 	}
 }
 
@@ -130,14 +137,18 @@ fn returns(void) TakeSnapshot parameters(Snapshot _snapshotFor)
 {
 	switch (_snapshotFor)
 	{
-	case Snapshot_Initial:
-	{
-		QueryPerformanceCounter(getAddress(Timing.Snapshot_Initital));
-	}
-	case Snapshot_End:
-	{
-		QueryPerformanceCounter(getAddress(Timing.Snapshot_End));
-	}
+		case Snapshot_Initial:
+		{
+			QueryPerformanceCounter(getAddress(Timing.Snapshot_Initital));
+
+			return;
+		}
+		case Snapshot_End:
+		{
+			QueryPerformanceCounter(getAddress(Timing.Snapshot_End));
+
+			return;
+		}
 	}
 }
 

@@ -10,7 +10,7 @@
 
 // Trial By Fire
 
-#include "fundamentalTypes.h"
+#include "FundamentalTypes.h"
 
 
 
@@ -63,22 +63,26 @@ fn returns(void     ) StaticDeallocate        parameters(void                   
 
 // Macros
 
-#define StaticAllocate(_type, _numberToAllocate)           \
-Internal_StaticAllocate(sizeof(_type) + _numberToAllocate)
+#define StaticAllocate(_type, _numberToAllocate)                   \
+Heap( Internal_StaticAllocate(sizeof(_type) + _numberToAllocate) )
 
 
-#define ScopedAllocate(_type, _numberToAllocate)                                    \
-Internal_ScopedAllocate(getAddress(scopedBlock), sizeof(_type) * _numberToAllocate)
+#define ScopedAllocate(_type, _numberToAllocate)                                            \
+Heap( Internal_ScopedAllocate(getAddress(scopedBlock), sizeof(_type) * _numberToAllocate) )
 
 
 #define SmartScope                                        \
 {                                                         \
-	MemoryBlock scopedBlock = { NULL, { NULL, 0U }, 0U };
+	Stack                                                 \
+	( 	                                                  \
+		MemoryBlock scopedBlock = ,                       \
+		{ NULL, { NULL, 0U }, 0U };                       \
+	)
 
 
-#define SmartScope_End                             \
-	if (scopedBlock.address != NULL)               \
-	{                                              \
-		ScopedDeallocate(getAddress(scopedBlock)); \
-	}                                              \
+#define SmartScope_End                                      \
+	if (scopedBlock.address != NULL)                        \
+	{                                                       \
+		Heap( ScopedDeallocate(getAddress(scopedBlock)) );  \
+	}                                                       \
 }

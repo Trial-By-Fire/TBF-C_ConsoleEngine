@@ -41,10 +41,12 @@ struct ConsoleData_Def
 
 
 
-
 // Private Instances
 
-Global(ConsoleData) Renderer;
+BSS
+(
+	ConsoleData Renderer;
+)
 
 
 
@@ -94,6 +96,8 @@ fn returns(void) ClearRender parameters()
 		SetConsoleCursorPosition(Renderer.handle, Renderer.zeroCell);
 
 		//Successfuly cleared. Returning to originating routine.
+
+		return;
 	}
 }
 

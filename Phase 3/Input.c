@@ -23,7 +23,7 @@ fn returns(bool) KeyboardHit parameters(void)
 	return _kbhit();
 }
 
-fn returns(int) GetKeyPress parameters(void)
+fn returns(Key) GetKeyPress parameters(void)
 {
-	return _getch();
+	return (Key)_getch();
 }

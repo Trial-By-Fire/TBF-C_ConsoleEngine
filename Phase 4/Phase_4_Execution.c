@@ -13,15 +13,16 @@
 
 fn returns(void) Test parameters(void) SmartScope
 {
-	Ptr(bool) testBool = ScopedAllocate(bool, 1);
+	Stack
+	(
+		Ptr(bool ) testBool   = Heap( ScopedAllocate(bool , 1) );
+		Ptr(char ) testChar   = Heap( StaticAllocate(bool , 1) );
+		Ptr(float) testFloats = Heap( ScopedAllocate(float, 2) );
+	)
 
 	val(testBool) = false;
 
-	Ptr(char) testChar = StaticAllocate(bool, 1);
-
 	val(testChar) = 'a';
-
-	Ptr(float) testFloats = ScopedAllocate(float, 2);
 
 	testFloats[0] = 1.1F;
 	testFloats[1] = 2.2F;
@@ -32,7 +33,10 @@ SmartScope_End
 
 fn returns(ExecFlags) EntryPoint parameters(void)
 {
-	Ptr(int) testInt = StaticAllocate(int, 1);
+	Stack
+	(
+		Ptr(int) testInt = Heap( StaticAllocate(int, 1) );
+	)
 
 	//Launch_V3();
 
@@ -40,7 +44,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	val(testInt) = 4;
 
-	StaticDeallocate();
+	Heap( StaticDeallocate() );
 
 	return ExecFlags_Success;
 }

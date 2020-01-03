@@ -36,7 +36,7 @@ I'm going to choose to separate my code into my own sectors for the sake of orga
 
 // Entrypoint for app execution.
 #define EntryPoint \
-main
+int main()
 
 // The return value for the entrypoint function.
 #define ExecFlags \
@@ -48,6 +48,17 @@ int
 
 
 // Memory Related
+
+// Used to define data that is initialized. Don't put uninitialized data in this section.
+#define section_data(_declare) \
+_declare
+
+// Used to define readonly data.
+#define section_data_readonly(_readonlyDeclare) \
+const _readonlyDeclare;
+
+#define section_data_buffered(_declare) \
+_declare;
 
 // Stores the address for a data instance of the specified type.
 #define Ptr(_type) \
@@ -93,7 +104,7 @@ CONSOLE_SCREEN_BUFFER_INFO
 // Used to clearly state a function declare.
 #define fn
 
-// Used to clearly state paramater declare.
+// Used to clearly state parameter declare.
 #define parameters
 
 // States what the function will return data if any. (Put void if you don't want to return data).
@@ -115,67 +126,57 @@ puts(_string)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// Data Addresses
+section_data_buffered
+(
+	Ptr(void) memoryBlock;
 
-// Determine size of each group of data.
+	Ptr(bool) exist;
 
-Ptr(void) memoryBlock;   // Address to full memory block if using single allocation.
+	Ptr(char) message;
 
-Ptr(bool) exist;   // Sentinel value use to exist core engine loop.
+	Ptr(LARGE_INTEGER) timeSnapshot_Initial;
+	Ptr(LARGE_INTEGER) timeSnapshot_End    ;
+	Ptr(LARGE_INTEGER) timeFrequency       ;
+	Ptr(int64        ) cycle_TicksElapsed  ;
+	Ptr(floatEP      ) cycle_Microseconds  ;
+	Ptr(floatEP      ) deltaTime           ;
 
-Ptr(char) message;   // Address to the message string.
+	Ptr(floatEP) consoleRefeshTimer   ;
+	Ptr(floatEP) consoleRefeshInterval;
 
-// Timing Stuff
+	Ptr(char) lastKeyPressed;
 
-Ptr(LARGE_INTEGER) timeSnapshot_Initial;
-Ptr(LARGE_INTEGER) timeSnapshot_End    ;
-Ptr(LARGE_INTEGER) timeFrequency       ;
-Ptr(int64        ) cycle_TicksElapsed  ;
-Ptr(floatEP      ) cycle_Microseconds  ;
-Ptr(floatEP      ) deltaTime           ;
-
-// Console Timing
-
-Ptr(floatEP) consoleRefeshTimer   ;
-Ptr(floatEP) consoleRefeshInterval;
-
-// Input System
-
-Ptr(char) lastKeyPressed;
-
-// Clear Console Routine
-
-Ptr(HANDLE) consoleHandle            ;
-Ptr(DWORD ) charactersWritten        ;
-Ptr(COORD ) screenPos_00             ;
-Ptr(CSBI  ) csbi_instance            ;
-Ptr(DWORD ) consoleSize              ;
-Ptr(bool  ) fillResult               ;
-Ptr(bool  ) attributeResult          ;
-Ptr(uInt  ) clearConsole_ReturnRoutes;
-
+	Ptr(HANDLE) consoleHandle            ;
+	Ptr(DWORD ) charactersWritten        ;
+	Ptr(COORD ) screenPos_00             ;
+	Ptr(CSBI  ) csbi_instance            ;
+	Ptr(DWORD ) consoleSize              ;
+	Ptr(bool  ) fillResult               ;
+	Ptr(bool  ) attributeResult          ;
+	Ptr(uInt  ) clearConsole_ReturnRoutes;
+)
 
 
 
 // EntryPoint: Where you define the execution of your program. (Its also a function. All execution is within some function)
 
-fn returns(ExecFlags) EntryPoint parameters(void)
+EntryPoint
 {
-	// Sentinel Initalization
+	// Sentinel Initialization
 
 	exist = AllocateMemory(sizeof(bool));
 
 	val(exist) = true;
 
 
-	// Message Initalization
+	// Message Initialization
 
 	message = AllocateMemory(sizeof(char) * 13);
 
 	val( (message + 0 ) ) = 'H' ;   //This means the same as data(message) = 'H'; I just did it to keep the whitespace aligned / keep an explicit index of what data block were accessing.
 	val( (message + 1 ) ) = 'e' ;   //Since every character data block is one byte, we simply increment the address of our message by how far from the first block it is. 
 	val( (message + 2 ) ) = 'l' ;   //We can do this cause we restricted the address of message to be a character.
-	val( (message + 3 ) ) = 'l' ;   //Since its restricted to be addresssing a character, every time you do numerical operation on the value of the address,
+	val( (message + 3 ) ) = 'l' ;   //Since its restricted to be addressing a character, every time you do numerical operation on the value of the address,
 	val( (message + 4 ) ) = 'o' ;   //your saying to increment the address by the size of a character which is in this case 1 byte.
 	val( (message + 5 ) ) = ' ' ;
 	val( (message + 6 ) ) = 'W' ;
@@ -197,7 +198,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 	// Core Loop Prep
 
 
-	// Timing Initalization
+	// Timing Initialization
 
 	timeSnapshot_Initial = AllocateMemory(sizeof(LARGE_INTEGER));
 	timeSnapshot_End     = AllocateMemory(sizeof(LARGE_INTEGER));
@@ -268,7 +269,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 				val(consoleHandle)    ,
 				(TCHAR)' '            ,
 				val(consoleSize      ),
-				val(screenPos_00),
+				val(screenPos_00)     ,
 				charactersWritten
 			);
 
@@ -377,7 +378,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 		goto Core_Engine_Loop;
 	}
 
-	printf("Exiting Game Engine: Press enter key to contiue. PHASE 1 OVER!!!!!!!!!");
+	printf("Exiting Game Engine: Press enter key to continue. PHASE 1 OVER!!!!!!!!!");
 
 	getchar();
 
