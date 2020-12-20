@@ -12,6 +12,12 @@
 
 alias(struct CString_Def) as CString;
 
+alias(char) as CString_13[13];
+
+alias(char) as CTS_CString[];
+
+alias(wchar_t) as CTS_CWString[];
+
 
 
 // Structures
@@ -27,9 +33,6 @@ struct CString_Def
 
 // Constants
 
-#define SizeOf_HelloWorld \
-	13U
-
 #define SizeOf_CString \
 	sizeof(CString)
 
@@ -37,8 +40,4 @@ struct CString_Def
 
 // Forward Declarations
 
-fn returns(void) CString_PrintStartMessage parameters(void);
-
 fn returns(void) CString_LoadModule parameters(void);
-
-fn returns(void) SetupStartMessage parameters(void);

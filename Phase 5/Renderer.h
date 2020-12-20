@@ -5,7 +5,7 @@
 // Includes
 
 #include "C_STL.h"
-#include "Windows_Includes.h"
+#include "OSPlatform.h"
 #include "LAL.h"
 
 
@@ -24,16 +24,18 @@ struct ConsoleData_Def
 {
 	// Procedure Data
 
-	HANDLE ConsoleHandle    ;
-	DWORD  CharactersWritten;
+	HWND   Window_Handle;
+	HANDLE Output_Handle;
+	DWORD  CharactersWritten  ;
 	COORD  ScreenPos_00     ;
-	CSBI   Csbi_instance    ;
-	DWORD  ConsoleSize      ;
+	COORD  CoordSize;
+	CSBI   CSBI_Instance    ;
+	DWORD  Size      ;
 
 	// Render Timing
 
-	float64 ConsoleRefeshTimer   ;
-	float64 ConsoleRefeshInterval;
+	float64 RefeshTimer   ;
+	float64 RefeshInterval;
 };
 
 
@@ -42,6 +44,12 @@ struct ConsoleData_Def
 
 #define SizeOf_Renderer \
 	sizeof(ConsoleData)
+
+#define Renderer_Width \
+	80
+
+#define Renderer_Height \
+	48
 
 
 
@@ -68,6 +76,8 @@ fn returns(void) ResetRendererDrawPosition parameters(void);
 fn returns(void) SetupRenderer parameters(void);
 
 fn returns(bool) ShouldRender parameters(void);
+
+fn returns(void) Renderer_UnloadModule parameters(void);
 
 fn returns(bool) UpdateRendererInfo parameters(void);
 

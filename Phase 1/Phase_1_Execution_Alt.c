@@ -25,7 +25,7 @@ I'm going to choose to separate my code into my own sectors for the sake of orga
 
 // Trial By Fire
 
-#include "FloatCompare.h"
+#include "../FloatCompare.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -123,7 +123,7 @@ Ptr(void) memoryBlock;   // Address to full memory block if using single allocat
 
 Ptr(bool) exist;   // Sentinel value use to exist core engine loop.
 
-Ptr(char) message;   // Address to the message string.
+Ptr(char) message;   // 
 
 // Timing Stuff
 
@@ -266,7 +266,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 			FillConsoleOutputCharacter
 			(
 				val(consoleHandle)    ,
-				(TCHAR)' '            ,
+				(TCHAR)' '             ,
 				val(consoleSize      ),
 				val(screenPos_00),
 				charactersWritten
@@ -285,10 +285,10 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 		val(attributeResult) = \
 			FillConsoleOutputAttribute
 			(
-				val(consoleHandle)        ,
+				val(consoleHandle)       ,
 				csbi_instance->wAttributes,
-				val(consoleSize      )    ,
-				val(screenPos_00)         ,
+				val(consoleSize      )   ,
+				val(screenPos_00)   ,
 				charactersWritten
 			);
 

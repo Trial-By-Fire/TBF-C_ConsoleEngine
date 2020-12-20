@@ -1,24 +1,32 @@
 // Includes
 
-// C Stadnard Library
-
-#include <stdlib.h>
-
-// Trial By Fire
-
-#include "fundamentalTypes.h"
+#include "C_STL.h"
+#include "LAL.h"
 #include "Memory.h"
 
 
 
-fn returns(void) Test parameters(void) SmartScope
+// Aliases (Typedefs)
+
+alias(enum ExecFlags_Def) as ExecFlags;
+
+
+
+// Enumerators
+
+enum ExecFlags_Def
 {
-	Stack
-	(
-		Ptr(bool ) testBool   = Heap( ScopedAllocate(bool , 1) );
-		Ptr(char ) testChar   = Heap( StaticAllocate(bool , 1) );
-		Ptr(float) testFloats = Heap( ScopedAllocate(float, 2) );
-	)
+	ExecFlags_Sucess = 0,
+};
+
+
+
+
+fn returns(void) Test_ScopedAllocations parameters(void) SmartScope
+{
+	Ptr(bool ) testBool   = ScopedAllocate(bool , 1);
+	Ptr(char ) testChar   = StaticAllocate(char , 1); 
+	Ptr(float) testFloats = ScopedAllocate(float, 2);
 
 	val(testBool) = false;
 
@@ -31,20 +39,24 @@ SmartScope_End
 
 
 
+
+
+// SmartScope_End
+
+
+// Entry Point
+
 fn returns(ExecFlags) EntryPoint parameters(void)
 {
-	Stack
-	(
-		Ptr(int) testInt = Heap( StaticAllocate(int, 1) );
-	)
+	// Global Dynamic Allocation Test
 
-	//Launch_V3();
+	Ptr(int) testInt = StaticAllocate(int, 1);
 
-	Test();
+	Test_ScopedAllocations();
 
 	val(testInt) = 4;
 
-	Heap( StaticDeallocate() );
+	StaticDeallocate();
 
-	return ExecFlags_Success;
+	return ExecFlags_Sucess;
 }

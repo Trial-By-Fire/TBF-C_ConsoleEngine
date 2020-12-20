@@ -3,25 +3,64 @@
 
 
 
+// Includes
+#include "Memory.h"
+
+
+
+// Static Data
+
+// Private
+
+// Static Data
+
+BSS
+(
+	Ptr(CString) Message_HelloWorld; 
+)
+
+
 // Functions
 
-fn returns(void) SetupStartMessage(void)
-{
-	StartMessage.length = 13U;
+// Public
 
-	StartMessage.array[0] = 'H';
-	StartMessage.array[1] = 'e';
-	StartMessage.array[2] = 'l';
-	StartMessage.array[3] = 'l';
-	StartMessage.array[4] = 'o';
-	StartMessage.array[5] = ' ';
-	StartMessage.array[6] = 'W';
-	StartMessage.array[7] = 'o';
-	StartMessage.array[8] = 'r';
-	StartMessage.array[9] = 'l';
-	StartMessage.array[10] = 'd';
-	StartMessage.array[11] = '!';
-	StartMessage.array[12] = '\0';
+fn returns(void) CString_PrintStartMessage parameters(void)
+{
+	// Print Start Message
+
+	print(Message_HelloWorld->Array);
+}
+
+fn returns(void) CString_LoadModule parameters(void)
+{
+	Message_HelloWorld = Data_AssignMemory(SizeOf_CString);
+
+	SetupStartMessage();
+}
+
+fn returns(void) SetupStartMessage parameters(void)
+{
+	Message_HelloWorld->Length = SizeOf_HelloWorld;
+
+	Message_HelloWorld->Array = Heap(AllocateMemory(Message_HelloWorld->Length));
+
+	// Setup the values of the message string. 
+
+	Message_HelloWorld->Array[0] = 'H';   // val( (Message + 0) ) = 'H';
+	Message_HelloWorld->Array[1] = 'e';
+	Message_HelloWorld->Array[2] = 'l';
+	Message_HelloWorld->Array[3] = 'l';
+	Message_HelloWorld->Array[4] = 'o';
+	Message_HelloWorld->Array[5] = ' ';
+	Message_HelloWorld->Array[6] = 'W';
+	Message_HelloWorld->Array[7] = 'o';
+	Message_HelloWorld->Array[8] = 'r';
+	Message_HelloWorld->Array[9] = 'l';
+	Message_HelloWorld->Array[10] = 'd';
+	Message_HelloWorld->Array[11] = '!';
+	Message_HelloWorld->Array[12] = '\0';
+
+	// Once we have the values we print the message.
 
 	return;
 }

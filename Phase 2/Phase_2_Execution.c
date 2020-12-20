@@ -11,10 +11,9 @@
 #include <conio.h>
 #include <Windows.h>
 
-
 // Trial By Fire
 
-#include "FloatCompare.h"
+#include "../FloatCompare.h"
 
 //////////////////////////////////// End of Includes ///////////////////////////////////////////////
 
@@ -25,25 +24,21 @@
 // Aliasing
 
 // Allows the aliasing of a data structure to a different typename.
-#define alias(_typeToAlias) \
-typedef _typeToAlias
+#define alias \
+typedef 
 
 // A way to show relationship to alias...
-#define as
-
+#define as 
 
 // Functions
 
 #define EntryPoint \
 main
 
-// Used to clearly state a function declare.
-#define fn
+#define fn \
 
-// Used to clearly state parameter declare.
-#define parameters
+#define parameters \
 
-// States what the function will return data if any. (Put void if you don't want to return data).
 #define returns(_returnType) \
 _returnType
 
@@ -58,24 +53,24 @@ const are put in read only memory.
 #define readonly \
 const
 
-// Stores the address for a data instance of the specified type.
+// Stores the address for a data instance of the specified type. (Pointer declaration, using indirection operator)
 #define Ptr(_type) \
 _type*
 
-// Gets the address from the specified instance.
+//Provides a more explicit method for getting a reference.
 #define getAddress(_instance) \
 &_instance
 
-// Gets the data instance (instantiated object) from the specified address.
+// Gets the data instance from the specified address (AKA Dereference, using indirection operator)
 #define val(_address) \
 *_address
 
-// Specifies that this datatype is intended to be allocated within the data segement. 
+// Specifies that this datatype is intended to be allocated within the data segment. 
 // (It will allocate and format the memory for you before starting the program)
 #define Data(_typeOfData) \
 _typeOfData
 
-// Specifies that this datatype is intended to be allocated within the BSS segement. 
+// Specifies that this datatype is intended to be allocated within the BSS segment. 
 // (It will allocate the memory only but will not format it for you before starting the program)
 #define BSS(_typeOfData) \
 _typeOfData
@@ -92,37 +87,31 @@ _heapOperation
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
 
 
-
+	
 // Aliases (Typedefs) ------------------------------------------------------------------------------
 
-// C Standard Types
+alias char as Byte;
 
-alias(char) as Byte;
+alias long long int as int64;
 
-alias(size_t) as DataSize;
+alias unsigned           int as uInt  ;
+alias unsigned long long int as uInt64;
 
-alias(long double) as floatEP;
+alias char as Key;
 
-alias(long long int) as int64;
+alias long double as float64;
 
-alias(unsigned           int) as uInt  ;
-alias(unsigned long long int) as uInt64;
+alias size_t as DataSize;
 
-alias (char) as Key;
+alias CONSOLE_SCREEN_BUFFER_INFO as CSBI;
 
-// Microsoft
+alias enum ExecFlags_Def  as ExecFlags;
 
-alias(CONSOLE_SCREEN_BUFFER_INFO) as CSBI;
-
-// TBF
-
-alias(enum ExecFlags_Def) as ExecFlags;
-
-alias(struct CString_Def    ) as CString    ;
-alias(struct MemoryBlock_Def) as MemoryBlock;
-alias(struct TimingData_Def ) as TimingData ;
-alias(struct InputData_Def  ) as InputData  ;
-alias(struct ConsoleData_Def) as ConsoleData;
+alias struct CString_Def     as CString    ;
+alias struct MemoryBlock_Def as MemoryBlock;
+alias struct TimingData_Def  as TimingData ;
+alias struct InputData_Def   as InputData  ;
+alias struct ConsoleData_Def as ConsoleData;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -132,59 +121,59 @@ alias(struct ConsoleData_Def) as ConsoleData;
 
 enum ExecFlags_Def
 {
-	ExecFlags_Success = 0,
+	ExecFlags_Sucess = 0,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 // Structures
 
 struct CString_Def
 {
-	Ptr(char) array;
+	Ptr(char) Array;
 
-	uInt64 length;
+	uInt64 Length;
 };
 
 struct MemoryBlock_Def
 {
-	Ptr(void) address;
+	Ptr(void) Address;
 
-	uInt64 byteLocation;
+	uInt64 ByteLocation;   // Has the last address referenced from the data array.
 
-	DataSize size;
+	DataSize Size;   // In Bytes.
 };
 
 struct TimingData_Def
 {
-	LARGE_INTEGER Snapshot_Initital;
-	LARGE_INTEGER Snapshot_End     ;
-	LARGE_INTEGER Frequency        ;
-
-	int64   Elapsed_Ticks;
-	floatEP Elapsed_Micro;
-
-	floatEP deltaTime;
+	LARGE_INTEGER TimeSnapshot_Initial;
+	LARGE_INTEGER TimeSnapshot_End    ;
+	LARGE_INTEGER TimeFrequency       ;
+	int64         Cycle_TicksElapsed  ;
+	float64       Cycle_Microseconds  ;
+	float64       DeltaTime           ;
 };
 
 struct InputData_Def
 {
-	Key lastKeyPressed;
+	Key LastPressedKey;
 };
 
 struct ConsoleData_Def
 {
-	HANDLE handle     ;
-	CSBI   csbi_inst  ;
-	DWORD  size       ;
-	COORD  zeroCell   ;
-	DWORD  charWritten;
+	// Procedure Data
+
+	HANDLE ConsoleHandle    ;
+	DWORD  CharactersWritten;
+	COORD  ScreenPos_00     ;
+	CSBI   Csbi_instance    ;
+	DWORD  ConsoleSize      ;
 
 	// Render Timing
-	floatEP refreshTimer   ;
-	floatEP refreshInterval;
+
+	float64 ConsoleRefeshTimer   ;
+	float64 ConsoleRefeshInterval;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,111 +188,132 @@ struct ConsoleData_Def
 #define MicrosecondToSecond \
 	10000000
 
+#define SizeOf_HelloWorld \
+	13U
+
+#define SizeOf_CString \
+	sizeof(CString)
+
+#define SizeOf_TimeData \
+	sizeof(TimingData)
+
+#define SizeOf_InputSystem \
+	sizeof(InputData)
+
+#define SizeOf_Renderer \
+	sizeof(ConsoleData)
+
 #define SizeOf_Data \
-	sizeof(bool) + sizeof(CString) + sizeof(TimingData) + sizeof(InputData) + sizeof(ConsoleData)
+	sizeof(bool) + SizeOf_CString + SizeOf_TimeData + SizeOf_InputSystem + SizeOf_Renderer
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-// Static Data ------------------------------------------------------------------------------------------
+// Static Data
+
+// Determine size of each group of data.
 
 BSS
-(
-	Ptr(MemoryBlock) DataArray;
+( 
+	Ptr(MemoryBlock) DataArray;   // Address to full memory block if using single allocation.
 
-	Ptr(bool) Exist;
+	Ptr(bool) Exist;   // Sentinel value use to exit core engine loop.
 
-	Ptr(CString) StartMessage;
-
+	Ptr(CString    ) Message ;   // 
 	Ptr(TimingData ) Timing  ;
 	Ptr(InputData  ) Input   ;
 	Ptr(ConsoleData) Renderer;
+
+	// Input System
+
+	Ptr(char) LastKeyPressed;
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-// Functions ---------------------------------------------------------------------------------------
+// Functions
 
 // Forward Declarations
 
-fn returns(Ptr(void)) AllocateMemory parameters(DataSize  _amountToAllocate);
-fn returns(void     ) Deallocate     parameters(Ptr(void) _addressToData   );
+fn returns(Ptr(void)) AllocateMemory                  parameters(DataSize _amountToAllocate);
+fn returns(bool     ) FillRendererCellsWithWhitespace parameters(void                      );
+fn returns(bool     ) FormatRendererCells             parameters(void                      );
+fn returns(bool     ) UpdateRendererInfo              parameters(void                      );
+fn returns(void     ) ResetRendererDrawPosition       parameters(void                      );
 
-
-// Start Message -----------------------------------------------------------------------------------
+// Start Message
 
 fn returns(void) SetupStartMessage parameters(void)
 {
-	StartMessage->length = 13U;
+	Message->Length = SizeOf_HelloWorld;
 
-	StartMessage->array = Heap( AllocateMemory(StartMessage->length) );
+	Message->Array = Heap( AllocateMemory(Message->Length) );
 
-	StartMessage->array[0 ] = 'H' ;
-	StartMessage->array[1 ] = 'e' ;
-	StartMessage->array[2 ] = 'l' ;
-	StartMessage->array[3 ] = 'l' ;
-	StartMessage->array[4 ] = 'o' ;
-	StartMessage->array[5 ] = ' ' ;
-	StartMessage->array[6 ] = 'W' ;
-	StartMessage->array[7 ] = 'o' ;
-	StartMessage->array[8 ] = 'r' ;
-	StartMessage->array[9 ] = 'l' ;
-	StartMessage->array[10] = 'd' ;
-	StartMessage->array[11] = '!' ;
-	StartMessage->array[12] = '\0';
+	// Setup the values of the message string. 
 
-	return;
-}
+	Message->Array[0 ] = 'H' ;   // val( (Message + 0) ) = 'H';
+	Message->Array[1 ] = 'e' ;
+	Message->Array[2 ] = 'l' ;
+	Message->Array[3 ] = 'l' ;
+	Message->Array[4 ] = 'o' ;
+	Message->Array[5 ] = ' ' ;
+	Message->Array[6 ] = 'W' ;
+	Message->Array[7 ] = 'o' ;
+	Message->Array[8 ] = 'r' ;
+	Message->Array[9 ] = 'l' ;
+	Message->Array[10] = 'd' ;
+	Message->Array[11] = '!' ;
+	Message->Array[12] = '\0';
 
-
-// Timing ------------------------------------------------------------------------------------------
-
-fn returns(void) SetupTiming parameters(void)
-{
-	Timing->Elapsed_Ticks = 0   ;
-	Timing->Elapsed_Micro = 0.0L;
-	Timing->deltaTime     = 0.0L;
-
-	QueryPerformanceFrequency(getAddress(Timing->Frequency));
+	// Once we have the values we print the message.
 
 	return;
 }
+
+// Timing
 
 fn returns(void) ProcessCycleTiming parameters(void)
 {
-	Timing->Elapsed_Ticks = Timing->Snapshot_End.QuadPart - Timing->Snapshot_Initital.QuadPart;
+	Timing->Cycle_TicksElapsed = Timing->TimeSnapshot_End.QuadPart - Timing->TimeSnapshot_Initial.QuadPart;
 
-	Timing->Elapsed_Micro  = (floatEP)(Timing->Elapsed_Ticks * TickToMicroseconds);
-	Timing->Elapsed_Micro /= (floatEP) Timing->Frequency.QuadPart                 ;	
+	Timing->Cycle_Microseconds = (float64)(Timing->Cycle_TicksElapsed * TickToMicroseconds                      );
+	Timing->Cycle_Microseconds =           Timing->Cycle_Microseconds / (float64)Timing->TimeFrequency.QuadPart  ;
 
-	Timing->deltaTime      = (floatEP)(Timing->Elapsed_Micro) / (floatEP)MicrosecondToSecond;
+	Timing->DeltaTime          = (float64)Timing->Cycle_TicksElapsed / (float64)MicrosecondToSecond;
 
-	if 
-	(
-		FloatEP_ApproxEqual(Timing->deltaTime, 0.000001L) || 
-		FloatEP_ApproxLess (Timing->deltaTime, 0.000001L)
-	)
+	if (Float64_ApproxEqual(Timing->DeltaTime, 0.000001L) || Float64_ApproxLess(Timing->DeltaTime, 0.000001L))
 	{
-		Renderer->refreshTimer += + 0.000001L;
+		Renderer->ConsoleRefeshTimer = Renderer->ConsoleRefeshTimer + 0.000001L;
 
 		return;
 	}
 	else
 	{
-		Renderer->refreshTimer += Timing->deltaTime;
+		Renderer->ConsoleRefeshTimer = Renderer->ConsoleRefeshTimer + Timing->DeltaTime;
 
 		return;
 	}
 }
 
-// Input -------------------------------------------------------------------------------------------
+fn returns(void) SetupTiming parameters(void)
+{
+	Timing->Cycle_TicksElapsed = 0   ;
+	Timing->Cycle_Microseconds = 0.0L;
+	Timing->DeltaTime          = 0.0L;
+
+	QueryPerformanceFrequency(getAddress(Timing->TimeFrequency));
+
+	return;
+}
+
+// Input
 
 fn returns(bool) KeyboardHit parameters(void)
 {
-	return _kbhit();
+	return (bool)_kbhit();
 }
 
 fn returns(Key) GetKeyPress parameters(void)
@@ -311,42 +321,40 @@ fn returns(Key) GetKeyPress parameters(void)
 	return (Key)_getch();
 }
 
+// Memory
 
-// Memory ------------------------------------------------------------------------------------------
-
-fn returns(Ptr(void)) AllocateMemory parameters(DataSize _amountToAllocate)
+fn returns( Ptr(void) ) AllocateMemory parameters(DataSize _amountToAllocate)
 {
 	return Heap( malloc(_amountToAllocate) );
 }
 
-fn returns(void) Deallocate parameters(Ptr(void) _addressToData)
+fn returns(void) Deallocate parameters(Ptr(void) _memoryToDeallocate )
 {
-	Heap( free(_addressToData) );
+	Heap( free(_memoryToDeallocate) );
 
 	return;
 }
 
-
-// Memory Block ---------------------------------------------------------------------------------------
+// Memory Block
 
 fn returns(void) Data_Alloc parameters(void)
 {
 	DataArray = Heap( AllocateMemory(sizeof(MemoryBlock)) );
 
-	DataArray->size = SizeOf_Data;
+	DataArray->Size = SizeOf_Data;
 
-	DataArray->address = Heap( AllocateMemory(DataArray->size) );
+	DataArray->Address = Heap( AllocateMemory(DataArray->Size) );
 
-	DataArray->byteLocation = 0U;
+	DataArray->ByteLocation = 0U;
 
 	return;
 }
 
 fn returns(void) Data_Dealloc parameters(void)
 {
-	if (DataArray->size > 0)
+	if (DataArray->Size > 0)
 	{
-		Heap( Deallocate(DataArray->address) );
+		Heap( Deallocate(DataArray->Address) );
 	}
 
 	Heap( Deallocate(DataArray) );
@@ -354,15 +362,27 @@ fn returns(void) Data_Dealloc parameters(void)
 	return;
 }
 
-fn returns(Ptr(void)) Data_AssignMemory parameters(DataSize _sizeofDataType)
+fn returns( Ptr(void) ) Data_AddressAt parameters(Ptr(uInt64) _byteLocation)
 {
-	if (DataArray->byteLocation <= DataArray->size)
+	if (val(_byteLocation) <= DataArray->Size)
 	{
-		Ptr(void) addressAssigned = ( (Ptr(Byte))DataArray->address ) + DataArray->byteLocation;
+		return (Ptr(Byte))DataArray->Address + val(_byteLocation);
+	}
+	else
+	{
+		return NULL;
+	}
+}
 
-		DataArray->byteLocation += _sizeofDataType;
+fn returns( Ptr(void) ) Data_AssignMemory parameters(DataSize _sizeOfDataType)
+{
+	if (DataArray->ByteLocation <= DataArray->Size )
+	{
+		Stack( Ptr(void) ) addressedAssigned = ( ( Ptr(Byte) )DataArray->Address) + DataArray->ByteLocation;
 
-		return addressAssigned;
+		DataArray->ByteLocation += _sizeOfDataType;
+
+		return addressedAssigned;
 	}
 	else
 	{
@@ -371,148 +391,153 @@ fn returns(Ptr(void)) Data_AssignMemory parameters(DataSize _sizeofDataType)
 }
 
 
-// Renderer ----------------------------------------------------------------------------------------
+// Renderer
 
-fn returns(void) ClearRender parameters()
+fn returns(void) ClearRender parameters(void)
 {
-	if (GetConsoleScreenBufferInfo(Renderer->handle, getAddress(Renderer->csbi_inst)))
+	if (UpdateRendererInfo())
 	{
-		Renderer->size = Renderer->csbi_inst.dwSize.X * Renderer->csbi_inst.dwSize.Y;
+		Renderer->ConsoleSize = Renderer->Csbi_instance.dwSize.X * Renderer->Csbi_instance.dwSize.Y;
 
-		if
-		(
-			!FillConsoleOutputCharacter
-			(
-				Renderer->handle     ,
-				(TCHAR)' '           ,
-				Renderer->size       ,
-				Renderer->zeroCell   ,
-	 getAddress(Renderer->charWritten)
-			)
-		)
+		if (FillRendererCellsWithWhitespace() && UpdateRendererInfo() && FormatRendererCells())
 		{
+			ResetRendererDrawPosition();
+
 			return;
 		}
-
-		if (!GetConsoleScreenBufferInfo(Renderer->handle, getAddress(Renderer->csbi_inst)))
+		else
 		{
-			return;
+			return;   // If any of the conditions fail, return immediately.
 		}
-
-		if
-		(
-			!FillConsoleOutputAttribute
-			(
-				Renderer->handle               ,
-				Renderer->csbi_inst.wAttributes,
-				Renderer->size                 ,
-				Renderer->zeroCell             ,
-	 getAddress(Renderer->charWritten          )
-			)
-		)
-		{
-			return;
-		}
-
-		SetConsoleCursorPosition(Renderer->handle, Renderer->zeroCell);
-
-		//Successfuly cleared. Returning to originating routine.
-
-		return;
-	}
-	else
-	{
-		return;
 	}
 }
 
-fn returns(int) print parameters(readonly Ptr(char) _stringToPrint)
+// Return value tells you if it did the job.
+fn returns(bool) FillRendererCellsWithWhitespace parameters(void)
 {
-	return puts(_stringToPrint);
+	return FillConsoleOutputCharacter
+			(
+				Renderer->ConsoleHandle     ,
+				(TCHAR)' '                  ,
+				Renderer->ConsoleSize       ,
+				Renderer->ScreenPos_00      ,
+	 getAddress(Renderer->CharactersWritten)
+			);
+}
+
+fn returns(bool) FormatRendererCells parameters(void)
+{
+	return FillConsoleOutputAttribute
+			(
+				Renderer->ConsoleHandle            ,
+				Renderer->Csbi_instance.wAttributes,
+				Renderer->ConsoleSize              ,
+				Renderer->ScreenPos_00             ,
+	 getAddress(Renderer->CharactersWritten)
+			);
+}
+
+fn returns(int) print parameters(readonly Ptr(char) _message)
+{
+	return puts(_message);
+}
+
+fn returns(void) RenderFrame parameters(void)
+{
+	printf("Tick Elapsed        : %llu  \n", Timing  ->Cycle_TicksElapsed);
+	printf("Timer      (Seconds): %.7Lf \n", Renderer->ConsoleRefeshTimer);
+	printf("Delta Time (Seconds): %.7Lf \n", Timing  ->DeltaTime         );
+	printf("Key Pressed         :  %c   \n", Input   ->LastPressedKey    );
+	
+	return;
+}
+
+fn returns(void) ResetRendererDrawPosition parameters(void)
+{
+	SetConsoleCursorPosition(Renderer->ConsoleHandle, Renderer->ScreenPos_00);
+	
+	return;
 }
 
 fn returns(void) SetupRenderer parameters(void)
 {
-	Renderer->handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	Renderer->ConsoleRefeshTimer    = 0.0L;
+	Renderer->ConsoleRefeshInterval = 0.1L;
 
-	Renderer->zeroCell.X = 0;
-	Renderer->zeroCell.Y = 0;
+	Renderer->ScreenPos_00.X = 0;
+	Renderer->ScreenPos_00.Y = 0;
 
-	Renderer->refreshTimer    = 0.0L;
-	Renderer->refreshInterval = 0.1L;
+	Renderer->ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	return;
 }
 
 fn returns(bool) ShouldRender parameters(void)
 {
-	if 
-	(
-		FloatEP_ApproxGreater(Renderer->refreshTimer, Renderer->refreshInterval) ||
-		FloatEP_ApproxEqual  (Renderer->refreshTimer, Renderer->refreshInterval)
-	)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return Float64_ApproxGreater(Renderer->ConsoleRefeshTimer, Renderer->ConsoleRefeshInterval) || 
+		   Float64_ApproxEqual  (Renderer->ConsoleRefeshTimer, Renderer->ConsoleRefeshInterval)   ;
 }
 
-// Prepare Modules ---------------------------------------------------------------------------------
-
-fn returns(void) PrepareModules parameters(void)
+fn returns(bool) UpdateRendererInfo parameters(void)
 {
-	// Exist
+	return GetConsoleScreenBufferInfo(Renderer->ConsoleHandle, getAddress(Renderer->Csbi_instance));
+}
 
-	Exist = Data_AssignMemory(sizeof(Exist));
+
+// Prepare Modules
+
+fn returns (void) PrepareModules parameters(void)
+{
+	// Exist Sentinel
+
+	Exist = Data_AssignMemory(sizeof(bool));
 
 	val(Exist) = true;
 
 	// Start Message
 
-	StartMessage = Data_AssignMemory(sizeof(CString));
+	Message = Data_AssignMemory(SizeOf_CString);
 
 	SetupStartMessage();
 
 	// Timing
-
-	Timing = Data_AssignMemory(sizeof(TimingData));
+	
+	Timing = Data_AssignMemory(SizeOf_TimeData);
 
 	SetupTiming();
 
 	// Input
 
-	Input = Data_AssignMemory(sizeof(InputData));
+	Input = Data_AssignMemory(SizeOf_InputSystem);
 
-	// Render
+	Input->LastPressedKey = '\0';
 
-	Renderer = Data_AssignMemory(sizeof(Renderer));
+	// Renderer
+
+	Renderer = Data_AssignMemory(SizeOf_Renderer);
 
 	SetupRenderer();
 
 	return;
 }
 
-// Engine Cycle ------------------------------------------------------------------------------------
+
+// Engine Cycle
 
 fn returns(void) EngineCycler parameters(void)
 {
 	while (val(Exist) == true)
 	{
-		QueryPerformanceCounter(getAddress(Timing->Snapshot_Initital));
-
-		// Update Input
-
-		if (KeyboardHit())
-		{
-			Input->lastKeyPressed = GetKeyPress();
-		}
+		QueryPerformanceCounter(getAddress(Timing->TimeSnapshot_Initial));   // Take initial cycle snapshot of time.
 
 		// Process Input
 
-		if (Input->lastKeyPressed == 'q')
+		if (KeyboardHit())
+		{
+			Input->LastPressedKey = GetKeyPress();
+		}
+
+		if (Input->LastPressedKey == 'q')
 		{
 			val(Exist) = false;
 		}
@@ -523,21 +548,18 @@ fn returns(void) EngineCycler parameters(void)
 
 		// Update State
 
-		// Update Render
+		// Process Render
 
 		if (ShouldRender())
 		{
 			ClearRender();
 
-			printf("Tick Elasped        : %llu  \n", Timing  ->Elapsed_Ticks );
-			printf("Timer      (Seconds): %.7Lf \n", Renderer->refreshTimer  );
-			printf("Delta Time (Seconds): %.7Lf \n", Timing  ->deltaTime     );
-			printf("Key Pressed         :  %c   \n", Input   ->lastKeyPressed);
+			RenderFrame();
 
-			Renderer->refreshTimer = 0.0L;
+			Renderer->ConsoleRefeshTimer = 0.0L;
 		}
 
-		QueryPerformanceCounter(getAddress(Timing->Snapshot_End));
+		QueryPerformanceCounter(getAddress(Timing->TimeSnapshot_End));   // Take ending cycle snapshot of time.
 
 		ProcessCycleTiming();
 	}
@@ -549,9 +571,11 @@ fn returns(void) EngineCycler parameters(void)
 
 
 
+// Entry Point
+
 fn returns(ExecFlags) EntryPoint parameters(void)
 {
-	// Stack
+	// Allocate our data array.
 
 	Heap( Data_Alloc() );
 
@@ -559,20 +583,23 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	PrepareModules();
 
+	// Print Start Message
+
+	print(Message->Array);
+
 	// Core Engine Loop
 
 	EngineCycler();
 
-
-	// Exit Sequence
-
-	Heap( Data_Dealloc() );
+	// Exit Engine
 
 	printf("Exiting Game Engine: Press enter key to continue.");
 
 	getchar();
 
-	return ExecFlags_Success;
-}
+	// Now that were done before we leave we deallocate the data array.
 
-////////////////////////////////////////////////////////////////////////
+	Heap( Data_Dealloc() );
+
+	return ExecFlags_Sucess;
+}

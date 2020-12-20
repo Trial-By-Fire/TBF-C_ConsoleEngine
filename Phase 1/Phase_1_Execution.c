@@ -21,13 +21,10 @@ I'm going to choose to separate my code into my own sectors for the sake of orga
 // Windows Library
 
 #include <conio.h>
-//#include <Windows.h>
 #include <Windows.h>
-//#include 
 
 //Eds Cancer
-#include "FloatCompare.h"
-//#include <concrt.h>
+#include "../FloatCompare.h"
 
 ////////////////////////////////////////////
 
@@ -330,7 +327,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 		SetConsoleCursorPosition(val(consoleHandle), val(screenCoordinates));
 
-		//Successfuly cleared. Returning to originating routine.
+		// Successfully cleared. Returning to originating routine.
 	}
 	
 	ClearConsole_Return:
@@ -408,7 +405,7 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 		goto Core_Engine_Loop;
 	}
 
-	printf("Exiting Game Engine: Press enter key to contiue. PHASE 1 OVER!!!!!!!!!");
+	printf("Exiting Game Engine: Press enter key to continue. PHASE 1 OVER!!!!!!!!!");
 
 	getchar();
 
