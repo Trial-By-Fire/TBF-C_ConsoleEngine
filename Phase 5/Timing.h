@@ -45,14 +45,10 @@ struct TimingData_Def
 
 // Forward Declarations
 
-fn returns(void) TakeInitialSnapshot parameters(void);
-
-fn returns(void) TakeEndingSnapshot parameters(void);
+fn returns(ro Ptr(TimingData) ) Timing_GetContext(void);
 
 fn returns(void) Timing_LoadModule parameters(void);
 
-fn returns( Ptr(ro TimingData) ) GetTimingContext(void);
+fn returns(void) Timing_TakeInitialSnapshot parameters(void);
 
-fn returns(void) ProcessCycleTiming parameters(void);
-
-fn returns(void) SetupTiming parameters(void);
+fn returns(void) Timing_TakeEndingSnapshot parameters(void);

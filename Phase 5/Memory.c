@@ -12,6 +12,8 @@ Data()
 	MemoryBlockArray GlobalMemory =
 	{ NULL, 0U };
 
+
+
 // Functions
 
 // Public
@@ -33,6 +35,16 @@ fn returns(void) Deallocate parameters(Ptr(void) _memoryToDeallocate)
 fn returns( Ptr(void) ) Reallocate parameters( Ptr(void)  _memoryToReallocate, DataSize _sizeDesired)
 {
 	return Heap(realloc(_memoryToReallocate, _sizeDesired));
+}
+
+fn returns( Ptr(void) ) Internal_Memory_FormatByFill parameters(Ptr(void) _memoryAddress, sInt _fillValue, DataSize _sizeOfData)
+{
+	return memset(_memoryAddress, _fillValue, _sizeOfData);
+}
+
+fn returns( Ptr(void) ) Memory_FormatWithData parameters(Ptr(void) _memoryAddress, ro Ptr(void) _dataSource, DataSize _sizeOfData)
+{
+	return memcpy(_memoryAddress, _dataSource, _sizeOfData);
 }
 
 // Memory Allocation Array

@@ -33,9 +33,9 @@ fn returns(void) Cycler_Initialize parameters(void)
 {
 	while (Exist == true)
 	{
-		TakeInitialSnapshot();
+		Timing_TakeInitialSnapshot();
 
-		ProcessInput();
+		Input_Update();
 
 		// Update UI
 
@@ -43,11 +43,22 @@ fn returns(void) Cycler_Initialize parameters(void)
 
 		// Update State
 
-		ProcessRender();
+		Stack()
 
-		TakeEndingSnapshot();
+			ro Ptr(InputData   ) inputContext    = Input_GetContext();
+			ro Ptr(RendererData) rendererContext = Renderer_GetContext();
+			ro Ptr(TimingData  ) timingContext   = Timing_GetContext();
 
-		ProcessCycleTiming();
+		Renderer_WriteToPersistentSection(1, L"Tick Elapsed        : %llu" , timingContext  ->Cycle_TicksElapsed);
+		Renderer_WriteToPersistentSection(2, L"Timer      (Seconds): %.7Lf", rendererContext->RefeshTimer       );
+		Renderer_WriteToPersistentSection(3, L"Delta Time (Seconds): %.7Lf", timingContext  ->DeltaTime         );
+		Renderer_WriteToPersistentSection(4, L"Key Pressed         : %c"   , inputContext   ->LastPressedKey    );
+
+		Renderer_Update();
+
+		Timing_TakeEndingSnapshot();
+
+		Timing_Update();
 	}
 }
 

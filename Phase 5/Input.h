@@ -34,12 +34,12 @@ struct InputData_Def
 
 // Forward Declarations
 
+fn returns(Ptr(ro InputData)) Input_GetContext(void);
+
+fn returns(Key) Input_GetKeyPress parameters(void);
+
+fn returns(bool) Input_KeyboardHit parameters(void);
+
 fn returns(void) Input_LoadModule parameters(void);
 
-fn returns(Ptr(ro InputData)) GetInputContext(void);
-
-fn returns(Key) GetKeyPress parameters(void);
-
-fn returns(bool) KeyboardHit parameters(void);
-
-fn returns(void) ProcessInput parameters(void);
+fn returns(void) Input_Update parameters(void);
