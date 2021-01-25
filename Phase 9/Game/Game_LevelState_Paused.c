@@ -22,30 +22,6 @@ Data()
 
 	uInt PauseUI_Index = 0;
 
-	// Title
-
-	CTS_CWString PauseTitle_Text = L"Paused";
-
-	DataSize PauseTitle_Text_Length = 0;
-
-	Ptr(Cell) PauseTitle_RenderCells = NULL;
-
-	// Resume button
-
-	CTS_CWString Resume_Text = L"Resume";
-
-	DataSize Resume_Text_Length = 0;
-
-	Ptr(Cell) Reusme_RenderCells = NULL;
-
-	// Quit to Menu button
-
-	CTS_CWString QuitToMenu_Text = L"Quit to Menu";
-
-	DataSize QuitToMenu_Text_Length = 0;
-
-	Ptr(Cell) QuitToMenu_RenderCells = NULL;
-
 
 
 // Enums
