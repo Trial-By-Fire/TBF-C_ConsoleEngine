@@ -13,7 +13,6 @@
 
 
 
-
 // Macros
 
 #define Console_Cursor_MinSize 1
@@ -25,7 +24,23 @@
 FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
 
 
+
+// Enums
+
+enum EKeyCode_Def
+{
+	Key_None        = 0x00,
+	Key_Arrow_UP    = VK_UP,
+	Key_Arrow_Down  = VK_DOWN,
+	Key_Arrow_Left  = VK_LEFT,
+	Key_Arrow_Right = VK_RIGHT,
+};
+
+
 // Aliases (Typedefs)
+
+alias(enum EKeyCode_Def) as EKeyCode;
+
 
 
 // Forward Declarations
@@ -35,3 +50,6 @@ fn returns(bool) Bind_IOBufferTo_Console parameters(void);
 fn returns(bool) RequestConsole parameters(void);
 
 fn returns(bool) Unbind_IOBufferTo_Console parameters(void);
+
+
+fn returns(bool) GetKeySignal parameters(EKeyCode _key);

@@ -86,6 +86,11 @@ extern
 #define sGlobal \
 static
 
+// Functions
+#define FunctionPtr(_function) \
+(*FPtr_##_function)
+
+
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
 
 

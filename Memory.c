@@ -49,7 +49,7 @@ fn returns( Ptr(void) ) Memory_FormatWithData parameters(Ptr(void) _memoryAddres
 
 // Memory Allocation Array
 
-fn returns(void) MemoryBlockArray_Add parameters(Ptr(MemoryBlockArray) _memoryArray)
+fn returns(void) MemoryBlockArray_Add parameters(Ptr(MemoryBlockArray) _memoryArray, Ptr(MemoryBlock) _memoryAllocation)
 {
 	if (_memoryArray->Array == NULL)
 	{

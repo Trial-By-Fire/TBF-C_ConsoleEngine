@@ -45,7 +45,9 @@ struct TimingData_Def
 
 // Forward Declarations
 
-fn returns(ro Ptr(TimingData) ) Timing_GetContext(void);
+fn returns(void) Timing_MakeTimer parameters(void);
+
+fn returns(ro Ptr(TimingData) ) Timing_GetContext parameters(void);
 
 fn returns(void) Timing_LoadModule parameters(void);
 

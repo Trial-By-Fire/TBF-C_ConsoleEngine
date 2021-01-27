@@ -136,6 +136,18 @@ fn returns(bool) Unbind_IOBufferTo_Console parameters(void)
 	return true;
 }
 
+fn returns(bool) GetKeySignal parameters(EKeyCode _key)
+{
+	if (GetAsyncKeyState(_key) & 0x8000)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 
 
 // Private

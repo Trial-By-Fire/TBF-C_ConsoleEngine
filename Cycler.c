@@ -43,6 +43,15 @@ fn returns(void) Cycler_Initialize parameters(void)
 
 		// Update State
 
+		//sGlobal stateLoaded = false;
+
+		if (Input_GetKeyTap(Key_Arrow_Down, 3))
+		{
+			Exist = false;
+		}
+
+		// Update Renderer
+
 		Stack()
 
 			ro Ptr(InputData   ) inputContext    = Input_GetContext();
@@ -52,9 +61,11 @@ fn returns(void) Cycler_Initialize parameters(void)
 		Renderer_WriteToPersistentSection(1, L"Tick Elapsed        : %llu" , timingContext  ->Cycle_TicksElapsed);
 		Renderer_WriteToPersistentSection(2, L"Timer      (Seconds): %.7Lf", rendererContext->RefeshTimer       );
 		Renderer_WriteToPersistentSection(3, L"Delta Time (Seconds): %.7Lf", timingContext  ->DeltaTime         );
-		Renderer_WriteToPersistentSection(4, L"Key Pressed         : %c"   , inputContext   ->LastPressedKey    );
+		//Renderer_WriteToPersistentSection(4, L"Key Pressed         : %c"   , inputContext   ->LastPressedKey    );
 
 		Renderer_Update();
+
+		// Update Timing
 
 		Timing_TakeEndingSnapshot();
 
@@ -65,4 +76,18 @@ fn returns(void) Cycler_Initialize parameters(void)
 fn returns(void) Cycler_LoadModule parameters(void)
 {
 	Exist = true;
+}
+
+
+
+// Private
+
+fn returns(bool) ShouldQuit parameters(void)
+{
+	//sGlobal 
+}
+
+fn returns(void) Quit parameters(void)
+{
+	Exist = false;
 }

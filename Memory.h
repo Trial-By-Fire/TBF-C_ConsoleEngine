@@ -88,8 +88,8 @@ Internal_GlobalAllocate(sizeof(_type) * _numberToAllocate)
 #define ScopedAllocate(_type, _numberToAllocate)  \
 Internal_ScopedAllocate(getAddress(scopedMemory), sizeof(_type) * _numberToAllocate)
 
-#define Memory_FormatByFill(_type, _memoryAllocation, _fillValue, _sizeOfAllocation) \
-Internal_Memory_FormatByFill(_memoryAllocation, _fillValue, sizeof(_type) * _sizeOfAllocation);
+#define Memory_FormatByFill(_type, _memoryAddress, _fillValue, _sizeOfAllocation) \
+Internal_Memory_FormatByFill(_memoryAddress, _fillValue, sizeof(_type) * _sizeOfAllocation);
 
 #define SmartScope                  \
 {					                \
