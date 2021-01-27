@@ -13,7 +13,12 @@
 
 enum 
 {
+	ECharacter_DontMove ,
+	ECharacter_MoveLeft ,
+	ECharacter_MoveRight,
+
 	LevelCell_Empty  = 0,
+	LevelCell_Pit    = BACKGROUND_BLUE,
 	LevelCell_Ground = BACKGROUND_GREEN,
 	LevelCell_Finish = BACKGROUND_RED
 };
@@ -21,6 +26,10 @@ enum
 
 
 // Aliases
+
+// Character
+
+alias(struct Character_Def) as Character;
 
 // Level
 
@@ -50,6 +59,22 @@ struct Vector2D_Def
 {
 	float32 X;
 	float32 Y;
+};
+
+// Character
+
+struct Character_Def
+{
+	Cell Sprite;
+
+	Vector2D Position;
+
+	float32 MoveVelocity;
+	float32 VerticalVelocity;
+
+	bool ShouldJump, Fell;
+
+	sInt MoveState;
 };
 
 // UI
@@ -95,6 +120,16 @@ struct UI_Widget_Def
 
 
 // Functions
+
+// Character
+
+fn returns(bool) Character_IsGrounded parameters(Ptr(Character) _character, Ptr(Level) _level);
+
+fn returns(void) Character_Load parameters(Ptr(Character) _character);
+
+fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Level) _level);
+
+fn returns(void) Character_Render parameters(Ptr(Character) _character);
 
 // Level
 

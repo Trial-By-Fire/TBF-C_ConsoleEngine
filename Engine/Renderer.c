@@ -48,7 +48,7 @@ BSS()
 
 Data()
 
-	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 11";
+	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 12";
 
 	ro COORD Console_ScreenPos_00 = 
 	{
