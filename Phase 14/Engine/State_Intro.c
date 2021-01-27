@@ -36,7 +36,7 @@ bool
 Cell* IntroTitle_RenderCells = NULL;
 Cell* Version_RenderCells    = NULL;
 
-DataSize 
+size_t 
 	Title_Length         = 0,
 	EngineVersion_Length = 0 ;
 
@@ -48,7 +48,7 @@ DataSize
 
 void ChangeTitleTo_Grey()
 {
-	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 	{
 		IntroTitle_RenderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
@@ -56,7 +56,7 @@ void ChangeTitleTo_Grey()
 
 void ChangeEngineVerTo_Grey()
 {
-	for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
 	{
 		Version_RenderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
@@ -64,7 +64,7 @@ void ChangeEngineVerTo_Grey()
 
 void ChangeTitleTo_White()
 {
-	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 	{
 		IntroTitle_RenderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
@@ -72,7 +72,7 @@ void ChangeTitleTo_White()
 
 void ChangeEngineVerTo_White()
 {
-	for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
 	{
 		Version_RenderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
@@ -105,12 +105,12 @@ void IntroState_Load(void)
 		IntroTitle_RenderCells = GlobalAllocate(Cell, Title_Length        );
 		Version_RenderCells    = GlobalAllocate(Cell, EngineVersion_Length);
 
-		for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+		for (size_t cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 		{
 			IntroTitle_RenderCells[cellIndex].Char.UnicodeChar = IntroTitle[cellIndex];
 		}
 
-		for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+		for (size_t cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
 		{
 			Version_RenderCells[cellIndex].Char.UnicodeChar = EngineVersion[cellIndex];
 		}

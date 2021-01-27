@@ -18,7 +18,7 @@ MemoryBlockArray GlobalMemory =
 
 // C-API
 
-void* AllocateMemory(DataSize _amountToAllocate)
+void* AllocateMemory(size_t _amountToAllocate)
 {
 	return malloc(_amountToAllocate);
 }
@@ -30,17 +30,17 @@ void Deallocate(void* _memoryToDeallocate)
 	return;
 }
 
-void* Reallocate(void* _memoryToReallocate, DataSize _sizeDesired)
+void* Reallocate(void* _memoryToReallocate, size_t _sizeDesired)
 {
 	return realloc(_memoryToReallocate, _sizeDesired);
 }
 
-void* Internal_Memory_FormatByFill(void* _memoryAddress, sInt _fillValue, DataSize _sizeOfData)
+void* Internal_Memory_FormatByFill(void* _memoryAddress, sInt _fillValue, size_t _sizeOfData)
 {
 	return memset(_memoryAddress, _fillValue, _sizeOfData);
 }
 
-void* Memory_FormatWithData(void* _memoryAddress, const void* _dataSource, DataSize _sizeOfData)
+void* Memory_FormatWithData(void* _memoryAddress, const void* _dataSource, size_t _sizeOfData)
 {
 	return memcpy(_memoryAddress, _dataSource, _sizeOfData);
 }
@@ -79,7 +79,7 @@ MemoryBlock* MemoryBlockArray_LastEntry(MemoryBlockArray* _memoryArray)
 
 // Memory Management
 
-Address Internal_ScopedAllocate(MemoryBlockArray* _scopedMemory, DataSize _sizeOfAllocation)
+Address Internal_ScopedAllocate(MemoryBlockArray* _scopedMemory, size_t _sizeOfAllocation)
 {
 	if (_scopedMemory->Array == NULL)
 	{
@@ -124,7 +124,7 @@ Address Internal_ScopedAllocate(MemoryBlockArray* _scopedMemory, DataSize _sizeO
 
 void ScopedDeallocate(MemoryBlockArray* _scopedMemory)
 {
-	for (DataSize index = 0; index < _scopedMemory->Length; index++)
+	for (size_t index = 0; index < _scopedMemory->Length; index++)
 	{
 		Deallocate(_scopedMemory->Array[index]->Location);
 
@@ -136,7 +136,7 @@ void ScopedDeallocate(MemoryBlockArray* _scopedMemory)
 	return;
 }
 
-Address Internal_GlobalAllocate(DataSize _sizeOfAllocation)
+Address Internal_GlobalAllocate(size_t _sizeOfAllocation)
 {
 	if (GlobalMemory.Array == NULL)
 	{
@@ -179,9 +179,9 @@ Address Internal_GlobalAllocate(DataSize _sizeOfAllocation)
 	}
 }
 
-Address Internal_GlobalReallocate(Address _location, DataSize _sizeForReallocation)
+Address Internal_GlobalReallocate(Address _location, size_t _sizeForReallocation)
 {
-	for (DataSize index = 0; index < GlobalMemory.Length; index++)
+	for (size_t index = 0; index < GlobalMemory.Length; index++)
 	{
 		if (GlobalMemory.Array[index]->Location == _location)
 		{
@@ -205,7 +205,7 @@ Address Internal_GlobalReallocate(Address _location, DataSize _sizeForReallocati
 
 void GlobalDeallocate(void)
 {
-	for (DataSize index = 0; index < GlobalMemory.Length; index++)
+	for (size_t index = 0; index < GlobalMemory.Length; index++)
 	{
 		Deallocate(GlobalMemory.Array[index]->Location);
 

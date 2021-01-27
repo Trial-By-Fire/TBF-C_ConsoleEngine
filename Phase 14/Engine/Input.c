@@ -19,8 +19,8 @@ InputData Input;
 
 // Forward Declarations
 
-EKeyCode GetKeyCodeAtIndex  (DataSize _index);
-DataSize GetKeyIndexFromCode(EKeyCode _key);
+EKeyCode GetKeyCodeAtIndex  (size_t _index);
+size_t GetKeyIndexFromCode(EKeyCode _key);
 
 
 
@@ -40,7 +40,7 @@ const InputData* Input_GetContext(void)
 
 void Input_Update(void)
 {
-	DataSize index = 0; 
+	size_t index = 0; 
 
 	for (; index < Keys_NumTracked; index++)
 	{
@@ -92,7 +92,7 @@ void Input_Update(void)
 		{
 			*CurrentState = latestState;
 
-			for (DataSize subIndex = 0; subIndex < Input.KeyEventSubs[index].Num; subIndex++)
+			for (size_t subIndex = 0; subIndex < Input.KeyEventSubs[index].Num; subIndex++)
 			{
 				if ( Input.KeyEventSubs[index].Array[subIndex] != NULL)
 				{
@@ -115,7 +115,7 @@ void Input_SubscribeTo(EKeyCode _key, InputEvent_Function* _callbackFunction)
 	}
 	else
 	{
-		for (DataSize subIndex = 0; subIndex < subs->Num; subIndex++)
+		for (size_t subIndex = 0; subIndex < subs->Num; subIndex++)
 		{
 			if ( (&subs->Array)[subIndex] == NULL)
 			{
@@ -149,7 +149,7 @@ void Input_Unsubscribe(EKeyCode _key, InputEvent_Function* _callbackFunction)
 {
 	Subscriptions* subs = &Input.KeyEventSubs[GetKeyIndexFromCode(_key)];
 
-	for (DataSize subIndex = 0; subIndex < subs->Num; subIndex++)
+	for (size_t subIndex = 0; subIndex < subs->Num; subIndex++)
 	{
 		if (subs->Array[subIndex] == _callbackFunction)
 		{
@@ -162,7 +162,7 @@ void Input_Unsubscribe(EKeyCode _key, InputEvent_Function* _callbackFunction)
 
 // Private
 
-EKeyCode GetKeyCodeAtIndex(DataSize _index)
+EKeyCode GetKeyCodeAtIndex(size_t _index)
 {
 	switch (_index)
 	{
@@ -193,7 +193,7 @@ EKeyCode GetKeyCodeAtIndex(DataSize _index)
 	}
 }
 
-DataSize GetKeyIndexFromCode(EKeyCode _key)
+size_t GetKeyIndexFromCode(EKeyCode _key)
 {
 	switch (_key)
 	{

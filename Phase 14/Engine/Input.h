@@ -84,7 +84,7 @@ struct Subscriptions_Def
 {
 	InputEvent_FunctionPtr* Array;
 
-	DataSize Num;
+	size_t Num;
 };
 
 struct InputData_Def

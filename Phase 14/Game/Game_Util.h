@@ -83,7 +83,7 @@ struct UI_Text_Def
 {
 	WideChar* Content;
 
-	DataSize Length;
+	size_t Length;
 
 	Cell* RenderCells;
 
@@ -101,16 +101,16 @@ struct UI_Grid_Def
 {
 	UI_Button* Buttons;
 
-	DataSize Num;
+	size_t Num;
 
-	DataSize CurrentIndex;
+	size_t CurrentIndex;
 };
 
 struct UI_Widget_Def
 {
 	UI_Text* TextUIs;
 
-	DataSize Num_TextUIs;
+	size_t Num_TextUIs;
 
 	//Ptr(UI_Grid) Grids;
 
@@ -147,9 +147,9 @@ COORD Convert_Vector2D_ToRenderCoord(Vector2D _vector);
 
 // General Rendering
 
-void ChangeCellsTo_Grey(Cell* _renderCells, DataSize _length);
+void ChangeCellsTo_Grey(Cell* _renderCells, size_t _length);
 
-void ChangeCellsTo_White(Cell* _renderCells, DataSize _length);
+void ChangeCellsTo_White(Cell* _renderCells, size_t _length);
 
 // UI
 

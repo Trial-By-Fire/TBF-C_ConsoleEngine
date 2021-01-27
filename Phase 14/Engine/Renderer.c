@@ -33,7 +33,7 @@ struct Lines_Def
 {
 	Line* Array;
 
-	DataSize Num;
+	size_t Num;
 }
 
 Lines;
@@ -201,7 +201,7 @@ void Renderer_Update(void)
 
 		if (DebugLogSection_Dynamic.Num <= 18)
 		{
-			for (DataSize index = 0; index < DebugLogSection_Dynamic.Num - 1; index++)
+			for (size_t index = 0; index < DebugLogSection_Dynamic.Num - 1; index++)
 			{
 				startingCell.Y = ERenderer_DebugStart + index;
 				finalCell   .Y = ERenderer_DebugStart + index;
@@ -211,9 +211,9 @@ void Renderer_Update(void)
 		}
 		else
 		{
-			DataSize LogStart = DebugLogSection_Dynamic.Num - 18 - DebugLogSection_RelativeLastLine;
+			size_t LogStart = DebugLogSection_Dynamic.Num - 18 - DebugLogSection_RelativeLastLine;
 
-			for (DataSize index = 0; index < ERenderer_DebugLogSize; index++)
+			for (size_t index = 0; index < ERenderer_DebugLogSize; index++)
 			{
 				startingCell.Y = ERenderer_DebugStart + index;
 				finalCell   .Y = ERenderer_DebugStart + index;
@@ -222,7 +222,7 @@ void Renderer_Update(void)
 			}
 		}
 
-		for (DataSize index = 0; index < ERenderer_PersistentSectionSize; index++)
+		for (size_t index = 0; index < ERenderer_PersistentSectionSize; index++)
 		{
 			startingCell.Y = ERenderer_DebugPersistentStart + index;
 			finalCell   .Y = ERenderer_DebugPersistentStart + index;
@@ -240,14 +240,14 @@ void Renderer_Update(void)
 
 void Renderer_WriteToBufferCells(Cell* _cell, COORD _initalCell, COORD _finalCell)
 {
-	DataSize lineOffset = _initalCell.Y * ERenderer_Width;
-	DataSize colOffset  = _initalCell.X;
+	size_t lineOffset = _initalCell.Y * ERenderer_Width;
+	size_t colOffset  = _initalCell.X;
 
-	DataSize totalOffset = lineOffset + colOffset;
+	size_t totalOffset = lineOffset + colOffset;
 
 	void* bufferOffset = &Buffer[totalOffset];
 
-	DataSize dataSize = totalOffset;
+	size_t dataSize = totalOffset;
 
 	lineOffset =  _finalCell.Y * ERenderer_Width;
 	colOffset  =  _finalCell.X                  ;
@@ -301,15 +301,15 @@ void Renderer_WriteToLog(WideChar* _logString)
 
 	static uInt nextLine = 0;
 
-	DataSize logLength = wcslen(_logString);
-	DataSize linePos   = 0;
+	size_t logLength = wcslen(_logString);
+	size_t linePos   = 0;
 
 	if (nextLine == 0)
 	{
 		Renderer_DebugLogDynamic_AddLine();
 	}
 
-	for (DataSize index = 0; index < logLength; index++)
+	for (size_t index = 0; index < logLength; index++)
 	{
 		if (linePos > ERenderer_Width - 1)
 		{
@@ -326,7 +326,7 @@ void Renderer_WriteToLog(WideChar* _logString)
 		linePos++;
 	}
 
-	for (DataSize index = linePos; index < ERenderer_Width; index++)
+	for (size_t index = linePos; index < ERenderer_Width; index++)
 	{
 		DebugLogSection_Dynamic.Array[nextLine][index].Char.UnicodeChar = 0;
 		DebugLogSection_Dynamic.Array[nextLine][index].Attributes       = 0;
@@ -371,13 +371,13 @@ void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...)
 
 	va_end(argList);
 
-	for (DataSize index = 0; index < CellsFormatted; index++)
+	for (size_t index = 0; index < CellsFormatted; index++)
 	{
 		PersistentSubSection[index].Char.UnicodeChar = TranslationBuffer[index];
 		PersistentSubSection[index].Attributes       = Console_WhiteCell;
 	}
 
-	for (DataSize index = CellsFormatted + 1; index < ERenderer_Width; index++)
+	for (size_t index = CellsFormatted + 1; index < ERenderer_Width; index++)
 	{
 		PersistentSubSection[index].Char.UnicodeChar = NULL;
 		PersistentSubSection[index].Attributes       = NULL;
@@ -403,7 +403,7 @@ void DrawGameScanlines(void)
 
 	Cell cellLine[ERenderer_Width];
 
-	for (DataSize index = 0; index < ERenderer_Width; index++)
+	for (size_t index = 0; index < ERenderer_Width; index++)
 	{
 		cellLine[index] = cellUnit;
 	}
@@ -468,7 +468,7 @@ void InitalizeData(void)
 
 #ifdef Debug
 
-	for (DataSize index = 0; index < ERenderer_Width; index++)
+	for (size_t index = 0; index < ERenderer_Width; index++)
 	{
 		Border_GameDebug    [index] = borderCell;
 		Border_LogPersistent[index] = borderCell;

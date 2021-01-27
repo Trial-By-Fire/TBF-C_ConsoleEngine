@@ -31,14 +31,14 @@ struct MemoryBlock_Def
 {
 	Address Location;
 
-	DataSize Size;
+	size_t Size;
 };
 
 struct MemoryBlockArray_Def
 {
 	MemoryBlock** Array;
 
-	DataSize Length;
+	size_t Length;
 };
 
 
@@ -58,11 +58,11 @@ struct MemoryBlockArray_Def
 
 // C-API
 
-void* AllocateMemory(DataSize _amountToAllocate  );
+void* AllocateMemory(size_t _amountToAllocate  );
 void  Deallocate    (void*    _memoryToDeallocate);
 
-void* Internal_Memory_FormatByFill(void* _memoryAddress,       sInt  _fillValue,  DataSize _sizeOfData);
-void* Memory_FormatWithData       (void* _memoryAddress, const void* _dataSource, DataSize _sizeOfData);
+void* Internal_Memory_FormatByFill(void* _memoryAddress,       sInt  _fillValue,  size_t _sizeOfData);
+void* Memory_FormatWithData       (void* _memoryAddress, const void* _dataSource, size_t _sizeOfData);
 
 // Memory Allocation Array
 
@@ -72,11 +72,11 @@ void         MemoryBlockArray_Deallocate(MemoryBlockArray* _memoryArray         
 
 // Memory Management
 
-Address Internal_ScopedAllocate(MemoryBlockArray* _scopedAllocations, DataSize _sizeOfAllocation);
+Address Internal_ScopedAllocate(MemoryBlockArray* _scopedAllocations, size_t _sizeOfAllocation);
 void    ScopedDeallocate       (MemoryBlockArray* _scopedAllocations                            );
 
-Address Internal_GlobalAllocate  (                   DataSize _sizeOfAllocation   );
-Address Internal_GlobalReallocate(Address _location, DataSize _sizeForReallocation);
+Address Internal_GlobalAllocate  (                   size_t _sizeOfAllocation   );
+Address Internal_GlobalReallocate(Address _location, size_t _sizeForReallocation);
 void    GlobalDeallocate         (void                                            );
 
 

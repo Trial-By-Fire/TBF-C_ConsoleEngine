@@ -171,10 +171,10 @@ sInt Level_GetCellAtPosition(Level* _level, Vector2D _position)
 
 	Cell* cellBuffer = (Cell*)_level;
 
-	DataSize lineOffset = renderCoord.Y * ERenderer_Width;
-	DataSize colOffset  = renderCoord.X;
+	size_t lineOffset = renderCoord.Y * ERenderer_Width;
+	size_t colOffset  = renderCoord.X;
 
-	DataSize totalOffset = lineOffset + colOffset;
+	size_t totalOffset = lineOffset + colOffset;
 
 	return cellBuffer[totalOffset].Attributes;
 }
@@ -184,16 +184,16 @@ void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, sInt _cell
 SmartScope
 {
 
-	DataSize lineOffset = _firstCell.Y * ERenderer_Width;
-	DataSize colOffset  = _firstCell.X;
+	size_t lineOffset = _firstCell.Y * ERenderer_Width;
+	size_t colOffset  = _firstCell.X;
 
-	DataSize totalOffset = lineOffset + colOffset;
+	size_t totalOffset = lineOffset + colOffset;
 
 	Cell* levelCellBuffer = (Cell*)_level;
 
 	void* bufferOffset = &levelCellBuffer[totalOffset];
 
-	DataSize dataSize = totalOffset;
+	size_t dataSize = totalOffset;
 
 	lineOffset = _lastCell.Y * ERenderer_Width;
 
@@ -207,7 +207,7 @@ SmartScope
 
 	Cell* setCellBuffer = ScopedAllocate(Cell, dataSize);
 
-	for (DataSize index = 0; index < dataSize; index++)
+	for (size_t index = 0; index < dataSize; index++)
 	{
 		setCellBuffer[index].Char.UnicodeChar = 0;
 		setCellBuffer[index].Attributes       = _cellType;
@@ -251,17 +251,17 @@ COORD Convert_Vector2D_ToRenderCoord(Vector2D _vector)
 
 // General Rendering
 
-void ChangeCellsTo_Grey(Cell* _renderCells, DataSize _length)
+void ChangeCellsTo_Grey(Cell* _renderCells, size_t _length)
 {
-	for (DataSize cellIndex = 0; cellIndex < _length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _length; cellIndex++)
 	{
 		_renderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
 }
 
-void ChangeCellsTo_White(Cell* _renderCells, DataSize _length)
+void ChangeCellsTo_White(Cell* _renderCells, size_t _length)
 {
-	for (DataSize cellIndex = 0; cellIndex < _length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _length; cellIndex++)
 	{
 		_renderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
@@ -293,7 +293,7 @@ void UI_Text_Create
 
 	_uiText->RenderCells = GlobalAllocate(Cell, _uiText->Length);
 
-	for (DataSize cellIndex = 0; cellIndex < _uiText->Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _uiText->Length; cellIndex++)
 	{
 		_uiText->RenderCells[cellIndex].Char.UnicodeChar = _uiText->Content[cellIndex];
 		_uiText->RenderCells[cellIndex].Attributes       = Console_WhiteCell;
@@ -346,7 +346,7 @@ void UI_Button_Create
 
 	_button->Text.RenderCells = GlobalAllocate(Cell, _button->Text.Length);
 
-	for (DataSize cellIndex = 0; cellIndex < _button->Text.Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _button->Text.Length; cellIndex++)
 	{
 		_button->Text.RenderCells[cellIndex].Char.UnicodeChar = _button->Text.Content[cellIndex];
 		_button->Text.RenderCells[cellIndex].Attributes       = Console_WhiteCell;
@@ -441,7 +441,7 @@ void UI_Grid_Add
 
 void UI_Grid_MoveUp(UI_Grid* _uiGrid)
 {
-	DataSize* currentIndex = &_uiGrid->CurrentIndex;
+	size_t* currentIndex = &_uiGrid->CurrentIndex;
 
 	UI_Text* buttonText = &_uiGrid->Buttons[*currentIndex].Text;
 
@@ -459,7 +459,7 @@ void UI_Grid_MoveUp(UI_Grid* _uiGrid)
 
 void UI_Grid_MoveDown(UI_Grid* _uiGrid)
 {
-	DataSize* currentIndex = &_uiGrid->CurrentIndex;
+	size_t* currentIndex = &_uiGrid->CurrentIndex;
 
 	UI_Text* buttonText = &_uiGrid->Buttons[*currentIndex].Text;
 
@@ -482,7 +482,7 @@ void UI_Grid_Select(UI_Grid* _uiGrid)
 
 void UI_Grid_Render(UI_Grid* _uiGrid)
 {
-	for (DataSize index = 0; index < _uiGrid->Num; index++)
+	for (size_t index = 0; index < _uiGrid->Num; index++)
 	{
 		UI_Button_Render(&_uiGrid->Buttons[index]);
 	}
@@ -574,7 +574,7 @@ void UI_Widget_Select(UI_Widget* _uiWidget)
 
 void UI_Widget_Render(UI_Widget* _uiWidget)
 {
-	for (DataSize index = 0; index < _uiWidget->Num_TextUIs; index++)
+	for (size_t index = 0; index < _uiWidget->Num_TextUIs; index++)
 	{
 		UI_Text_Render(&_uiWidget->TextUIs[index]);
 	}
