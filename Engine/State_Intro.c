@@ -27,15 +27,17 @@ BSS()
 
 Data()
 
-	CTS_CWString Title         = L"Trial By Fire Engine";
-	CTS_CWString EngineVersion = L"Type C Phase 7"      ;
+	bool Intro_DoneOnce = false;
+
+	CTS_CWString IntroTitle    = L"Trial By Fire Engine";
+	CTS_CWString EngineVersion = L"Type C Phase 8"      ;
 
 	bool 
 		RenderTitle   = false, 
 		RenderVersion = false ;
 
-	Ptr( Cell) Title_RenderCells   = NULL;
-	Ptr( Cell) Version_RenderCells = NULL;
+	Ptr( Cell) IntroTitle_RenderCells = NULL;
+	Ptr( Cell) Version_RenderCells    = NULL;
 
 	DataSize 
 		Title_Length         = 0,
@@ -51,7 +53,7 @@ fn returns(void) ChangeTitleTo_Grey()
 {
 	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 	{
-		Title_RenderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
+		IntroTitle_RenderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
 }
 
@@ -67,7 +69,7 @@ fn returns(void) ChangeTitleTo_White()
 {
 	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 	{
-		Title_RenderCells[cellIndex].Attributes = Console_WhiteCell;
+		IntroTitle_RenderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
 }
 
@@ -86,34 +88,39 @@ fn returns(void) IntroState_Load parameters(void)
 {
 	Renderer_WriteToLog(L"Intro State: Loaded");
 
-	IntroTimer.EndTime = 8.0L;
-
-	Timer_TillTitle    .EndTime = 2.0L;
-	Timer_TillVersion  .EndTime = 1.2L;
-
-	Timer_TillIntroFadeToGrey.EndTime = Timer_TillTitle.EndTime + 4.2L;
-
-	Timer_Till_FadeOut.EndTime = 0.134L;
-
-	Timer_TillTitle_ToWhite  .EndTime = 0.134L;
-	Timer_TillVersion_ToWhite.EndTime = 0.134L;
-
-	Title_Length         = wcslen(Title);
-	EngineVersion_Length = wcslen(EngineVersion);
-
-	Title_RenderCells   = GlobalAllocate(Cell, Title_Length        );
-	Version_RenderCells = GlobalAllocate(Cell, EngineVersion_Length);
-
-	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+	if (! Intro_DoneOnce)
 	{
-		Title_RenderCells[cellIndex].Char.UnicodeChar = Title[cellIndex];
-	}
+		IntroTimer.EndTime = 7.0L;
 
-	for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
-	{
-		Version_RenderCells[cellIndex].Char.UnicodeChar = EngineVersion[cellIndex];
-	}
+		Timer_TillTitle    .EndTime = 2.0L;
+		Timer_TillVersion  .EndTime = 1.2L;
 
+		Timer_TillIntroFadeToGrey.EndTime = Timer_TillTitle.EndTime + 4.2L;
+
+		Timer_Till_FadeOut.EndTime = 0.134L;
+
+		Timer_TillTitle_ToWhite  .EndTime = 0.134L;
+		Timer_TillVersion_ToWhite.EndTime = 0.134L;
+
+		Title_Length = wcslen(IntroTitle);
+		EngineVersion_Length = wcslen(EngineVersion);
+
+		IntroTitle_RenderCells = GlobalAllocate(Cell, Title_Length        );
+		Version_RenderCells    = GlobalAllocate(Cell, EngineVersion_Length);
+
+		for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+		{
+			IntroTitle_RenderCells[cellIndex].Char.UnicodeChar = IntroTitle[cellIndex];
+		}
+
+		for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+		{
+			Version_RenderCells[cellIndex].Char.UnicodeChar = EngineVersion[cellIndex];
+		}
+
+		Intro_DoneOnce = true;
+	}
+	
 	ChangeTitleTo_Grey();
 
 	ChangeEngineVerTo_Grey();
@@ -235,8 +242,8 @@ fn returns(void) IntroState_Render parameters(void)
 {
 	Stack()
 		unbound COORD
-			startingCell = { 0, 10 },
-			endingCell   = { 0, 10 };
+			startingCell = { 0, 9 },
+			endingCell   = { 0, 9 };
 
 	// Render Title
 	if (RenderTitle)
@@ -247,7 +254,7 @@ fn returns(void) IntroState_Render parameters(void)
 		startingCell.Y = 9;
 		endingCell  .Y = 9;
 
-		Renderer_WriteToBufferCells(Title_RenderCells, startingCell, endingCell);
+		Renderer_WriteToBufferCells(IntroTitle_RenderCells, startingCell, endingCell);
 	}
 
 	// Render Version

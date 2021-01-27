@@ -98,7 +98,8 @@ static
 
 alias(char) as Byte;
 
-alias(signed long long int) as sint64;
+alias(signed           short) as sInt16;
+alias(signed long long int  ) as sInt64;
 
 alias(unsigned           int) as uInt  ;
 alias(unsigned long long int) as uInt64;

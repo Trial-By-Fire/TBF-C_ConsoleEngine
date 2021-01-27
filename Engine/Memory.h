@@ -75,8 +75,9 @@ fn returns(void            ) MemoryBlockArray_Deallocate parameters(Ptr(MemoryBl
 fn returns(Address) Internal_ScopedAllocate parameters(Ptr(MemoryBlockArray) _scopedAllocations, DataSize _sizeOfAllocation);
 fn returns(void   ) ScopedDeallocate        parameters(Ptr(MemoryBlockArray) _scopedAllocations                            );
 
-fn returns(Address) Internal_GlobalAllocate parameters(DataSize _sizeOfAllocation);
-fn returns(void   ) GlobalDeallocate        parameters(void                      );
+fn returns(Address) Internal_GlobalAllocate   parameters(                   DataSize _sizeOfAllocation   );
+fn returns(Address) Internal_GlobalReallocate parameters(Address _location, DataSize _sizeForReallocation);
+fn returns(void   ) GlobalDeallocate          parameters(void                                            );
 
 
 
@@ -84,6 +85,9 @@ fn returns(void   ) GlobalDeallocate        parameters(void                     
 
 #define GlobalAllocate(_type, _numberToAllocate) \
 Internal_GlobalAllocate(sizeof(_type) * _numberToAllocate)
+
+#define GlobalReallocate(_type, _address, _numberToReallocate) \
+Internal_GlobalReallocate(_address, sizeof(_type) * _numberToReallocate);
 
 #define ScopedAllocate(_type, _numberToAllocate)  \
 Internal_ScopedAllocate(getAddress(scopedMemory), sizeof(_type) * _numberToAllocate)

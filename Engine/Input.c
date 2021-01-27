@@ -40,61 +40,6 @@ fn returns(ro Ptr(InputData)) Input_GetContext(void)
 	return getAddress(Input);
 }
 
-fn returns(bool) Input_GetKeyTap(EKeyCode _key, DataSize _recordLength)
-{
-	Stack()
-
-		DataSize 
-			//queryIndex    = Input.Index_CurrentState, 
-			relativeIndex = 0; 
-
-		bool 
-			foundRelease = false, 
-			foundPress   = false ;
-
-		Ptr(InputState_RingBuffer) ringBuffer = getAddress(Input.KeyStateBuffer[GetKeyIndexFromCode(_key)]);
-
-
-	if (_recordLength > InputState_BufferSize)
-	{
-		for (; relativeIndex < InputState_BufferSize; relativeIndex++)
-		{
-			Stack()
-				EInputState keyState = ringBuffer->Buffer[ringBuffer->Index - relativeIndex];
-
-			if (keyState == EInput_Released)
-			{
-				foundRelease = true;
-			}
-
-			if (foundRelease && keyState == EInput_Pressed)
-			{
-				foundPress = true;
-			}
-		}
-	}
-	else
-	{
-		for (; relativeIndex < _recordLength; relativeIndex++)
-		{
-			Stack()
-				EInputState keyState = ringBuffer->Buffer[ringBuffer->Index - relativeIndex];
-
-			if (keyState == EInput_Released)
-			{
-				foundRelease = true;
-			}
-
-			if (foundRelease && keyState == EInput_Pressed)
-			{
-				foundPress = true;
-			}
-		}
-	}
-
-	return foundPress && foundRelease;
-}
-
 fn returns(void) Input_Update parameters(void)
 {
 	DataSize index = 0; 
@@ -116,17 +61,24 @@ fn returns(void) Input_Update parameters(void)
 
 		// Determine latest key state.
 
-		Stack() EInputState latestState;
+		Stack()
+
+			Ptr(EInputState) CurrentState = getAddress(Input.KeyStates[index]);
+				
+			EInputState latestState;
 
 		if (Current == Previous)
 		{
 			if (Current == true)
 			{
-				latestState = EInput_Held;
+				latestState = EInput_PressHeld;
 			}
 			else
 			{
-				latestState = EInput_None;
+				if (val(CurrentState) != EInput_PressHeld)
+				{
+					latestState = EInput_None;
+				}
 			}
 		}
 		else
@@ -141,58 +93,76 @@ fn returns(void) Input_Update parameters(void)
 			}
 		}
 
-		Ptr(InputState_RingBuffer) ringBuffer = getAddress(Input.KeyStateBuffer[index]);
-
-		Stack() EInputState CurrentState = ringBuffer->Buffer[ringBuffer->Index];
-
-		if (latestState != CurrentState)
+		if (latestState != val(CurrentState))
 		{
-			if (CurrentState >= (InputState_BufferSize - 1))
+			val(CurrentState) = latestState;
+
+
+			for (DataSize subIndex = 0; subIndex < Input.KeyEventSubs[index].Num; subIndex++)
 			{
-				ringBuffer->Index = 0;
-			}
-			else
-			{
-				ringBuffer->Index = ringBuffer->Index + 1;
-			}
-
-			ringBuffer->Buffer[ringBuffer->Index] = latestState;
-
-			switch (latestState)
-			{
-				case EInput_Held:
+				if (Input.KeyEventSubs[index].Array[subIndex] != NULL)
 				{
-					if (index != 1) break;
-
-					Renderer_WriteToLog(L"Key State: Held");
-
-					break;
-				}
-				case EInput_None:
-				{
-					if (index != 1) break;
-
-					Renderer_WriteToLog(L"Key State: None");
-
-					break;
-				}
-				case EInput_Released:
-				{
-					if (index != 1) break;
-
-					Renderer_WriteToLog(L"Key State: Released");
-
-					break;
-				}
-				case EInput_Pressed:
-				{
-					if (index != 1) break;
-
-					Renderer_WriteToLog(L"Key State: Pressed");
-
-					break;
+					Input.KeyEventSubs[index].Array[subIndex](val(CurrentState));
 				}
 			}
+		}
+	}
+}
+
+fn returns(void) Input_SubscribeTo(EKeyCode _key, Ptr(InputEvent_Function) _callbackFunction)
+{
+	Stack() 
+		Ptr(Subscriptions) subs = getAddress(Input.KeyEventSubs[GetKeyIndexFromCode(_key)]);
+
+	if (subs->Num == 0)
+	{
+		subs->Array = GlobalAllocate(Ptr(InputEvent_FunctionPtr), 1);
+
+		subs->Num++;
+	}
+	else
+	{
+		for (DataSize subIndex = 0; subIndex < subs->Num; subIndex++)
+		{
+			if (subs->Array[subIndex] == NULL)
+			{
+				subs->Array[subs->Num - 1] = _callbackFunction;
+
+				return;
+			}
+		}
+
+
+		Stack() 
+			Address resizeIntermediary = GlobalReallocate( Ptr(InputEvent_FunctionPtr), subs->Array, (subs->Num + 1) );
+
+		if (resizeIntermediary != NULL)
+		{
+			subs->Array = resizeIntermediary;
+
+			subs->Num++;
+		}
+		else
+		{
+			perror("Failed to globally reallocate subscription array.");
+
+			exit(1);
+		}
+	}
+
+	subs->Array[subs->Num - 1] = _callbackFunction;
+}
+
+fn returns(void) Input_Unsubscribe(EKeyCode _key, Ptr(InputEvent_Function) _callbackFunction)
+{
+	Stack()
+		Ptr(Subscriptions) subs = getAddress(Input.KeyEventSubs[GetKeyIndexFromCode(_key)]);
+
+	for (DataSize subIndex = 0; subIndex < subs->Num; subIndex++)
+	{
+		if (subs->Array[subIndex] == _callbackFunction)
+		{
+			subs->Array[subIndex] = NULL;
 		}
 	}
 }
@@ -207,7 +177,7 @@ fn returns(EKeyCode) GetKeyCodeAtIndex(DataSize _index)
 	{
 		case 0:
 		{
-			return Key_Arrow_UP;
+			return Key_Arrow_Up;
 		}
 		case 1:
 		{
@@ -221,6 +191,10 @@ fn returns(EKeyCode) GetKeyCodeAtIndex(DataSize _index)
 		{
 			return Key_Arrow_Right;
 		}
+		case 4:
+		{
+			return Key_Enter;
+		}
 	}
 }
 
@@ -228,7 +202,7 @@ fn returns(DataSize) GetKeyIndexFromCode(EKeyCode _key)
 {
 	switch (_key)
 	{
-		case Key_Arrow_UP:
+		case Key_Arrow_Up:
 		{
 			return 0;
 		}
@@ -243,6 +217,10 @@ fn returns(DataSize) GetKeyIndexFromCode(EKeyCode _key)
 		case Key_Arrow_Right:
 		{
 			return 3;
+		}
+		case Key_Enter:
+		{
+			return 4;
 		}
 	}
 }

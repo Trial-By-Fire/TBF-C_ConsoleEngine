@@ -33,7 +33,7 @@ fn returns(void) PrintStartMessage parameters(void)
 
 	Renderer_WriteToLog(L"");
 
-	Renderer_WriteToLog(L"Version: Phase 7");
+	Renderer_WriteToLog(L"Version: Phase 8");
 }
 
 fn returns(void) UnloadModules parameters(void)
@@ -55,12 +55,6 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	Cycler_Initialize();
 	
-	// Exit Engine
-
-	printf("Exiting Game Engine: Press enter key to continue.");
-
-	getchar();
-
 	UnloadModules();
 
 	GlobalDeallocate();

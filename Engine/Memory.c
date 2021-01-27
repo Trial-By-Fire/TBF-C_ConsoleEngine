@@ -186,6 +186,31 @@ fn returns(Address) Internal_GlobalAllocate parameters(DataSize _sizeOfAllocatio
 	}
 }
 
+fn returns(Address) Internal_GlobalReallocate parameters(Address _location, DataSize _sizeForReallocation)
+{
+	for (DataSize index = 0; index < GlobalMemory.Length; index++)
+	{
+		if (GlobalMemory.Array[index]->Location == _location)
+		{
+			Stack()
+				Address resizeIntermediary = Reallocate(_location, _sizeForReallocation);
+
+			if (resizeIntermediary != NULL)
+			{
+				GlobalMemory.Array[index]->Location = resizeIntermediary;
+
+				return GlobalMemory.Array[index]->Location;
+			}
+			else
+			{
+				return NULL;
+			}
+		}
+	}
+
+	return NULL;
+}
+
 fn returns(void) GlobalDeallocate parameters(void)
 {
 	for (DataSize index = 0; index < GlobalMemory.Length; index++)

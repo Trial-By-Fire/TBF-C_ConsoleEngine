@@ -23,7 +23,7 @@ struct TimingData_Def
 	LARGE_INTEGER TimeSnapshot_Initial;
 	LARGE_INTEGER TimeSnapshot_End    ;
 	LARGE_INTEGER TimeFrequency       ;
-	sint64        Cycle_TicksElapsed  ;
+	sInt64        Cycle_TicksElapsed  ;
 	float64       Cycle_Microseconds  ;
 	float64       DeltaTime           ;
 };

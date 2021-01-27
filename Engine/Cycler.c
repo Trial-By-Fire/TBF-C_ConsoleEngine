@@ -59,7 +59,6 @@ fn returns(void) Cycler_Initialize parameters(void)
 		Renderer_WriteToPersistentSection(1, L"Tick Elapsed        : %llu" , timingContext  ->Cycle_TicksElapsed);
 		Renderer_WriteToPersistentSection(2, L"Timer      (Seconds): %.7Lf", rendererContext->RefeshTimer       );
 		Renderer_WriteToPersistentSection(3, L"Delta Time (Seconds): %.7Lf", timingContext  ->DeltaTime         );
-		//Renderer_WriteToPersistentSection(4, L"Key Pressed         : %c"   , inputContext   ->LastPressedKey    );
 
 		Renderer_Update();
 
