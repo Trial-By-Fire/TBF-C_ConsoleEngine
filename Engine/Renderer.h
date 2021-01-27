@@ -4,6 +4,7 @@
 
 // Includes
 
+#include "Config.h"
 #include "LAL.h"
 #include "CString.h"
 #include "OSPlatform.h"
@@ -15,16 +16,22 @@
 enum ERenderer
 {
 	ERenderer_Width                 = 80,
+
+#ifdef Debug
 	ERenderer_Height                = 48,
 
-	ERenderer_GameEnd               = 23,
 	ERenderer_BorderLine            = 24,
 
 	ERenderer_DebugStart            = 25,
 	ERenderer_DebugLogSize          = 18,
 
 	ERenderer_DebugPersistentStart  = 44,
-	ERenderer_PersistentSectionSize = 4
+	ERenderer_PersistentSectionSize = 4 ,
+#else
+	ERenderer_Height                = 24,
+#endif
+
+	ERenderer_GameEnd               = 23,	
 };
 
 

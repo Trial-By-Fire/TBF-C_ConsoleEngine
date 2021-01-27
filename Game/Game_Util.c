@@ -9,6 +9,19 @@
 
 // Character
 
+fn returns(bool) Character_AtFinish parameters(Ptr(Character) _character, Ptr(Level) _level)
+{
+	Stack()
+		Vector2D collisionPostion = _character->Position;
+
+	collisionPostion.Y -= 0.085f;
+
+	Stack()
+		sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
+
+	return cellCollided == LevelCell_Finish;
+}
+
 fn returns(bool) Character_IsGrounded parameters(Ptr(Character) _character, Ptr(Level) _level)
 {
 	Stack() 
@@ -19,7 +32,7 @@ fn returns(bool) Character_IsGrounded parameters(Ptr(Character) _character, Ptr(
 	Stack() 
 		sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
-	return cellCollided == LevelCell_Ground;
+	return cellCollided == LevelCell_Ground || cellCollided == LevelCell_Finish;
 }
 
 fn returns(void) Character_Load parameters(Ptr(Character) _character)
@@ -27,26 +40,28 @@ fn returns(void) Character_Load parameters(Ptr(Character) _character)
 	_character->Sprite.Char.UnicodeChar = 0;
 	_character->Sprite.Attributes       = BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
 
-	_character->Position.X = 0;
-	_character->Position.Y = 0;
+	_character->Position.X = -0.975f;
+	_character->Position.Y = -0.075f;
+
+	_character->VerticalVelocity = 0.0f;
 
 	_character->ShouldJump = false;
 	_character->Fell       = false;
 
-	_character->MoveState = ECharacter_DontMove;
+	_character->MoveState        = ECharacter_DontMove;
+	_character->Active_MoveState = ECharacter_DontMove;
 }
 
 fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Level) _level)
 {
+	if (_character->Fell == true) return;
+
 	Stack()
 
 		float32 deltaTime = (float32)Timing_GetContext()->DeltaTime;
 
-		unbound float32 velocity         = 1.0f;
-		unbound float32 verticalVelocity = 0.0f;
-		unbound float32 gravity          = 0.00004f;
-
-		unbound sInt moveState;
+		unbound float32 velocity = 1.0f;
+		unbound float32 gravity  = 0.00004f;
 
 		Vector2D collisionPostion = _character->Position;
 
@@ -56,17 +71,17 @@ fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Leve
 
 		sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
-	if (cellCollided == LevelCell_Ground)
+	if (cellCollided == LevelCell_Ground || cellCollided == LevelCell_Finish)
 	{
-		verticalVelocity = 0.0f;
+		_character->VerticalVelocity = 0.0f;
 
 		_character->Position.Y = -0.9f;
 
-		moveState = _character->MoveState;
+		_character->Active_MoveState = _character->MoveState;
 	}
 	else if (cellCollided == LevelCell_Pit)
 	{
-		verticalVelocity = 0.0f;
+		_character->VerticalVelocity = 0.0f;
 
 		_character->Position.Y = -0.9f;
 
@@ -74,23 +89,25 @@ fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Leve
 	}
 	else
 	{
-		verticalVelocity -= gravity * deltaTime;
+		_character->VerticalVelocity -= gravity * deltaTime;
 
-		_character->Position.Y += verticalVelocity;
+		_character->Position.Y += _character->VerticalVelocity;
 	}
+
+	if (cellCollided == LevelCell_Finish) return;
 
 	if (_character->ShouldJump && cellCollided == LevelCell_Ground)
 	{
 		Renderer_WriteToLog(L"Giving character jump velocity");
 
-		verticalVelocity = 0.05 * deltaTime;
+		_character->VerticalVelocity = 0.065 * deltaTime;
 
-		_character->Position.Y = -0.80f;
+		_character->Position.Y = -0.75f;
 
 		_character->ShouldJump = false;
 	}
 
-	switch (moveState)
+	switch (_character->Active_MoveState)
 	{
 		case ECharacter_MoveLeft:
 		{
@@ -131,6 +148,8 @@ fn returns(void) Character_Render parameters(Ptr(Character) _character)
 
 	Renderer_WriteToBufferCells(getAddress(_character->Sprite), renderCoord, renderCoord);
 
+#ifdef Debug
+
 	Stack()
 
 		unbound Cell colliderView = 
@@ -151,6 +170,7 @@ fn returns(void) Character_Render parameters(Ptr(Character) _character)
 	if (colliderViewCoord.Y > ERenderer_GameEnd) colliderViewCoord.Y = ERenderer_GameEnd;
 
 	Renderer_WriteToBufferCells(getAddress(colliderView), colliderViewCoord, colliderViewCoord);
+#endif
 }
 
 // Level
@@ -187,8 +207,9 @@ SmartScope
 
 		DataSize dataSize = totalOffset;
 
-	lineOffset = (_lastCell.Y) * ERenderer_Width;
-	colOffset  =  _lastCell.X;
+	lineOffset = _lastCell.Y * ERenderer_Width;
+
+	colOffset  = _lastCell.X;
 
 	totalOffset = lineOffset + colOffset;
 
@@ -206,9 +227,7 @@ SmartScope
 		setCellBuffer[index].Attributes       = _cellType;
 	}
 
-	Memory_FormatWithData(bufferOffset, setCellBuffer, dataSize * sizeof(Cell));
-
-	return;
+	Memory_FormatWithData(bufferOffset, (Ptr(void))setCellBuffer, dataSize * sizeof(Cell));
 }
 SmartScope_End
 
@@ -219,8 +238,7 @@ fn returns(void) Level_Render parameters(Ptr(Level) _level)
 		screenStart = {               0,                 0 }, 
 		screenEnd   = { ERenderer_Width, ERenderer_GameEnd } ;
 
-
-	Renderer_WriteToBufferCells(_level, screenStart, screenEnd);
+	Renderer_WriteToBufferCells((Ptr(Cell))_level, screenStart, screenEnd);
 }
 
 // Space
@@ -473,7 +491,7 @@ fn returns(void) UI_Grid_MoveDown parameters(Ptr(UI_Grid) _uiGrid)
 
 		Ptr(UI_Text) buttonText = getAddress(_uiGrid->Buttons[val(currentIndex)].Text);
 
-	if (val(currentIndex) < _uiGrid->Num)
+	if (val(currentIndex) < (_uiGrid->Num - 1))
 	{
 		ChangeCellsTo_Grey(buttonText->RenderCells, buttonText->Length);
 

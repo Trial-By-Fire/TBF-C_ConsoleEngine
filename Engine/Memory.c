@@ -103,7 +103,7 @@ fn returns(Address) Internal_ScopedAllocate(Ptr(MemoryBlockArray) _scopedMemory,
 		}
 		else
 		{
-			perror("Failed to reallocate the global memory array. Exiting...");
+			perror("Failed to reallocate the scoped memory array. Exiting...");
 		}
 	}
 
@@ -121,7 +121,7 @@ fn returns(Address) Internal_ScopedAllocate(Ptr(MemoryBlockArray) _scopedMemory,
 	}
 	else
 	{
-		perror("Failed to globally allocate memory.");
+		perror("Failed to scope allocate memory.");
 
 		exit(1);
 	}

@@ -40,21 +40,17 @@ fn returns(void) Cycler_Initialize parameters(void)
 
 		Input_Update();
 
-		// Update UI
-
-		// Update Physics
-
 		// Update State
 
 		State_Update();
 		
 		// Update Renderer
 
-		Stack()
+		//Stack()
 
-			ro Ptr(InputData   ) inputContext    = Input_GetContext   ();
-			ro Ptr(RendererData) rendererContext = Renderer_GetContext();
-			ro Ptr(TimingData  ) timingContext   = Timing_GetContext  ();
+			//ro Ptr(InputData   ) inputContext    = Input_GetContext   ();
+			//ro Ptr(RendererData) rendererContext = Renderer_GetContext();
+			//ro Ptr(TimingData  ) timingContext   = Timing_GetContext  ();
 
 		//Renderer_WriteToPersistentSection(1, L"Tick Elapsed        : %llu" , timingContext  ->Cycle_TicksElapsed);
 		//Renderer_WriteToPersistentSection(2, L"Timer      (Seconds): %.7Lf", rendererContext->RefeshTimer       );

@@ -33,7 +33,7 @@ fn returns(void) PrintStartMessage parameters(void)
 
 	Renderer_WriteToLog(L"");
 
-	Renderer_WriteToLog(L"Version: Phase 12");
+	Renderer_WriteToLog(L"Version: Phase 13");
 }
 
 fn returns(void) UnloadModules parameters(void)

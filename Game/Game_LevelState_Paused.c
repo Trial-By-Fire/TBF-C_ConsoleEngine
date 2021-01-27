@@ -45,6 +45,8 @@ fn returns(void) Level_State_Paused_PressResume parameters(void)
 
 fn returns(void) Level_State_Paused_PressQuitToMenu parameters(void)
 {
+	Ingame_Reload();
+
 	State_SetState(LoadGame());
 }
 

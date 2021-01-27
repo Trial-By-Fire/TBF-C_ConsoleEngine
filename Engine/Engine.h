@@ -1,11 +1,13 @@
 #pragma once
 
 
+#include "Config.h"
 #include "LAL.h"
 #include "State.h"
 #include "Renderer.h"
 #include "Cycler.h"
 #include "Input.h"
+#include "Memory.h"
 
 
 

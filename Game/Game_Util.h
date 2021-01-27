@@ -33,7 +33,7 @@ alias(struct Character_Def) as Character;
 
 // Level
 
-alias(Cell) as GameScreenBuffer [ERenderer_Width * ERenderer_GameEnd];
+alias(Line) as GameScreenBuffer [ERenderer_GameEnd + 1];
 
 alias(GameScreenBuffer) as Level;
 
@@ -69,11 +69,11 @@ struct Character_Def
 
 	Vector2D Position;
 
-	float32 MoveVelocity;
 	float32 VerticalVelocity;
 
 	bool ShouldJump, Fell;
 
+	sInt Active_MoveState;
 	sInt MoveState;
 };
 
@@ -122,6 +122,8 @@ struct UI_Widget_Def
 // Functions
 
 // Character
+
+fn returns(bool) Character_AtFinish parameters(Ptr(Character) _character, Ptr(Level) _level);
 
 fn returns(bool) Character_IsGrounded parameters(Ptr(Character) _character, Ptr(Level) _level);
 
@@ -203,7 +205,8 @@ parameters
 	   Ptr(UI_Widget)     _uiWidget,
 	ro Ptr(WideChar)      _text,
 	       COORD          _startingCell,
-	       COORD          _endingCell
+	       COORD          _endingCell,
+	       bool           _shouldCenter
 );
 
 fn returns(void) UI_Widget_AddButton 

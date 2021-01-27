@@ -44,11 +44,13 @@ BSS()
 
 	uInt DebugLogSection_RelativeLastLine = 1;
 
+#ifdef Debug
 	Line PersistentSection[ERenderer_PersistentSectionSize];
+#endif
 
 Data()
 
-	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 12";
+	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 13";
 
 	ro COORD Console_ScreenPos_00 = 
 	{
@@ -186,6 +188,8 @@ fn returns(void) Renderer_Update parameters(void)
 
 		//Renderer_WriteToPersistentSection(1, L"Relative Last Line: %u", DebugLogSection_RelativeLastLine);
 
+	#ifdef Debug
+
 		Stack()
 
 			COORD 
@@ -231,6 +235,8 @@ fn returns(void) Renderer_Update parameters(void)
 			Renderer_WriteToBufferCells(getAddress(PersistentSection[index]), startingCell, finalCell);
 		}
 
+	#endif
+
 		Renderer_RenderFrame();
 
 		Renderer.RefeshTimer = 0.0L;
@@ -241,7 +247,7 @@ fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cell, COORD _
 {
 	Stack()
 
-		DataSize lineOffset = (_initalCell.Y) * ERenderer_Width;
+		DataSize lineOffset = _initalCell.Y * ERenderer_Width;
 		DataSize colOffset  = _initalCell.X;
 
 		DataSize totalOffset = lineOffset + colOffset;
@@ -250,8 +256,8 @@ fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cell, COORD _
 
 		DataSize dataSize = totalOffset;
 
-	lineOffset = (_finalCell.Y) * ERenderer_Width;
-	colOffset  =  _finalCell.X;
+	lineOffset =  _finalCell.Y * ERenderer_Width;
+	colOffset  =  _finalCell.X                  ;
 
 	totalOffset = lineOffset + colOffset;
 
@@ -266,6 +272,8 @@ fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cell, COORD _
 
 fn returns(void) Renderer_DebugLogDynamic_AddLine parameters(void)
 {
+#ifdef Debug
+
 	if (DebugLogSection_Dynamic.Num == 0)
 	{
 		DebugLogSection_Dynamic.Array = GlobalAllocate(Line, 1);
@@ -290,10 +298,14 @@ fn returns(void) Renderer_DebugLogDynamic_AddLine parameters(void)
 			exit(1);
 		}
 	}
+
+#endif
 }
 
 fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 {
+#ifdef Debug
+
 	Stack()
 
 		unbound uInt nextLine = 0;
@@ -334,11 +346,15 @@ fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 	Renderer_DebugLogDynamic_AddLine();
 
 	DebugLogSection_RelativeLastLine = 1;
+
+#endif
 }
 
 // Note: Row starts at 1.
 fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(WideChar) _lineformat, ...)
 {
+#ifdef Debug
+
 	Stack()
 
 		WideChar TranslationBuffer[ERenderer_Width];
@@ -377,6 +393,8 @@ fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(Wid
 		PersistentSubSection[index].Char.UnicodeChar = NULL;
 		PersistentSubSection[index].Attributes       = NULL;
 	}
+
+#endif
 }
 
 
@@ -467,6 +485,8 @@ fn returns(void) InitalizeData parameters(void)
 	borderCell.Char.UnicodeChar = '='; 
 	borderCell.Attributes       = Console_WhiteCell;
 
+#ifdef Debug
+
 	for (DataSize index = 0; index < ERenderer_Width; index++)
 	{
 		Border_GameDebug    [index] = borderCell;
@@ -475,6 +495,8 @@ fn returns(void) InitalizeData parameters(void)
 
 	DebugLogSection_Dynamic.Array = NULL;
 	DebugLogSection_Dynamic.Num = 0;
+
+#endif
 
 	return;
 }
@@ -540,16 +562,24 @@ fn returns(void) UpdateSizeAndPosition parameters(void)
 
 fn returns(void) Renderer_Logs_ScrollUp parameters(void)
 {
+#ifdef Debug
+
 	if (DebugLogSection_RelativeLastLine < DebugLogSection_Dynamic.Num)
 	{
 		DebugLogSection_RelativeLastLine++;
 	}
+
+#endif
 }
 
 fn returns(void) Renderer_Logs_ScrollDown parameters(void)
 {
+#ifdef Debug
+
 	if (DebugLogSection_RelativeLastLine > 1)
 	{
 		DebugLogSection_RelativeLastLine --;
 	}
+
+#endif
 }
