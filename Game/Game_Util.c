@@ -7,6 +7,71 @@
 
 // Public
 
+// Level
+
+fn returns(sInt) Level_GetCellAtPosition parameters(Ptr(Level) _level, Vector2D _position)
+{
+	Stack()
+		COORD renderCoord = Convert_Vector2D_ToRenderCoord(_position);
+
+		Ptr(Cell) cellBuffer = (Ptr(Cell))_level;
+
+	return cellBuffer[renderCoord.X * renderCoord.Y].Attributes;
+}
+
+fn returns(void) Level_SetCells parameters(Ptr(Level) _level, COORD _firstCell, COORD _lastCell, sInt _cellType) 
+
+SmartScope
+{
+	Stack()
+
+		DataSize lineOffset = (_firstCell.Y) * ERenderer_Width;
+		DataSize colOffset  = _firstCell.X;
+
+		DataSize totalOffset = lineOffset + colOffset;
+
+		Ptr(Cell) levelCellBuffer = (Ptr(Cell))_level;
+
+		Ptr(void) bufferOffset = getAddress(levelCellBuffer[totalOffset]);
+
+		DataSize dataSize = totalOffset;
+
+	lineOffset = (_lastCell.Y) * ERenderer_Width;
+	colOffset  =  _lastCell.X;
+
+	totalOffset = lineOffset + colOffset;
+
+	dataSize = totalOffset - dataSize;
+
+	if (dataSize == 0) dataSize = 1;
+
+	Stack()
+
+		Ptr(Cell) setCellBuffer = ScopedAllocate(Cell, dataSize);
+
+	for (DataSize index = 0; index < dataSize; index++)
+	{
+		setCellBuffer[index].Char.UnicodeChar = 0;
+		setCellBuffer[index].Attributes       = _cellType;
+	}
+
+	Memory_FormatWithData(bufferOffset, setCellBuffer, dataSize * sizeof(Cell));
+
+	return;
+}
+SmartScope_End
+
+fn returns(void) Level_Render parameters(Ptr(Level) _level)
+{
+	Stack()
+		COORD 
+		screenStart = {               0,                 0 }, 
+		screenEnd   = { ERenderer_Width, ERenderer_GameEnd } ;
+
+
+	Renderer_WriteToBufferCells(_level, screenStart, screenEnd);
+}
+
 // Space
 
 fn returns(COORD) Convert_Vector2D_ToRenderCoord parameters(Vector2D _vector)

@@ -8,7 +8,25 @@
 
 
 
+
+// Enums
+
+enum 
+{
+	LevelCell_Empty  = 0,
+	LevelCell_Ground = BACKGROUND_GREEN,
+	LevelCell_Finish = BACKGROUND_RED
+};
+
+
+
 // Aliases
+
+// Level
+
+alias(Cell) as GameScreenBuffer [ERenderer_Width * ERenderer_GameEnd];
+
+alias(GameScreenBuffer) as Level;
 
 // Space
 
@@ -77,6 +95,14 @@ struct UI_Widget_Def
 
 
 // Functions
+
+// Level
+
+fn returns(sInt) Level_GetCellAtPosition parameters(Ptr(Level) _level, Vector2D _position);
+
+fn returns(void) Level_SetCells parameters(Ptr(Level) _level, COORD _firstCell, COORD _lastCell, sInt _cellType);
+
+fn returns(void) Level_Render parameters(Ptr(Level) _level);
 
 // Space
 

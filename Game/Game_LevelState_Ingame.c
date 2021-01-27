@@ -33,6 +33,8 @@ BSS()
 
 	Vector2D Char_Position;
 
+	Level TestLevel;
+
 Data()
 
 	bool Ingame_DoneOnce = false;
@@ -175,6 +177,12 @@ fn returns(void) Load_Ingame parameters(void)
 		Char_Position.Y = 0.0f;
 
 
+		start.X = 0;               start.Y = ERenderer_GameEnd - 1;
+		end  .X = ERenderer_Width; end  .Y = ERenderer_GameEnd    ;
+
+		Level_SetCells(getAddress(TestLevel), start, end, LevelCell_Ground);
+
+
 		Ingame_DoneOnce = true;
 	}
 
@@ -244,6 +252,8 @@ fn returns(void) Update_Ingame parameters(void)
 
 fn returns(void) Render_Ingame parameters(void)
 {
+	Level_Render(getAddress(TestLevel));
+
 	UI_Text_Render(getAddress(Ingame_Text));
 
 	CharSprite_RenderCoord = Convert_Vector2D_ToRenderCoord(Char_Position);
