@@ -1,27 +1,16 @@
+// Parent Header
+#include "Execution.h"
+
+
+
 // Includes
 
 #include "C_STL.h"
-#include "LAL.h"
 #include "CString.h"
 #include "Cycler.h"
 #include "Input.h"
 #include "Memory.h"
 #include "Renderer.h"
-
-
-
-// Aliases (Typedefs)
-
-alias(enum ExecFlags_Def) as ExecFlags;
-
-
-
-// Enumerators
-
-enum ExecFlags_Def
-{
-	ExecFlags_Sucess = 0,
-};
 
 
 
@@ -40,11 +29,22 @@ fn returns(void) PrintStartMessage parameters(void)
 {
 	Stack()
 
-		CTS_CString EntryMessage = "TBF C Engine\n\nVersion: Phase 5\0";
+		//CTS_CWString EntryMessage = L"TBF C EngineVersion: Phase 5\0";
 
 	// Print Start Message
 
-	print(EntryMessage);
+	//print(EntryMessage);
+
+	Renderer_WriteToLog(L"TBF C Engine");
+
+	Renderer_WriteToLog(L"");
+
+	Renderer_WriteToLog(L"Version: Phase 5");
+}
+
+fn returns(void) UnloadModules parameters(void)
+{
+	Renderer_UnloadModule();
 }
 
 // Entry Point
@@ -74,6 +74,8 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 	// Now that were done before we leave we deallocate the data array.
 
 	//Heap(Data_Dealloc());
+
+	UnloadModules();
 
 	GlobalDeallocate();
 

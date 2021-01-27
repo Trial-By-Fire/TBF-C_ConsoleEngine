@@ -30,26 +30,26 @@ fn returns(void) Input_LoadModule parameters(void)
 	Input.LastPressedKey = '\0';
 }
 
-fn returns(Ptr(ro InputData)) GetInputContext(void)
+fn returns(ro Ptr(InputData)) Input_GetContext(void)
 {
 	return getAddress(Input);
 }
 
-fn returns(Key) GetKeyPress parameters(void)
+fn returns(Key) Input_GetKeyPress parameters(void)
 {
 	return (Key)_getch();
 }
 
-fn returns(bool) KeyboardHit parameters(void)
+fn returns(bool) Input_KeyboardHit parameters(void)
 {
 	return (bool)_kbhit();
 }
 
-fn returns(void) ProcessInput parameters(void)
+fn returns(void) Input_Update parameters(void)
 {
-	if (KeyboardHit())
+	if (Input_KeyboardHit())
 	{
-		Input.LastPressedKey = GetKeyPress();
+		Input.LastPressedKey = Input_GetKeyPress();
 	}
 
 	if (Input.LastPressedKey == 'q')

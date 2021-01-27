@@ -19,31 +19,37 @@ BSS()
 
 
 
+// Forward Declarations
+
+fn returns(void) Timing_InitalizeData parameters(void);
+
+
+
 // Function
 
 // Public
 
-fn returns(void) TakeInitialSnapshot parameters(void)
-{
-	QueryPerformanceCounter(getAddress(Timing.TimeSnapshot_Initial));
-}
-
-fn returns(void) TakeEndingSnapshot parameters(vodi)
-{
-	QueryPerformanceCounter(getAddress(Timing.TimeSnapshot_End));
-}
-
-fn returns(void) Timing_LoadModule parameters(void)
-{
-	SetupTiming();
-}
-
-fn returns( Ptr(ro TimingData) ) GetTimingContext(void)
+fn returns(ro Ptr(TimingData)) Timing_GetContext(void)
 {
 	return getAddress(Timing);
 }
 
-fn returns(void) ProcessCycleTiming parameters(void)
+fn returns(void) Timing_LoadModule parameters(void)
+{
+	Timing_InitalizeData();
+}
+
+fn returns(void) Timing_TakeInitialSnapshot parameters(void)
+{
+	QueryPerformanceCounter(getAddress(Timing.TimeSnapshot_Initial));
+}
+
+fn returns(void) Timing_TakeEndingSnapshot parameters(void)
+{
+	QueryPerformanceCounter(getAddress(Timing.TimeSnapshot_End));
+}
+
+fn returns(void) Timing_Update parameters(void)
 {
 	Timing.Cycle_TicksElapsed = Timing.TimeSnapshot_End.QuadPart - Timing.TimeSnapshot_Initial.QuadPart;
 
@@ -52,10 +58,12 @@ fn returns(void) ProcessCycleTiming parameters(void)
 
 	Timing.DeltaTime = (float64)Timing.Cycle_TicksElapsed / (float64)MicrosecondToSecond;
 
-	ProcessRenderTiming(Timing.DeltaTime);
+	Renderer_ProcessTiming(Timing.DeltaTime);
 }
 
-fn returns(void) SetupTiming parameters(void)
+// Private
+
+fn returns(void) Timing_InitalizeData parameters(void)
 {
 	Timing.Cycle_TicksElapsed = 0;
 	Timing.Cycle_Microseconds = 0.0L;

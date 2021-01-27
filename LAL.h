@@ -27,7 +27,7 @@ typedef _typeToAlias
 
 // Functions
 
-#define EntryPoint \
+//#define EntryPoint \
 main
 
 #define fn \
@@ -83,6 +83,9 @@ _heapOperation
 #define eGlobal \
 extern
 
+#define sGlobal \
+static
+
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
 
 
@@ -95,6 +98,8 @@ alias(signed long long int) as sint64;
 
 alias(unsigned           int) as uInt  ;
 alias(unsigned long long int) as uInt64;
+
+alias(signed int) as sInt;
 
 alias(char) as Key;
 

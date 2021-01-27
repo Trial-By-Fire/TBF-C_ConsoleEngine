@@ -4,9 +4,26 @@
 
 // Includes
 
-#include "C_STL.h"
-#include "Windows_Includes.h"
 #include "LAL.h"
+#include "CString.h"
+#include "OSPlatform.h"
+
+
+
+enum ERenderer
+{
+	ERenderer_Width                 = 80,
+	ERenderer_Height                = 48,
+
+	ERenderer_GameEnd               = 23,
+	ERenderer_BorderLine            = 24,
+
+	ERenderer_DebugStart            = 25,
+	ERenderer_DebugLogSize          = 18,
+
+	ERenderer_DebugPersistentStart  = 44,
+	ERenderer_PersistentSectionSize = 4
+};
 
 
 
@@ -14,26 +31,48 @@
 
 alias(CONSOLE_SCREEN_BUFFER_INFO) as CSBI;
 
-alias(struct ConsoleData_Def) as ConsoleData;
+alias(CHAR_INFO) as Cell;
+
+alias(Cell) as Line[ERenderer_Width];
+
+alias(struct RendererData_Def) as RendererData;
+alias(struct ScreenInfo_Def  ) as ScreenInfo;
+
+
+alias (struct Vec2D_Int_Def) as Vec2D_Int;
 
 
 
 // Structures
 
-struct ConsoleData_Def
-{
-	// Procedure Data
+struct Vec2D_Int_Def { sInt X, Y; };
 
-	HANDLE ConsoleHandle    ;
-	DWORD  CharactersWritten;
-	COORD  ScreenPos_00     ;
-	CSBI   Csbi_instance    ;
-	DWORD  ConsoleSize      ;
+struct RendererData_Def
+{
+	// Console Data
+
+	HWND   Window_Handle;
+	HANDLE Output_Handle;
+
+	DWORD      CharactersWritten;
+	COORD      CoordSize;
+	CSBI       CSBI_Instance;
+	DWORD      BufferSize;
+	SMALL_RECT Size;
+
+	CONSOLE_CURSOR_INFO CursorSettings;
+
+	Vec2D_Int ScreenPosition;
 
 	// Render Timing
 
-	float64 ConsoleRefeshTimer   ;
-	float64 ConsoleRefeshInterval;
+	float64 RefeshTimer   ;
+	float64 RefeshInterval;
+};
+
+struct ScreenInfo_Def
+{
+	Vec2D_Int Center;
 };
 
 
@@ -41,35 +80,40 @@ struct ConsoleData_Def
 // Constants
 
 #define SizeOf_Renderer \
-	sizeof(ConsoleData)
+	sizeof(RendererData)
 
 
 
 // Forward Declarations
 
+fn returns(void) Renderer_Clear parameters(void);
+
+fn returns(bool) Renderer_FillCellsWithWhitespace parameters(void);
+
+fn returns(bool) Renderer_FormatCells parameters(void);
+
+fn returns(ro Ptr(RendererData)) Renderer_GetContext(void);
+
 fn returns(void) Renderer_LoadModule parameters(void);
 
-fn returns(void) ProcessRenderTiming parameters(float64 _deltaTime);
+fn returns(void) Renderer_ProcessTiming parameters(float64 _deltaTime);
 
-fn returns(void) ClearRender parameters(void);
+fn returns(void) Renderer_RenderFrame parameters(void);
 
-fn returns(bool) FillRendererCellsWithWhitespace parameters(void);
+fn returns(void) Renderer_ResetDrawPosition parameters(void);
 
-fn returns(bool) FormatRendererCells parameters(void);
+fn returns(void) Renderer_UnloadModule parameters(void);
 
-fn returns(int) print parameters(ro Ptr(char) _message);
+fn returns(void) Renderer_Update parameters(void);
 
-fn returns(void) ProcessRender parameters(void);
+fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cells, COORD _initalCell, COORD _finalCell);
 
-fn returns(void) RenderFrame parameters(void);
+// BS Fix for now:
+alias(wchar_t) WideChar;   // From C_String.h
 
-fn returns(void) ResetRendererDrawPosition parameters(void);
+fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString);
 
-fn returns(void) SetupRenderer parameters(void);
-
-fn returns(bool) ShouldRender parameters(void);
-
-fn returns(bool) UpdateRendererInfo parameters(void);
+fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(WideChar) _lineformat, ...);
 
 
 

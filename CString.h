@@ -16,6 +16,10 @@ alias(char) as CString_13[13];
 
 alias(char) as CTS_CString[];
 
+alias(wchar_t) as WideChar;
+
+alias(wchar_t) as CTS_CWString[];
+
 
 
 // Structures
