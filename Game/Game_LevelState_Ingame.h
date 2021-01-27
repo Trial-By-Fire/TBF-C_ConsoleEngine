@@ -8,6 +8,6 @@
 
 
 
-fn returns( Ptr(StateObj)) GetIngameState parameters(void);
+StateObj* GetIngameState(void);
 
-fn returns(void) Ingame_Reload parameters(void);
+void Ingame_Reload(void);

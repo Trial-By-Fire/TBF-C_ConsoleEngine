@@ -10,15 +10,15 @@
 
 // Aliases (Typedefs)
 
-alias(struct CString_Def) as CString;
+typedef struct CString_Def CString;
 
-alias(char) as CString_13[13];
+typedef char CString_13[13];
 
-alias(char) as CTS_CString[];
+typedef char CTS_CString[];
 
-alias(wchar_t) as WideChar;
+typedef wchar_t WideChar;
 
-alias(wchar_t) as CTS_CWString[];
+typedef wchar_t CTS_CWString[];
 
 
 
@@ -26,7 +26,7 @@ alias(wchar_t) as CTS_CWString[];
 
 struct CString_Def
 {
-	Ptr(char) Array;
+	char* Array;
 
 	uInt64 Length;
 };
@@ -42,4 +42,4 @@ struct CString_Def
 
 // Functions
 
-fn returns(void) CString_LoadModule parameters(void);
+void CString_LoadModule(void);

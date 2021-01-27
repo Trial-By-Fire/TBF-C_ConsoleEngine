@@ -8,4 +8,4 @@
 
 
 
-fn returns( Ptr(StateObj)) GetPausedState parameters(void);
+StateObj* GetPausedState(void);

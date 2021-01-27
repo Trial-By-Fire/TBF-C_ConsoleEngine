@@ -10,17 +10,17 @@
 
 
 
-BSS()
+// Static Data
 
-	StateObj Paused_State;
+// Private
 
-	UI_Widget PauseWidget;
+StateObj Paused_State;
 
-Data()
+UI_Widget PauseWidget;
 
-	bool Paused_DoneOnce = false;
+bool Paused_DoneOnce = false;
 
-	uInt PauseUI_Index = 0;
+uInt PauseUI_Index = 0;
 
 
 
@@ -38,32 +38,32 @@ enum
 
 // Class Public
 
-fn returns(void) Level_State_Paused_PressResume parameters(void)
+void Level_State_Paused_PressResume(void)
 {
 	LevelState_SetSubstate(GetIngameState());
 }
 
-fn returns(void) Level_State_Paused_PressQuitToMenu parameters(void)
+void Level_State_Paused_PressQuitToMenu(void)
 {
 	Ingame_Reload();
 
 	State_SetState(LoadGame());
 }
 
-fn returns(void) LevelState_Paused_OnKeyEnter parameters(EInputState _state)
+void LevelState_Paused_OnKeyEnter(EInputState _state)
 {
 	switch (_state)
 	{
 		case EInput_Pressed:
 		{
-			UI_Widget_Select(getAddress(PauseWidget));
+			UI_Widget_Select(&PauseWidget);
 
 			break;
 		}
 	}
 }
 
-fn returns(void) LevelState_Paused_OnKeyArrowUp parameters(EInputState _state)
+void LevelState_Paused_OnKeyArrowUp(EInputState _state)
 {
 	switch (_state)
 	{
@@ -71,14 +71,14 @@ fn returns(void) LevelState_Paused_OnKeyArrowUp parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"Pause: On Key Up");
 
-			UI_Widget_MoveUp(getAddress(PauseWidget));
+			UI_Widget_MoveUp(&PauseWidget);
 
 			break;
 		}
 	}
 }
 
-fn returns(void) LevelState_Paused_OnKeyArrowDown parameters(EInputState _state)
+void LevelState_Paused_OnKeyArrowDown(EInputState _state)
 {
 	switch (_state)
 	{
@@ -86,14 +86,14 @@ fn returns(void) LevelState_Paused_OnKeyArrowDown parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"Pause: On Key Down");
 
-			UI_Widget_MoveDown(getAddress(PauseWidget));
+			UI_Widget_MoveDown(&PauseWidget);
 
 			break;
 		}
 	}
 }
 
-fn returns(void) Load_Paused parameters(void)
+void Load_Paused(void)
 {
 	PauseUI_Index = 0;
 
@@ -105,16 +105,15 @@ fn returns(void) Load_Paused parameters(void)
 		PauseWidget.Grid.Num          = 0;
 		PauseWidget.Grid.CurrentIndex = 0;
 
-		Stack() 
 
-			COORD startCell, endCell;
+		COORD startCell, endCell;
 
 		startCell.X = 0; endCell.X = 0;
 		startCell.Y = 9; endCell.Y = 9;
 
 		UI_Widget_AddText
 		(
-			getAddress(PauseWidget),
+			&PauseWidget,
 
 			L"Paused\0",
 			startCell, 
@@ -126,12 +125,12 @@ fn returns(void) Load_Paused parameters(void)
 
 		UI_Widget_AddButton
 		(
-			getAddress(PauseWidget),
+			&PauseWidget,
 
 			L"Resume\0",
 			startCell, endCell,
 			true,
-			getAddress(Level_State_Paused_PressResume)
+			&Level_State_Paused_PressResume
 		);
 
 		startCell.X = 0;  endCell.X = 0;
@@ -139,55 +138,55 @@ fn returns(void) Load_Paused parameters(void)
 
 		UI_Widget_AddButton
 		(
-			getAddress(PauseWidget),
+			&PauseWidget,
 
 			L"Quit to Menu\0",
 			startCell, endCell,
 			true,
-			getAddress(Level_State_Paused_PressQuitToMenu)
+			&Level_State_Paused_PressQuitToMenu
 		);
 
 		Paused_DoneOnce = true;
 	}
 
-	Input_SubscribeTo(Key_Enter     , getAddress(LevelState_Paused_OnKeyEnter    ));
-	Input_SubscribeTo(Key_Arrow_Up  , getAddress(LevelState_Paused_OnKeyArrowUp  ));
-	Input_SubscribeTo(Key_Arrow_Down, getAddress(LevelState_Paused_OnKeyArrowDown));
+	Input_SubscribeTo(Key_Enter     , &LevelState_Paused_OnKeyEnter    );
+	Input_SubscribeTo(Key_Arrow_Up  , &LevelState_Paused_OnKeyArrowUp  );
+	Input_SubscribeTo(Key_Arrow_Down, &LevelState_Paused_OnKeyArrowDown);
 }
 
-fn returns(void) Unload_Paused parameters(void)
+void Unload_Paused(void)
 {
-	Input_Unsubscribe(Key_Enter     , getAddress(LevelState_Paused_OnKeyEnter    ));
-	Input_Unsubscribe(Key_Arrow_Up  , getAddress(LevelState_Paused_OnKeyArrowUp  ));
-	Input_Unsubscribe(Key_Arrow_Down, getAddress(LevelState_Paused_OnKeyArrowDown));
+	Input_Unsubscribe(Key_Enter     , &LevelState_Paused_OnKeyEnter    );
+	Input_Unsubscribe(Key_Arrow_Up  , &LevelState_Paused_OnKeyArrowUp  );
+	Input_Unsubscribe(Key_Arrow_Down, &LevelState_Paused_OnKeyArrowDown);
 }
 
-fn returns(void) Update_Paused parameters(void)
+void Update_Paused(void)
 {
 }
 
-fn returns(void) Render_Paused parameters(void)
+void Render_Paused(void)
 {
-	UI_Widget_Render(getAddress(PauseWidget));
+	UI_Widget_Render(&PauseWidget);
 }
 
 
 
 // Public
 
-fn returns(Ptr(StateObj)) GetPausedState parameters(void)
+StateObj* GetPausedState(void)
 {
-	unbound bool stateConstructed = false;
+	static bool stateConstructed = false;
 
-	if (!stateConstructed)
+	if (! stateConstructed)
 	{
-		Paused_State.Load   = getAddress(Load_Paused  );
-		Paused_State.Unload = getAddress(Unload_Paused);
-		Paused_State.Update = getAddress(Update_Paused);
-		Paused_State.Render = getAddress(Render_Paused);
+		Paused_State.Load   = &Load_Paused  ;
+		Paused_State.Unload = &Unload_Paused;
+		Paused_State.Update = &Update_Paused;
+		Paused_State.Render = &Render_Paused;
 
 		stateConstructed = true;
 	}
 
-	return getAddress(Paused_State);
+	return &Paused_State;
 }

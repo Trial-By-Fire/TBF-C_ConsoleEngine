@@ -13,15 +13,13 @@
 
 // Private
 
-BSS()
-
-	TimingData Timing;
+TimingData Timing;
 
 
 
 // Forward Declarations
 
-fn returns(void) Timing_InitalizeData parameters(void);
+void Timing_InitalizeData(void);
 
 
 
@@ -29,27 +27,27 @@ fn returns(void) Timing_InitalizeData parameters(void);
 
 // Public
 
-fn returns(ro Ptr(TimingData)) Timing_GetContext(void)
+const TimingData* Timing_GetContext(void)
 {
-	return getAddress(Timing);
+	return &Timing;
 }
 
-fn returns(void) Timing_LoadModule parameters(void)
+void Timing_LoadModule(void)
 {
 	Timing_InitalizeData();
 }
 
-fn returns(void) Timing_TakeInitialSnapshot parameters(void)
+void Timing_TakeInitialSnapshot(void)
 {
-	QueryPerformanceCounter(getAddress(Timing.TimeSnapshot_Initial));
+	QueryPerformanceCounter(&Timing.TimeSnapshot_Initial);
 }
 
-fn returns(void) Timing_TakeEndingSnapshot parameters(void)
+void Timing_TakeEndingSnapshot(void)
 {
-	QueryPerformanceCounter(getAddress(Timing.TimeSnapshot_End));
+	QueryPerformanceCounter(&Timing.TimeSnapshot_End);
 }
 
-fn returns(void) Timing_Update parameters(void)
+void Timing_Update(void)
 {
 	Timing.Cycle_TicksElapsed = Timing.TimeSnapshot_End.QuadPart - Timing.TimeSnapshot_Initial.QuadPart;
 
@@ -63,13 +61,13 @@ fn returns(void) Timing_Update parameters(void)
 
 // Private
 
-fn returns(void) Timing_InitalizeData parameters(void)
+void Timing_InitalizeData(void)
 {
 	Timing.Cycle_TicksElapsed = 0;
 	Timing.Cycle_Microseconds = 0.0L;
 	Timing.DeltaTime          = 0.0L;
 
-	QueryPerformanceFrequency(getAddress(Timing.TimeFrequency));
+	QueryPerformanceFrequency(&Timing.TimeFrequency);
 
 	return;
 }
@@ -82,19 +80,19 @@ fn returns(void) Timing_InitalizeData parameters(void)
 
 // Public
 
-fn returns(bool) Timer_Ended parameters(Ptr(TimerData) _timer)
+bool Timer_Ended(TimerData* _timer)
 {
 	return 
 		Float64_ApproxGreater(_timer->Elapsed, _timer->EndTime) || 
 		Float64_ApproxEqual  (_timer->Elapsed, _timer->EndTime)   ;
 }
 
-fn returns(void) Timer_Reset parameters(Ptr(TimerData) _timer)
+void Timer_Reset(TimerData* _timer)
 {
 	_timer->Elapsed = 0.0L;
 }
 
-fn returns(void) Timer_Tick parameters(Ptr(TimerData) _timer)
+void Timer_Tick(TimerData* _timer)
 {
 	if (Float64_ApproxEqual(Timing.DeltaTime, 0.000001L) || Float64_ApproxLess(Timing.DeltaTime, 0.000001L))
 	{

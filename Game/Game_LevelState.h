@@ -9,6 +9,6 @@
 
 // Functions
 
-fn returns( Ptr(StateObj)) GetLevelState parameters(void);
+StateObj* GetLevelState(void);
 
-fn returns(void) LevelState_SetSubstate parameters( Ptr(StateObj));
+void LevelState_SetSubstate(StateObj* _state);

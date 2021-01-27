@@ -11,29 +11,29 @@
 
 
 
-BSS()
+// Static Data
 
-	StateObj Ingame_State;
+// Private
 
-	UI_Text Ingame_Text;
+StateObj Ingame_State;
 
-	UI_Text Ingame_GameOver_Fell;
+UI_Text Ingame_Text;
 
-	UI_Text Ingame_GameOver_MadeIt;
+UI_Text Ingame_GameOver_Fell;
 
-	Character Player;
+UI_Text Ingame_GameOver_MadeIt;
 
-	Level Level1;
-	
-	Level Level2_Why;
+Character Player;
 
-	sInt CurrentLevel = 1;
+Level Level1;
 
-Data()
+Level Level2;
 
-	bool ShouldReload = true;
+sInt CurrentLevel = 1;
 
-	bool Ingame_DoneOnce = false;
+bool ShouldReload = true;
+
+bool Ingame_DoneOnce = false;
 
 
 
@@ -41,7 +41,7 @@ Data()
 
 // Class Public
 
-fn returns(void) LevelState_Ingame_OnKeyEnter parameters(EInputState _state)
+void LevelState_Ingame_OnKeyEnter(EInputState _state)
 {
 	switch (_state)
 	{
@@ -54,7 +54,7 @@ fn returns(void) LevelState_Ingame_OnKeyEnter parameters(EInputState _state)
 	}
 }
 
-fn returns(void) LevelState_Ingame_OnKeyUp parameters(EInputState _state)
+void LevelState_Ingame_OnKeyUp(EInputState _state)
 {
 	switch (_state)
 	{
@@ -71,7 +71,7 @@ fn returns(void) LevelState_Ingame_OnKeyUp parameters(EInputState _state)
 	}
 }
 
-fn returns(void) LevelState_Ingame_OnKeyLeft parameters(EInputState _state)
+void LevelState_Ingame_OnKeyLeft(EInputState _state)
 {
 	switch (_state)
 	{
@@ -93,7 +93,7 @@ fn returns(void) LevelState_Ingame_OnKeyLeft parameters(EInputState _state)
 	}
 }
 
-fn returns(void) LevelState_Ingame_OnKeyRight parameters(EInputState _state)
+void LevelState_Ingame_OnKeyRight(EInputState _state)
 {
 	switch (_state)
 	{
@@ -115,18 +115,17 @@ fn returns(void) LevelState_Ingame_OnKeyRight parameters(EInputState _state)
 	}
 }
 
-fn returns(void) Load_Ingame parameters(void)
+void Load_Ingame(void)
 {
 	if (! Ingame_DoneOnce)
 	{
-		Stack()
-			COORD 
-				start = { 1, 1 }, 
-				end   = { 1, 1 } ;
+		COORD 
+			start = { 1, 1 }, 
+			end   = { 1, 1 } ;
 
 		UI_Text_Create
 		(
-			getAddress(Ingame_Text),
+			&Ingame_Text,
 
 			L"Press enter to pause.\0",
 			start, end,
@@ -138,7 +137,7 @@ fn returns(void) Load_Ingame parameters(void)
 		
 		UI_Text_Create
 		(
-			getAddress(Ingame_GameOver_Fell),
+			&Ingame_GameOver_Fell,
 
 			L"Game Over: You fell\0",
 			start, end,
@@ -147,7 +146,7 @@ fn returns(void) Load_Ingame parameters(void)
 
 		UI_Text_Create
 		(
-			getAddress(Ingame_GameOver_MadeIt),
+			&Ingame_GameOver_MadeIt,
 
 			L"Game Over: You Made It!\0",
 			start, end,
@@ -159,84 +158,84 @@ fn returns(void) Load_Ingame parameters(void)
 		start.X = 0;                    start.Y = ERenderer_GameEnd - 1;
 		end  .X = ERenderer_Width - 70; end  .Y = ERenderer_GameEnd - 1;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, LevelCell_Ground);
 
 		start.X = 0;                    start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 70; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, LevelCell_Ground);
 
 		start.X = ERenderer_Width - 70; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 60; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Pit);
+		Level_SetCells(&Level1, start, end, LevelCell_Pit);
 
 		start.X = ERenderer_Width - 60; start.Y = ERenderer_GameEnd -1;
 		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd -1;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, LevelCell_Ground);
 
 		start.X = ERenderer_Width - 60; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, LevelCell_Ground);
 
 		start.X = ERenderer_Width - 40; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 20; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Pit);
+		Level_SetCells(&Level1, start, end, LevelCell_Pit);
 
 		start.X = ERenderer_Width - 20; start.Y = ERenderer_GameEnd - 1;
 		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd - 1;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, LevelCell_Ground);
 
 		start.X = ERenderer_Width - 20; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level1), start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, LevelCell_Ground);
 
 		// Level 2
 
 		start.X = 0;                    start.Y = ERenderer_GameEnd - 1;
 		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd - 1;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, LevelCell_Ground);
 
 		start.X = 0;                    start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, LevelCell_Ground);
 
 	 	start.X = ERenderer_Width - 40; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 25; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Pit);
+		Level_SetCells(&Level2, start, end, LevelCell_Pit);
 
 		start.X = ERenderer_Width - 25; start.Y = ERenderer_GameEnd -1;
 		end  .X = ERenderer_Width - 20; end  .Y = ERenderer_GameEnd -1;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, LevelCell_Ground);
 
 		start.X = ERenderer_Width - 25; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 20; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, LevelCell_Ground);
 	 
 		start.X = ERenderer_Width - 20; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width - 10; end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Pit);
+		Level_SetCells(&Level2, start, end, LevelCell_Pit);
 
 		start.X = ERenderer_Width - 10; start.Y = ERenderer_GameEnd - 1;
 		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd - 1;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Finish);
+		Level_SetCells(&Level2, start, end, LevelCell_Finish);
 
 		start.X = ERenderer_Width - 10; start.Y = ERenderer_GameEnd;
 		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd;
 
-		Level_SetCells(getAddress(Level2_Why), start, end, LevelCell_Finish);
+		Level_SetCells(&Level2, start, end, LevelCell_Finish);
 
 
 		Ingame_DoneOnce = true;
@@ -244,37 +243,37 @@ fn returns(void) Load_Ingame parameters(void)
 
 	if (ShouldReload == true)
 	{
-		Character_Load(getAddress(Player));
+		Character_Load(&Player);
 
 		CurrentLevel = 1;
 
 		ShouldReload = false;
 	}
 
-	Input_SubscribeTo(Key_Enter      , getAddress(LevelState_Ingame_OnKeyEnter));
-	Input_SubscribeTo(Key_Arrow_Up   , getAddress(LevelState_Ingame_OnKeyUp   ));
-	Input_SubscribeTo(Key_Arrow_Left , getAddress(LevelState_Ingame_OnKeyLeft ));
-	Input_SubscribeTo(Key_Arrow_Right, getAddress(LevelState_Ingame_OnKeyRight));
+	Input_SubscribeTo(Key_Enter      , &LevelState_Ingame_OnKeyEnter);
+	Input_SubscribeTo(Key_Arrow_Up   , &LevelState_Ingame_OnKeyUp   );
+	Input_SubscribeTo(Key_Arrow_Left , &LevelState_Ingame_OnKeyLeft );
+	Input_SubscribeTo(Key_Arrow_Right, &LevelState_Ingame_OnKeyRight);
 }
 
-fn returns(void) Unload_Ingame parameters(void)
+void Unload_Ingame(void)
 {
-	Input_Unsubscribe(Key_Enter      , getAddress(LevelState_Ingame_OnKeyEnter));
-	Input_Unsubscribe(Key_Arrow_Up   , getAddress(LevelState_Ingame_OnKeyUp   ));
-	Input_Unsubscribe(Key_Arrow_Left , getAddress(LevelState_Ingame_OnKeyLeft ));
-	Input_Unsubscribe(Key_Arrow_Right, getAddress(LevelState_Ingame_OnKeyRight));
+	Input_Unsubscribe(Key_Enter      , &LevelState_Ingame_OnKeyEnter);
+	Input_Unsubscribe(Key_Arrow_Up   , &LevelState_Ingame_OnKeyUp   );
+	Input_Unsubscribe(Key_Arrow_Left , &LevelState_Ingame_OnKeyLeft );
+	Input_Unsubscribe(Key_Arrow_Right, &LevelState_Ingame_OnKeyRight);
 }
 
-fn returns(void) Update_Ingame parameters(void)
+void Update_Ingame(void)
 {
-	if (CurrentLevel == 2 && ! Character_AtFinish(getAddress(Player), getAddress(Level2_Why)))
+	if (CurrentLevel == 2 && ! Character_AtFinish(&Player, &Level2))
 	{
-		Character_Update(getAddress(Player), getAddress(Level2_Why));	
+		Character_Update(&Player, &Level2);	
 	}
 
 	if (CurrentLevel == 1)
 	{
-		Character_Update(getAddress(Player), getAddress(Level1));
+		Character_Update(&Player, &Level1);
 	}
 
 	if (CurrentLevel == 1 && Player.Position.X >= 0.98f)
@@ -285,29 +284,29 @@ fn returns(void) Update_Ingame parameters(void)
 	}
 }
 
-fn returns(void) Render_Ingame parameters(void)
+void Render_Ingame(void)
 {
 	if (CurrentLevel == 1)
 	{
-		Level_Render(getAddress(Level1));
+		Level_Render(&Level1);
 	}
 	else
 	{
-		Level_Render(getAddress(Level2_Why));
+		Level_Render(&Level2);
 	}
 
-	UI_Text_Render(getAddress(Ingame_Text));
+	UI_Text_Render(&Ingame_Text);
 
-	Character_Render(getAddress(Player));	
+	Character_Render(&Player);	
 
 	if (Player.Fell)
 	{
-		UI_Text_Render(getAddress(Ingame_GameOver_Fell));
+		UI_Text_Render(&Ingame_GameOver_Fell);
 	}
 
-	if (CurrentLevel == 2 && Character_AtFinish(getAddress(Player), getAddress(Level2_Why)))
+	if (CurrentLevel == 2 && Character_AtFinish(&Player, &Level2))
 	{
-		UI_Text_Render(getAddress(Ingame_GameOver_MadeIt));
+		UI_Text_Render(&Ingame_GameOver_MadeIt);
 	}
 }
 
@@ -315,24 +314,24 @@ fn returns(void) Render_Ingame parameters(void)
 
 // Public
 
-fn returns( Ptr(StateObj)) GetIngameState parameters(void)
+StateObj* GetIngameState(void)
 {
-	unbound bool stateConstructed = false;
+	static bool stateConstructed = false;
 
 	if (!stateConstructed)
 	{
-		Ingame_State.Load   = getAddress(Load_Ingame  );
-		Ingame_State.Unload = getAddress(Unload_Ingame);
-		Ingame_State.Update = getAddress(Update_Ingame);
-		Ingame_State.Render = getAddress(Render_Ingame);
+		Ingame_State.Load   = &Load_Ingame  ;
+		Ingame_State.Unload = &Unload_Ingame;
+		Ingame_State.Update = &Update_Ingame;
+		Ingame_State.Render = &Render_Ingame;
 
 		stateConstructed = true;
 	}
 
-	return getAddress(Ingame_State);
+	return &Ingame_State;
 }
 
-fn returns(void) Ingame_Reload parameters(void)
+void Ingame_Reload(void)
 {
 	ShouldReload = true;
 }

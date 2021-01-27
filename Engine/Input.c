@@ -13,16 +13,14 @@
 
 // Private
 
-BSS()
-
-	InputData Input;
+InputData Input;
 
 
 
 // Forward Declarations
 
-fn returns(EKeyCode) GetKeyCodeAtIndex(DataSize _index);
-fn returns(DataSize) GetKeyIndexFromCode(EKeyCode _key);
+EKeyCode GetKeyCodeAtIndex  (size_t _index);
+size_t GetKeyIndexFromCode(EKeyCode _key);
 
 
 
@@ -30,24 +28,23 @@ fn returns(DataSize) GetKeyIndexFromCode(EKeyCode _key);
 
 // Public
 
-fn returns(void) Input_LoadModule parameters(void)
+void Input_LoadModule(void)
 {
 	//Input.StateIndex = 0;
 }
 
-fn returns(ro Ptr(InputData)) Input_GetContext(void)
+const InputData* Input_GetContext(void)
 {
-	return getAddress(Input);
+	return &Input;
 }
 
-fn returns(void) Input_Update parameters(void)
+void Input_Update(void)
 {
-	DataSize index = 0; 
+	size_t index = 0; 
 
 	for (; index < Keys_NumTracked; index++)
 	{
-		Stack()
-			bool Current, Previous;
+		bool Current, Previous;
 
 		// Get current signal state
 
@@ -61,11 +58,9 @@ fn returns(void) Input_Update parameters(void)
 
 		// Determine latest key state.
 
-		Stack()
-
-			Ptr(EInputState) CurrentState = getAddress(Input.KeyStates[index]);
+		EInputState* CurrentState = &Input.KeyStates[index];
 				
-			EInputState latestState;
+		EInputState latestState;
 
 		if (Current == Previous)
 		{
@@ -75,7 +70,7 @@ fn returns(void) Input_Update parameters(void)
 			}
 			else
 			{
-				if (val(CurrentState) != EInput_PressHeld)
+				if (*CurrentState != EInput_PressHeld)
 				{
 					latestState = EInput_None;
 				}
@@ -93,38 +88,36 @@ fn returns(void) Input_Update parameters(void)
 			}
 		}
 
-		if (latestState != val(CurrentState))
+		if (latestState != *CurrentState)
 		{
-			val(CurrentState) = latestState;
+			*CurrentState = latestState;
 
-
-			for (DataSize subIndex = 0; subIndex < Input.KeyEventSubs[index].Num; subIndex++)
+			for (size_t subIndex = 0; subIndex < Input.KeyEventSubs[index].Num; subIndex++)
 			{
-				if (Input.KeyEventSubs[index].Array[subIndex] != NULL)
+				if ( Input.KeyEventSubs[index].Array[subIndex] != NULL)
 				{
-					Input.KeyEventSubs[index].Array[subIndex](val(CurrentState));
+					Input.KeyEventSubs[index].Array[subIndex](*CurrentState);
 				}
 			}
 		}
 	}
 }
 
-fn returns(void) Input_SubscribeTo(EKeyCode _key, Ptr(InputEvent_Function) _callbackFunction)
+void Input_SubscribeTo(EKeyCode _key, InputEvent_Function* _callbackFunction)
 {
-	Stack() 
-		Ptr(Subscriptions) subs = getAddress(Input.KeyEventSubs[GetKeyIndexFromCode(_key)]);
+	Subscriptions* subs = &Input.KeyEventSubs[GetKeyIndexFromCode(_key)];
 
 	if (subs->Num == 0)
 	{
-		subs->Array = GlobalAllocate(Ptr(InputEvent_FunctionPtr), 1);
+		subs->Array = GlobalAllocate(InputEvent_FunctionPtr*, 1);
 
 		subs->Num++;
 	}
 	else
 	{
-		for (DataSize subIndex = 0; subIndex < subs->Num; subIndex++)
+		for (size_t subIndex = 0; subIndex < subs->Num; subIndex++)
 		{
-			if (subs->Array[subIndex] == NULL)
+			if ( (&subs->Array)[subIndex] == NULL)
 			{
 				subs->Array[subs->Num - 1] = _callbackFunction;
 
@@ -133,8 +126,7 @@ fn returns(void) Input_SubscribeTo(EKeyCode _key, Ptr(InputEvent_Function) _call
 		}
 
 
-		Stack() 
-			Address resizeIntermediary = GlobalReallocate( Ptr(InputEvent_FunctionPtr), subs->Array, (subs->Num + 1) );
+		Address resizeIntermediary = GlobalReallocate( InputEvent_FunctionPtr*, subs->Array, (subs->Num + 1) );
 
 		if (resizeIntermediary != NULL)
 		{
@@ -153,12 +145,11 @@ fn returns(void) Input_SubscribeTo(EKeyCode _key, Ptr(InputEvent_Function) _call
 	subs->Array[subs->Num - 1] = _callbackFunction;
 }
 
-fn returns(void) Input_Unsubscribe(EKeyCode _key, Ptr(InputEvent_Function) _callbackFunction)
+void Input_Unsubscribe(EKeyCode _key, InputEvent_Function* _callbackFunction)
 {
-	Stack()
-		Ptr(Subscriptions) subs = getAddress(Input.KeyEventSubs[GetKeyIndexFromCode(_key)]);
+	Subscriptions* subs = &Input.KeyEventSubs[GetKeyIndexFromCode(_key)];
 
-	for (DataSize subIndex = 0; subIndex < subs->Num; subIndex++)
+	for (size_t subIndex = 0; subIndex < subs->Num; subIndex++)
 	{
 		if (subs->Array[subIndex] == _callbackFunction)
 		{
@@ -171,7 +162,7 @@ fn returns(void) Input_Unsubscribe(EKeyCode _key, Ptr(InputEvent_Function) _call
 
 // Private
 
-fn returns(EKeyCode) GetKeyCodeAtIndex(DataSize _index)
+EKeyCode GetKeyCodeAtIndex(size_t _index)
 {
 	switch (_index)
 	{
@@ -202,7 +193,7 @@ fn returns(EKeyCode) GetKeyCodeAtIndex(DataSize _index)
 	}
 }
 
-fn returns(DataSize) GetKeyIndexFromCode(EKeyCode _key)
+size_t GetKeyIndexFromCode(EKeyCode _key)
 {
 	switch (_key)
 	{

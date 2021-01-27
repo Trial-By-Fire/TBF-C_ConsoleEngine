@@ -10,7 +10,7 @@
 
 // Aliases (Typedefs)
 
-alias(struct StateObj_Def) as StateObj;
+typedef struct StateObj_Def StateObj;
 
 
 
@@ -18,23 +18,23 @@ alias(struct StateObj_Def) as StateObj;
 
 struct StateObj_Def
 {
-	Ptr(Void_Function) Load  ;
-	Ptr(Void_Function) Unload; 
-	Ptr(Void_Function) Update;
-	Ptr(Void_Function) Render;
+	Void_Function* Load  ;
+	Void_Function* Unload; 
+	Void_Function* Update;
+	Void_Function* Render;
 };
 
 
 
 // Functions
 
-fn returns(void) State_LoadModule parameters(void);
+void State_LoadModule(void);
 
-fn returns(void) State_SetState(Ptr(StateObj) _state);
+void State_SetState(StateObj* _state);
 
-fn returns(void) State_Update parameters(void);
+void State_Update(void);
 
-fn returns(void) State_Render parameters(void);
+void State_Render(void);
 
-fn returns(void) State_LoadGame parameters(void);
+void State_LoadGame(void);
 

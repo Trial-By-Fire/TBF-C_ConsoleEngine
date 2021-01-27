@@ -12,7 +12,7 @@
 
 // Aliases (Typedefs)
 
-alias(struct TimingData_Def ) as TimingData;
+typedef struct TimingData_Def TimingData;
 
 
 
@@ -47,15 +47,15 @@ struct TimingData_Def
 
 //fn returns(void) Timing_MakeTimer parameters(void);
 
-fn returns(ro Ptr(TimingData) ) Timing_GetContext parameters(void);
+const TimingData* Timing_GetContext(void);
 
-fn returns(void) Timing_LoadModule parameters(void);
+void Timing_LoadModule(void);
 
-fn returns(void) Timing_TakeInitialSnapshot parameters(void);
+void Timing_TakeInitialSnapshot(void);
 
-fn returns(void) Timing_TakeEndingSnapshot parameters(void);
+void Timing_TakeEndingSnapshot(void);
 
-fn returns(void) Timing_Update parameters(void);
+void Timing_Update(void);
 
 
 
@@ -63,7 +63,7 @@ fn returns(void) Timing_Update parameters(void);
 
 // Aliases (Typedefs)
 
-alias(struct TimerData_Def) TimerData;
+typedef struct TimerData_Def TimerData;
 
 
 
@@ -79,9 +79,9 @@ struct TimerData_Def
 
 // Functions
 
-fn returns(bool) Timer_Ended parameters(Ptr(TimerData) _timer);
+bool Timer_Ended(TimerData* _timer);
 
-fn returns(void) Timer_Reset parameters(Ptr(TimerData) _timer);
+void Timer_Reset(TimerData* _timer);
 
-fn returns(void) Timer_Tick parameters(Ptr(TimerData) _timer);
+void Timer_Tick(TimerData* _timer);
 

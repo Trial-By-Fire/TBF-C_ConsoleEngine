@@ -17,11 +17,11 @@
 
 // Aliases (Typedefs)
 
-alias( Ptr(void) ) as Address;
+typedef void* Address;
 
-alias(struct MemoryBlock_Def) as MemoryBlock;
+typedef struct MemoryBlock_Def MemoryBlock;
 
-alias(struct MemoryBlockArray_Def) MemoryBlockArray;
+typedef struct MemoryBlockArray_Def MemoryBlockArray;
 
 
 
@@ -31,14 +31,14 @@ struct MemoryBlock_Def
 {
 	Address Location;
 
-	DataSize Size;
+	size_t Size;
 };
 
 struct MemoryBlockArray_Def
 {
-	Ptr( Ptr(MemoryBlock) ) Array;
+	MemoryBlock** Array;
 
-	DataSize Length;
+	size_t Length;
 };
 
 
@@ -58,26 +58,26 @@ struct MemoryBlockArray_Def
 
 // C-API
 
-fn returns( Ptr(void) ) AllocateMemory parameters(DataSize  _amountToAllocate);
-fn returns(void)        Deallocate     parameters(Ptr(void) _memoryToDeallocate);
+void* AllocateMemory(size_t _amountToAllocate  );
+void  Deallocate    (void*    _memoryToDeallocate);
 
-fn returns( Ptr(void) ) Internal_Memory_FormatByFill parameters(Ptr(void) _memoryAddress,    sInt      _fillValue,  DataSize _sizeOfData);
-fn returns( Ptr(void) ) Memory_FormatWithData        parameters(Ptr(void) _memoryAddress, ro Ptr(void) _dataSource, DataSize _sizeOfData);
+void* Internal_Memory_FormatByFill(void* _memoryAddress,       sInt  _fillValue,  size_t _sizeOfData);
+void* Memory_FormatWithData       (void* _memoryAddress, const void* _dataSource, size_t _sizeOfData);
 
 // Memory Allocation Array
 
-fn returns(void            ) MemoryBlockArray_Add        parameters(Ptr(MemoryBlockArray) _memoryArray, Ptr(MemoryBlock) _memoryAllocation);
-fn returns(Ptr(MemoryBlock)) MemoryBlockArray_LastEntry  parameters(Ptr(MemoryBlockArray) _memoryArray                                    );
-fn returns(void            ) MemoryBlockArray_Deallocate parameters(Ptr(MemoryBlockArray) _memoryArray                                    );
+void         MemoryBlockArray_Add       (MemoryBlockArray* _memoryArray, MemoryBlock* _memoryAllocation);
+MemoryBlock* MemoryBlockArray_LastEntry (MemoryBlockArray* _memoryArray                                );
+void         MemoryBlockArray_Deallocate(MemoryBlockArray* _memoryArray                                );
 
 // Memory Management
 
-fn returns(Address) Internal_ScopedAllocate parameters(Ptr(MemoryBlockArray) _scopedAllocations, DataSize _sizeOfAllocation);
-fn returns(void   ) ScopedDeallocate        parameters(Ptr(MemoryBlockArray) _scopedAllocations                            );
+Address Internal_ScopedAllocate(MemoryBlockArray* _scopedAllocations, size_t _sizeOfAllocation);
+void    ScopedDeallocate       (MemoryBlockArray* _scopedAllocations                            );
 
-fn returns(Address) Internal_GlobalAllocate   parameters(                   DataSize _sizeOfAllocation   );
-fn returns(Address) Internal_GlobalReallocate parameters(Address _location, DataSize _sizeForReallocation);
-fn returns(void   ) GlobalDeallocate          parameters(void                                            );
+Address Internal_GlobalAllocate  (                   size_t _sizeOfAllocation   );
+Address Internal_GlobalReallocate(Address _location, size_t _sizeForReallocation);
+void    GlobalDeallocate         (void                                            );
 
 
 
@@ -90,7 +90,7 @@ Internal_GlobalAllocate(sizeof(_type) * _numberToAllocate)
 Internal_GlobalReallocate(_address, sizeof(_type) * _numberToReallocate);
 
 #define ScopedAllocate(_type, _numberToAllocate)  \
-Internal_ScopedAllocate(getAddress(scopedMemory), sizeof(_type) * _numberToAllocate)
+Internal_ScopedAllocate(&scopedMemory, sizeof(_type) * _numberToAllocate)
 
 #define Memory_FormatByFill(_type, _memoryAddress, _fillValue, _sizeOfAllocation) \
 Internal_Memory_FormatByFill(_memoryAddress, _fillValue, sizeof(_type) * _sizeOfAllocation);
@@ -104,6 +104,6 @@ Internal_Memory_FormatByFill(_memoryAddress, _fillValue, sizeof(_type) * _sizeOf
 #define SmartScope_End                              \
 	if (scopedMemory.Array != NULL)                 \
 	{								                \
-		ScopedDeallocate(getAddress(scopedMemory)); \
+		ScopedDeallocate(&scopedMemory); \
 	}												\
 }

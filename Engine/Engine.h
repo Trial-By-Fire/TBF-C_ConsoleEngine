@@ -3,6 +3,7 @@
 
 #include "Config.h"
 #include "LAL.h"
+#include "Windows_Platform.h"
 #include "State.h"
 #include "Renderer.h"
 #include "Cycler.h"
@@ -14,4 +15,4 @@
 // Functions
 
 // Game must implement this function.
-fn returns(Ptr(StateObj)) LoadGame parameters(void);
+StateObj* LoadGame(void);

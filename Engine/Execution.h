@@ -8,7 +8,7 @@
 
 // Aliases (Typedefs)
 
-alias(enum ExecFlags_Def) as ExecFlags;
+typedef enum ExecFlags_Def ExecFlags;
 
 
 
@@ -23,5 +23,5 @@ enum ExecFlags_Def
 
 // Functions
 
-fn returns(ExecFlags) EntryPoint parameters(void);
+ExecFlags EntryPoint(void);
 

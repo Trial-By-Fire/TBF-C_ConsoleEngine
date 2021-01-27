@@ -29,25 +29,25 @@ enum
 
 // Character
 
-alias(struct Character_Def) as Character;
+typedef struct Character_Def Character;
 
 // Level
 
-alias(Line) as GameScreenBuffer [ERenderer_GameEnd + 1];
+typedef Line GameScreenBuffer[ERenderer_GameEnd + 1];
 
-alias(GameScreenBuffer) as Level;
+typedef GameScreenBuffer Level;
 
 // Space
 
-alias(struct Vector2D_Def) as Vector2D;
+typedef struct Vector2D_Def Vector2D;
 
 
 // UI
 
-alias(struct UI_Text_Def  ) as UI_Text;
-alias(struct UI_Button_Def) as UI_Button;
-alias(struct UI_Grid_Def  ) as UI_Grid;
-alias(struct UI_Widget_Def) as UI_Widget;
+typedef struct UI_Text_Def   UI_Text;
+typedef struct UI_Button_Def UI_Button;
+typedef struct UI_Grid_Def   UI_Grid;
+typedef struct UI_Widget_Def UI_Widget;
 
 
 
@@ -81,11 +81,11 @@ struct Character_Def
 
 struct UI_Text_Def
 {
-	Ptr(WideChar) Content;
+	WideChar* Content;
 
-	DataSize Length;
+	size_t Length;
 
-	Ptr(Cell) RenderCells;
+	Cell* RenderCells;
 
 	COORD StartingCell, EndingCell;
 };
@@ -94,23 +94,23 @@ struct UI_Button_Def
 {
 	UI_Text Text;
 
-	Ptr(Void_Function) Callback;
+	Void_Function* Callback;
 };
 
 struct UI_Grid_Def
 {
-	Ptr(UI_Button) Buttons;
+	UI_Button* Buttons;
 
-	DataSize Num;
+	size_t Num;
 
-	DataSize CurrentIndex;
+	size_t CurrentIndex;
 };
 
 struct UI_Widget_Def
 {
-	Ptr(UI_Text) TextUIs;
+	UI_Text* TextUIs;
 
-	DataSize Num_TextUIs;
+	size_t Num_TextUIs;
 
 	//Ptr(UI_Grid) Grids;
 
@@ -123,107 +123,97 @@ struct UI_Widget_Def
 
 // Character
 
-fn returns(bool) Character_AtFinish parameters(Ptr(Character) _character, Ptr(Level) _level);
+bool Character_AtFinish(Character* _character, Level* _level);
 
-fn returns(bool) Character_IsGrounded parameters(Ptr(Character) _character, Ptr(Level) _level);
+bool Character_IsGrounded(Character* _character, Level* _level);
 
-fn returns(void) Character_Load parameters(Ptr(Character) _character);
+void Character_Load(Character* _character);
 
-fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Level) _level);
+void Character_Update(Character* _character, Level* _level);
 
-fn returns(void) Character_Render parameters(Ptr(Character) _character);
+void Character_Render(Character* _character);
 
 // Level
 
-fn returns(sInt) Level_GetCellAtPosition parameters(Ptr(Level) _level, Vector2D _position);
+sInt Level_GetCellAtPosition(Level* _level, Vector2D _position);
 
-fn returns(void) Level_SetCells parameters(Ptr(Level) _level, COORD _firstCell, COORD _lastCell, sInt _cellType);
+void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, sInt _cellType);
 
-fn returns(void) Level_Render parameters(Ptr(Level) _level);
+void Level_Render(Level* _level);
 
 // Space
 
-fn returns(COORD) Convert_Vector2D_ToRenderCoord parameters(Vector2D _vector);
+COORD Convert_Vector2D_ToRenderCoord(Vector2D _vector);
 
 // General Rendering
 
-fn returns(void) ChangeCellsTo_Grey parameters(Ptr(Cell) _renderCells, DataSize _length);
+void ChangeCellsTo_Grey(Cell* _renderCells, size_t _length);
 
-fn returns(void) ChangeCellsTo_White parameters(Ptr(Cell) _renderCells, DataSize _length);
+void ChangeCellsTo_White(Cell* _renderCells, size_t _length);
 
 // UI
 
-fn returns(void) UI_Text_Create 
-
-parameters
+void UI_Text_Create 
 (
-	   Ptr(UI_Text)  _uiText, 
-	   Ptr(WideChar) _content, 
-	       COORD     _startingCell, 
-	       COORD     _endingCell,
-	       bool      _shouldCenter
+	UI_Text*  _uiText, 
+	WideChar* _content, 
+	COORD     _startingCell, 
+	COORD     _endingCell,
+	bool      _shouldCenter
 );
 
-fn returns(void) UI_Text_Render parameters(ro Ptr(UI_Text) _uiText);
+void UI_Text_Render(const UI_Text* _uiText);
 
-fn returns(void) UI_Button_Create 
-
-parameters
+void UI_Button_Create 
 (
-	   Ptr(UI_Button)     _button, 
-	ro Ptr(WideChar)      _text, 
+	      UI_Button*     _button, 
+	const WideChar*      _text, 
+	      COORD          _startingCell, 
+	      COORD          _endingCell, 
+	      bool           _shouldCenter,
+	      Void_Function* _callback
+);
+
+void UI_Button_Press (const UI_Button* _uiButton);
+void UI_Button_Render(const UI_Button* _uiButton);
+
+void UI_Grid_Add 
+(
+	      UI_Grid*        _uiGrid, 
+	const WideChar*       _text, 
 	       COORD          _startingCell, 
 	       COORD          _endingCell, 
 	       bool           _shouldCenter,
-	   Ptr(Void_Function) _callback
+	       Void_Function* _callback
 );
 
-fn returns(void) UI_Button_Press  parameters(ro Ptr(UI_Button) _uiButton);
-fn returns(void) UI_Button_Render parameters(ro Ptr(UI_Button) _uiButton);
+void UI_Grid_MoveUp  (UI_Grid* _uiGrid);
+void UI_Grid_MoveDown(UI_Grid* _uiGrid);
+void UI_Grid_Select  (UI_Grid* _uiGrid);
+void UI_Grid_Render  (UI_Grid* _uiGrid);
 
-fn returns(void) UI_Grid_Add 
-
-parameters
+void UI_Widget_AddText
 (
-	   Ptr(UI_Grid)       _uiGrid, 
-	ro Ptr(WideChar)      _text, 
-	       COORD          _startingCell, 
-	       COORD          _endingCell, 
-	       bool           _shouldCenter,
-	   Ptr(Void_Function) _callback
+	      UI_Widget*     _uiWidget,
+	const WideChar*      _text,
+	      COORD          _startingCell,
+	      COORD          _endingCell,
+	      bool           _shouldCenter
 );
 
-fn returns(void) UI_Grid_MoveUp   parameters(Ptr(UI_Grid) _uiGrid);
-fn returns(void) UI_Grid_MoveDown parameters(Ptr(UI_Grid) _uiGrid);
-fn returns(void) UI_Grid_Select   parameters(Ptr(UI_Grid) _uiGrid);
-fn returns(void) UI_Grid_Render   parameters(Ptr(UI_Grid) _uiGrid);
-
-fn returns(void) UI_Widget_AddText
-
-parameters
+void UI_Widget_AddButton 
 (
-	   Ptr(UI_Widget)     _uiWidget,
-	ro Ptr(WideChar)      _text,
-	       COORD          _startingCell,
-	       COORD          _endingCell,
-	       bool           _shouldCenter
+	      UI_Widget*     _uiWidget,
+	const WideChar*      _text,
+	      COORD          _startingCell,
+	      COORD          _endingCell,
+	      bool           _shouldCenter,
+	      Void_Function* _callback
 );
 
-fn returns(void) UI_Widget_AddButton 
-
-parameters
-(
-	   Ptr(UI_Widget)     _uiWidget,
-	ro Ptr(WideChar)      _text,
-	       COORD          _startingCell,
-	       COORD          _endingCell,
-	       bool           _shouldCenter,
-	   Ptr(Void_Function) _callback
-);
-
-fn returns(void) UI_Widget_MoveUp   parameters(Ptr(UI_Widget) _uiWidget);
-fn returns(void) UI_Widget_MoveDown parameters(Ptr(UI_Widget) _uiWidget);
-fn returns(void) UI_Widget_Select   parameters(Ptr(UI_Widget) _uiWidget);
-fn returns(void) UI_Widget_Render   parameters(Ptr(UI_Widget) _uiWidget);
+void UI_Widget_MoveUp  (UI_Widget* _uiWidget);
+void UI_Widget_MoveDown(UI_Widget* _uiWidget);
+void UI_Widget_Select  (UI_Widget* _uiWidget);
+void UI_Widget_Render  (UI_Widget* _uiWidget);
 
 

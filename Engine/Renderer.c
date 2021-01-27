@@ -17,57 +17,54 @@
 
 // Private
 
-BSS()
+CHAR_INFO* Buffer;
 
-	Ptr(CHAR_INFO) Buffer;
+RendererData Renderer;
+ScreenInfo   Screen;
 
-	RendererData Renderer;
-	ScreenInfo   Screen;
+Line Border_GameDebug    ;
+Line Border_LogPersistent;
 
-	Line Border_GameDebug    ;
-	Line Border_LogPersistent;
+// Eliminate these?
 
-	// Eliminate these?
-
-	typedef 
+typedef 
 		
-	struct Lines_Def
-	{
-		Ptr(Line) Array;
+struct Lines_Def
+{
+	Line* Array;
 
-		DataSize Num;
-	}
+	size_t Num;
+}
 
-	Lines;
+Lines;
 	
-	Lines DebugLogSection_Dynamic;
+Lines DebugLogSection_Dynamic;
 
-	uInt DebugLogSection_RelativeLastLine = 1;
+uInt DebugLogSection_RelativeLastLine = 1;
+
 
 #ifdef Debug
 	Line PersistentSection[ERenderer_PersistentSectionSize];
 #endif
 
-Data()
+const CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 14";
 
-	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 13";
-
-	ro COORD Console_ScreenPos_00 = 
-	{
-		0,  // X
-		0   // Y
-	};
+const COORD Console_ScreenPos_00 = 
+{
+	0,  // X
+	0   // Y
+};
 
 
 
 // Forward Declarations
 
-fn returns(void) DrawGameScanlines     parameters(void);
-fn returns(void) InitalizeData         parameters(void);
-fn returns(void) SetupConsole          parameters(void);
-fn returns(bool) ShouldRender          parameters(void);
-fn returns(bool) UpdateConsoleInfo     parameters(void);
-fn returns(void) UpdateSizeAndPosition parameters(void);
+void DrawGameScanlines    (void);
+void InitalizeData        (void);
+void SetupConsole         (void);
+bool ShouldRender         (void);
+bool UpdateConsoleInfo    (void);
+void UpdateSizeAndPosition(void);
 
 
 
@@ -75,7 +72,7 @@ fn returns(void) UpdateSizeAndPosition parameters(void);
 
 // Public
 
-fn returns(void) Renderer_Clear parameters(void)
+void Renderer_Clear(void)
 {
 	if (UpdateConsoleInfo())
 	{
@@ -84,7 +81,7 @@ fn returns(void) Renderer_Clear parameters(void)
 }
 
 // Return value tells you if it did the job.
-fn returns(bool) Renderer_FillCellsWithWhitespace parameters(void)
+bool Renderer_FillCellsWithWhitespace(void)
 {
 	return FillConsoleOutputCharacter
 	(
@@ -92,11 +89,11 @@ fn returns(bool) Renderer_FillCellsWithWhitespace parameters(void)
 		(TCHAR)' ',
 		Renderer.BufferSize,
 		Console_ScreenPos_00,
-		getAddress(Renderer.CharactersWritten)
+		&Renderer.CharactersWritten
 	);
 }
 
-fn returns(bool) Renderer_FormatCells parameters(void)
+bool Renderer_FormatCells(void)
 {
 	return FillConsoleOutputAttribute
 	(
@@ -104,16 +101,16 @@ fn returns(bool) Renderer_FormatCells parameters(void)
 		Renderer.CSBI_Instance.wAttributes,
 		Renderer.BufferSize,
 		Console_ScreenPos_00,
-		getAddress(Renderer.CharactersWritten)
+		&Renderer.CharactersWritten
 	);
 }
 
-fn returns(ro Ptr(RendererData)) Renderer_GetContext(void)
+const RendererData* Renderer_GetContext(void)
 {
-	return getAddress(Renderer);
+	return &Renderer;
 }
 
-fn returns(void) Renderer_LoadModule parameters(void)
+void Renderer_LoadModule(void)
 {
 	SetupConsole();
 
@@ -128,7 +125,7 @@ fn returns(void) Renderer_LoadModule parameters(void)
 	return;
 }
 
-fn returns(void) Renderer_ProcessTiming parameters(float64 _deltaTime)
+void Renderer_ProcessTiming(float64 _deltaTime)
 {
 	if (Float64_ApproxEqual(_deltaTime, 0.000001L) || Float64_ApproxLess(_deltaTime, 0.000001L))
 	{
@@ -144,22 +141,22 @@ fn returns(void) Renderer_ProcessTiming parameters(float64 _deltaTime)
 	}
 }
 
-fn returns(void) Renderer_RenderFrame parameters(void)
+void Renderer_RenderFrame(void)
 {
 	// Renders buffer to console.
-	WriteConsoleOutput(Renderer.Output_Handle, Buffer, Renderer.CoordSize, Console_ScreenPos_00, getAddress(Renderer.Size));
+	WriteConsoleOutput(Renderer.Output_Handle, Buffer, Renderer.CoordSize, Console_ScreenPos_00, &Renderer.Size);
 
 	return;
 }
 
-fn returns(void) Renderer_ResetDrawPosition parameters(void)
+void Renderer_ResetDrawPosition(void)
 {
 	SetConsoleCursorPosition(Renderer.Output_Handle, Console_ScreenPos_00);
 
 	return;
 }
 
-fn returns(void) Renderer_UnloadModule parameters(void)
+void Renderer_UnloadModule(void)
 {
 	if (Unbind_IOBufferTo_Console() != true)
 	{
@@ -176,7 +173,7 @@ fn returns(void) Renderer_UnloadModule parameters(void)
 	}
 }
 
-fn returns(void) Renderer_Update parameters(void)
+void Renderer_Update(void)
 {
 	if (ShouldRender())
 	{
@@ -190,22 +187,21 @@ fn returns(void) Renderer_Update parameters(void)
 
 	#ifdef Debug
 
-		Stack()
 
-			COORD 
-				startingCell = { 0              , ERenderer_BorderLine}, 
-				finalCell    = { ERenderer_Width, ERenderer_BorderLine};
+		COORD 
+			startingCell = { 0              , ERenderer_BorderLine}, 
+			finalCell    = { ERenderer_Width, ERenderer_BorderLine};
 
-		Renderer_WriteToBufferCells(getAddress(Border_GameDebug), startingCell, finalCell);
+		Renderer_WriteToBufferCells(&Border_GameDebug, startingCell, finalCell);
 
 		startingCell.Y = ERenderer_DebugPersistentStart - 1;
 		finalCell   .Y = ERenderer_DebugPersistentStart - 1;
 
-		Renderer_WriteToBufferCells(getAddress(Border_LogPersistent), startingCell, finalCell);
+		Renderer_WriteToBufferCells(&Border_LogPersistent, startingCell, finalCell);
 
 		if (DebugLogSection_Dynamic.Num <= 18)
 		{
-			for (DataSize index = 0; index < DebugLogSection_Dynamic.Num - 1; index++)
+			for (size_t index = 0; index < DebugLogSection_Dynamic.Num - 1; index++)
 			{
 				startingCell.Y = ERenderer_DebugStart + index;
 				finalCell   .Y = ERenderer_DebugStart + index;
@@ -215,10 +211,9 @@ fn returns(void) Renderer_Update parameters(void)
 		}
 		else
 		{
-			Stack()
-				DataSize LogStart = DebugLogSection_Dynamic.Num - 18 - DebugLogSection_RelativeLastLine;
+			size_t LogStart = DebugLogSection_Dynamic.Num - 18 - DebugLogSection_RelativeLastLine;
 
-			for (DataSize index = 0; index < ERenderer_DebugLogSize; index++)
+			for (size_t index = 0; index < ERenderer_DebugLogSize; index++)
 			{
 				startingCell.Y = ERenderer_DebugStart + index;
 				finalCell   .Y = ERenderer_DebugStart + index;
@@ -227,12 +222,12 @@ fn returns(void) Renderer_Update parameters(void)
 			}
 		}
 
-		for (DataSize index = 0; index < ERenderer_PersistentSectionSize; index++)
+		for (size_t index = 0; index < ERenderer_PersistentSectionSize; index++)
 		{
 			startingCell.Y = ERenderer_DebugPersistentStart + index;
 			finalCell   .Y = ERenderer_DebugPersistentStart + index;
 
-			Renderer_WriteToBufferCells(getAddress(PersistentSection[index]), startingCell, finalCell);
+			Renderer_WriteToBufferCells(&PersistentSection[index], startingCell, finalCell);
 		}
 
 	#endif
@@ -243,18 +238,16 @@ fn returns(void) Renderer_Update parameters(void)
 	}
 }
 
-fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cell, COORD _initalCell, COORD _finalCell)
+void Renderer_WriteToBufferCells(Cell* _cell, COORD _initalCell, COORD _finalCell)
 {
-	Stack()
+	size_t lineOffset = _initalCell.Y * ERenderer_Width;
+	size_t colOffset  = _initalCell.X;
 
-		DataSize lineOffset = _initalCell.Y * ERenderer_Width;
-		DataSize colOffset  = _initalCell.X;
+	size_t totalOffset = lineOffset + colOffset;
 
-		DataSize totalOffset = lineOffset + colOffset;
+	void* bufferOffset = &Buffer[totalOffset];
 
-		Ptr(void) bufferOffset = getAddress(Buffer[totalOffset]);
-
-		DataSize dataSize = totalOffset;
+	size_t dataSize = totalOffset;
 
 	lineOffset =  _finalCell.Y * ERenderer_Width;
 	colOffset  =  _finalCell.X                  ;
@@ -270,7 +263,7 @@ fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cell, COORD _
 	return;
 }
 
-fn returns(void) Renderer_DebugLogDynamic_AddLine parameters(void)
+void Renderer_DebugLogDynamic_AddLine(void)
 {
 #ifdef Debug
 
@@ -282,8 +275,7 @@ fn returns(void) Renderer_DebugLogDynamic_AddLine parameters(void)
 	}
 	else
 	{
-		Stack()
-			Address resizeIntermediary = GlobalReallocate(Line, DebugLogSection_Dynamic.Array, (DebugLogSection_Dynamic.Num + 1));
+		Address resizeIntermediary = GlobalReallocate(Line, DebugLogSection_Dynamic.Array, (DebugLogSection_Dynamic.Num + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -302,23 +294,22 @@ fn returns(void) Renderer_DebugLogDynamic_AddLine parameters(void)
 #endif
 }
 
-fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
+void Renderer_WriteToLog(WideChar* _logString)
 {
 #ifdef Debug
 
-	Stack()
 
-		unbound uInt nextLine = 0;
+	static uInt nextLine = 0;
 
-		DataSize logLength = wcslen(_logString);
-		DataSize linePos   = 0;
+	size_t logLength = wcslen(_logString);
+	size_t linePos   = 0;
 
 	if (nextLine == 0)
 	{
 		Renderer_DebugLogDynamic_AddLine();
 	}
 
-	for (DataSize index = 0; index < logLength; index++)
+	for (size_t index = 0; index < logLength; index++)
 	{
 		if (linePos > ERenderer_Width - 1)
 		{
@@ -335,7 +326,7 @@ fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 		linePos++;
 	}
 
-	for (DataSize index = linePos; index < ERenderer_Width; index++)
+	for (size_t index = linePos; index < ERenderer_Width; index++)
 	{
 		DebugLogSection_Dynamic.Array[nextLine][index].Char.UnicodeChar = 0;
 		DebugLogSection_Dynamic.Array[nextLine][index].Attributes       = 0;
@@ -351,19 +342,17 @@ fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 }
 
 // Note: Row starts at 1.
-fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(WideChar) _lineformat, ...)
+void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...)
 {
 #ifdef Debug
 
-	Stack()
+	WideChar TranslationBuffer[ERenderer_Width];
 
-		WideChar TranslationBuffer[ERenderer_Width];
+	Cell* PersistentSubSection = PersistentSection[_row - 1];
 
-		Ptr(Cell) PersistentSubSection = PersistentSection[_row - 1];
+	sInt CellsFormatted;
 
-		sInt CellsFormatted;
-
-		va_list argList;
+	va_list argList;
 
 
 	va_start(argList, _lineformat);
@@ -382,13 +371,13 @@ fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(Wid
 
 	va_end(argList);
 
-	for (DataSize index = 0; index < CellsFormatted; index++)
+	for (size_t index = 0; index < CellsFormatted; index++)
 	{
 		PersistentSubSection[index].Char.UnicodeChar = TranslationBuffer[index];
 		PersistentSubSection[index].Attributes       = Console_WhiteCell;
 	}
 
-	for (DataSize index = CellsFormatted + 1; index < ERenderer_Width; index++)
+	for (size_t index = CellsFormatted + 1; index < ERenderer_Width; index++)
 	{
 		PersistentSubSection[index].Char.UnicodeChar = NULL;
 		PersistentSubSection[index].Attributes       = NULL;
@@ -401,33 +390,27 @@ fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(Wid
 
 // Private
 
-fn returns(void) DrawGameScanlines parameters(void)
+void DrawGameScanlines(void)
 {
-	Stack()
+	static COORD cellIndex = { 0, 0 };
 
-		unbound COORD cellIndex = { 0, 0 };
+	const WideChar blockChar = '-';
 
-		ro WideChar blockChar = '-';
-
-		Cell cellUnit;
+	Cell cellUnit;
 
 	cellUnit.Char.UnicodeChar = blockChar;
 	cellUnit.Attributes       = FOREGROUND_INTENSITY;
 
-	Stack()
+	Cell cellLine[ERenderer_Width];
 
-		Cell cellLine[ERenderer_Width];
-
-	for (DataSize index = 0; index < ERenderer_Width; index++)
+	for (size_t index = 0; index < ERenderer_Width; index++)
 	{
 		cellLine[index] = cellUnit;
 	}
 
-	Stack()
+	COORD cellIndex_End = { ERenderer_Width, cellIndex.Y };
 
-		COORD cellIndex_End = { ERenderer_Width, cellIndex.Y };
-
-	Renderer_WriteToBufferCells(getAddress(cellLine), cellIndex, cellIndex_End);
+	Renderer_WriteToBufferCells(&cellLine, cellIndex, cellIndex_End);
 
 	cellIndex.Y++;
 
@@ -446,7 +429,7 @@ fn returns(void) DrawGameScanlines parameters(void)
 	}
 }
 
-fn returns(void) InitalizeData parameters(void)
+void InitalizeData(void)
 {
 	// Setup Necessary Data
 
@@ -478,16 +461,14 @@ fn returns(void) InitalizeData parameters(void)
 
 	Memory_FormatByFill(CHAR_INFO, Buffer, 0, ERenderer_Width * ERenderer_Height);
 
-	Stack()
-
-		Cell borderCell; 
+	Cell borderCell; 
 	
 	borderCell.Char.UnicodeChar = '='; 
 	borderCell.Attributes       = Console_WhiteCell;
 
 #ifdef Debug
 
-	for (DataSize index = 0; index < ERenderer_Width; index++)
+	for (size_t index = 0; index < ERenderer_Width; index++)
 	{
 		Border_GameDebug    [index] = borderCell;
 		Border_LogPersistent[index] = borderCell;
@@ -502,7 +483,7 @@ fn returns(void) InitalizeData parameters(void)
 }
 
 // Do initial request and IO binding for console interface.
-fn returns(void) SetupConsole parameters(void)
+void SetupConsole(void)
 {
 	if (RequestConsole() != true)
 	{
@@ -521,30 +502,30 @@ fn returns(void) SetupConsole parameters(void)
 	return;
 }
 
-fn returns(bool) ShouldRender parameters(void)
+bool ShouldRender(void)
 {
 	return Float64_ApproxGreater(Renderer.RefeshTimer, Renderer.RefeshInterval) ||
 		   Float64_ApproxEqual  (Renderer.RefeshTimer, Renderer.RefeshInterval)   ;
 }
 
-fn returns(bool) UpdateConsoleInfo parameters(void)
+bool UpdateConsoleInfo(void)
 {
-	return GetConsoleScreenBufferInfo(Renderer.Output_Handle, getAddress(Renderer.CSBI_Instance));
+	return GetConsoleScreenBufferInfo(Renderer.Output_Handle, &Renderer.CSBI_Instance);
 }
 
-fn returns(void) UpdateSizeAndPosition parameters(void)
+void UpdateSizeAndPosition(void)
 {
 	// Set desired cursor preferences.
-	SetConsoleCursorInfo(Renderer.Output_Handle, getAddress(Renderer.CursorSettings));
+	SetConsoleCursorInfo(Renderer.Output_Handle, &Renderer.CursorSettings);
 
 	// Change the window size.
-	SetConsoleWindowInfo(Renderer.Output_Handle, true, getAddress(Renderer.Size));
+	SetConsoleWindowInfo(Renderer.Output_Handle, true, &Renderer.Size);
 
 	// Update the buffer size.
 	SetConsoleScreenBufferSize(Renderer.Output_Handle, Renderer.CoordSize);
 
 	// Update the window size.
-	SetConsoleWindowInfo(Renderer.Output_Handle, true, getAddress(Renderer.Size));
+	SetConsoleWindowInfo(Renderer.Output_Handle, true, &Renderer.Size);
 
 	SetWindowPos
 	(
@@ -560,7 +541,7 @@ fn returns(void) UpdateSizeAndPosition parameters(void)
 	return;
 }
 
-fn returns(void) Renderer_Logs_ScrollUp parameters(void)
+void Renderer_Logs_ScrollUp(void)
 {
 #ifdef Debug
 
@@ -572,7 +553,7 @@ fn returns(void) Renderer_Logs_ScrollUp parameters(void)
 #endif
 }
 
-fn returns(void) Renderer_Logs_ScrollDown parameters(void)
+void Renderer_Logs_ScrollDown(void)
 {
 #ifdef Debug
 

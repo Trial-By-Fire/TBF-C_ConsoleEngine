@@ -31,22 +31,24 @@ enum EInputState_Def
 
 // Aliases (Typedefs)
 
-alias(enum EInputState_Def) as EInputState;
+typedef enum EInputState_Def EInputState;
 
-alias(bool) as BoolArray_KeySignals[Keys_NumTracked];
+typedef bool BoolArray_KeySignals[Keys_NumTracked];
 
-alias(struct StructOf_KeySignals_Def) as StructOf_KeySignals;
+typedef struct StructOf_KeySignals_Def StructOf_KeySignals;
 
-alias(struct Input_SignalState_Def) as Input_SignalState;
-alias(struct InputData_Def)         as InputData;
+typedef struct Input_SignalState_Def Input_SignalState;
+typedef struct InputData_Def         InputData;
 
-alias(struct Input_KeyStates_Def) Input_KeyStates;
+typedef struct Input_KeyStates_Def Input_KeyStates;
 
-alias( FunctionType(InputEvent_Function, void, EInputState) );
+typedef void (InputEvent_Function) (EInputState);
 
-alias( Ptr(InputEvent_Function)) as InputEvent_FunctionPtr;
+typedef InputEvent_Function* InputEvent_FunctionPtr;
 
-alias(struct Subscriptions_Def) as Subscriptions;
+typedef InputEvent_FunctionPtr* InputEvent_PtrTo_FunctionPtr;
+
+typedef struct Subscriptions_Def Subscriptions;
 
 
 
@@ -80,9 +82,9 @@ struct InputState_RingBuffer_Def
 
 struct Subscriptions_Def
 {
-	Ptr(InputEvent_FunctionPtr) Array;
+	InputEvent_FunctionPtr* Array;
 
-	DataSize Num;
+	size_t Num;
 };
 
 struct InputData_Def
@@ -110,12 +112,12 @@ struct InputData_Def
 
 // Functions
 
-fn returns(Ptr(ro InputData)) Input_GetContext(void);
+const InputData* Input_GetContext(void);
 
-fn returns(void) Input_LoadModule parameters(void);
+void Input_LoadModule(void);
 
-fn returns(void) Input_Update parameters(void);
+void Input_Update(void);
 
-fn returns(void) Input_SubscribeTo(EKeyCode _key, Ptr(InputEvent_Function) _callbackFunction);
+void Input_SubscribeTo(EKeyCode _key, InputEvent_Function* _callbackFunction);
 
-fn returns(void) Input_Unsubscribe(EKeyCode _key, Ptr(InputEvent_Function) _callbackFunction);
+void Input_Unsubscribe(EKeyCode _key, InputEvent_Function* _callbackFunction);

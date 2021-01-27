@@ -7,10 +7,8 @@
 
 // Private
 
-Data()
-
-	MemoryBlockArray GlobalMemory =
-	{ NULL, 0U };
+MemoryBlockArray GlobalMemory =
+{ NULL, 0U };
 
 
 
@@ -20,47 +18,46 @@ Data()
 
 // C-API
 
-fn returns( Ptr(void) ) AllocateMemory parameters(DataSize _amountToAllocate)
+void* AllocateMemory(size_t _amountToAllocate)
 {
-	return Heap(malloc(_amountToAllocate));
+	return malloc(_amountToAllocate);
 }
 
-fn returns(void) Deallocate parameters(Ptr(void) _memoryToDeallocate)
+void Deallocate(void* _memoryToDeallocate)
 {
-	Heap(free(_memoryToDeallocate));
+	free(_memoryToDeallocate);
 
 	return;
 }
 
-fn returns( Ptr(void) ) Reallocate parameters( Ptr(void)  _memoryToReallocate, DataSize _sizeDesired)
+void* Reallocate(void* _memoryToReallocate, size_t _sizeDesired)
 {
-	return Heap(realloc(_memoryToReallocate, _sizeDesired));
+	return realloc(_memoryToReallocate, _sizeDesired);
 }
 
-fn returns( Ptr(void) ) Internal_Memory_FormatByFill parameters(Ptr(void) _memoryAddress, sInt _fillValue, DataSize _sizeOfData)
+void* Internal_Memory_FormatByFill(void* _memoryAddress, sInt _fillValue, size_t _sizeOfData)
 {
 	return memset(_memoryAddress, _fillValue, _sizeOfData);
 }
 
-fn returns( Ptr(void) ) Memory_FormatWithData parameters(Ptr(void) _memoryAddress, ro Ptr(void) _dataSource, DataSize _sizeOfData)
+void* Memory_FormatWithData(void* _memoryAddress, const void* _dataSource, size_t _sizeOfData)
 {
 	return memcpy(_memoryAddress, _dataSource, _sizeOfData);
 }
 
 // Memory Allocation Array
 
-fn returns(void) MemoryBlockArray_Add parameters(Ptr(MemoryBlockArray) _memoryArray, Ptr(MemoryBlock) _memoryAllocation)
+void MemoryBlockArray_Add(MemoryBlockArray* _memoryArray, MemoryBlock* _memoryAllocation)
 {
 	if (_memoryArray->Array == NULL)
 	{
-		_memoryArray->Array = Heap() AllocateMemory(sizeof(MemoryBlock));
+		_memoryArray->Array = AllocateMemory(sizeof(MemoryBlock));
 
 		_memoryArray->Length = 1;
 	}
 	else
 	{
-		Stack()
-			Address resizeIntermediary = Heap() Reallocate(_memoryArray->Array, _memoryArray->Length + 1);
+		Address resizeIntermediary = Reallocate(_memoryArray->Array, _memoryArray->Length + 1);
 
 		if (resizeIntermediary != NULL)
 		{
@@ -75,25 +72,24 @@ fn returns(void) MemoryBlockArray_Add parameters(Ptr(MemoryBlockArray) _memoryAr
 	}
 }
 
-fn returns(Ptr(MemoryBlock)) MemoryBlockArray_LastEntry parameters(Ptr(MemoryBlockArray) _memoryArray)
+MemoryBlock* MemoryBlockArray_LastEntry(MemoryBlockArray* _memoryArray)
 {
-	return getAddress(_memoryArray->Array[_memoryArray->Length - 1]);
+	return &_memoryArray->Array[_memoryArray->Length - 1];
 }
 
 // Memory Management
 
-fn returns(Address) Internal_ScopedAllocate(Ptr(MemoryBlockArray) _scopedMemory, DataSize _sizeOfAllocation)
+Address Internal_ScopedAllocate(MemoryBlockArray* _scopedMemory, size_t _sizeOfAllocation)
 {
 	if (_scopedMemory->Array == NULL)
 	{
-		_scopedMemory->Array = Heap() AllocateMemory(sizeof(Ptr(MemoryBlock)));
+		_scopedMemory->Array = AllocateMemory(sizeof(MemoryBlock*));
 
 		_scopedMemory->Length = 1;
 	}
 	else
 	{
-		Stack()
-			Address resizeIntermediary = Heap() Reallocate(_scopedMemory->Array, sizeof(Ptr(MemoryBlock)) * (_scopedMemory->Length + 1));
+		Address resizeIntermediary = Reallocate(_scopedMemory->Array, sizeof(MemoryBlock*) * (_scopedMemory->Length + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -107,13 +103,12 @@ fn returns(Address) Internal_ScopedAllocate(Ptr(MemoryBlockArray) _scopedMemory,
 		}
 	}
 
-	_scopedMemory->Array[_scopedMemory->Length - 1] = Heap() AllocateMemory(sizeof(MemoryBlock));
+	_scopedMemory->Array[_scopedMemory->Length - 1] = AllocateMemory(sizeof(MemoryBlock));
 
-	Stack()
-		Ptr(MemoryBlock) newBlock = _scopedMemory->Array[_scopedMemory->Length - 1];
+	MemoryBlock* newBlock = _scopedMemory->Array[_scopedMemory->Length - 1];
 
 	newBlock->Size     = _sizeOfAllocation;
-	newBlock->Location = Heap() AllocateMemory(_sizeOfAllocation);
+	newBlock->Location = AllocateMemory(_sizeOfAllocation);
 
 	if (newBlock->Location != NULL)
 	{
@@ -127,9 +122,9 @@ fn returns(Address) Internal_ScopedAllocate(Ptr(MemoryBlockArray) _scopedMemory,
 	}
 }
 
-fn returns(void) ScopedDeallocate(Ptr(MemoryBlockArray) _scopedMemory)
+void ScopedDeallocate(MemoryBlockArray* _scopedMemory)
 {
-	for (DataSize index = 0; index < _scopedMemory->Length; index++)
+	for (size_t index = 0; index < _scopedMemory->Length; index++)
 	{
 		Deallocate(_scopedMemory->Array[index]->Location);
 
@@ -141,18 +136,17 @@ fn returns(void) ScopedDeallocate(Ptr(MemoryBlockArray) _scopedMemory)
 	return;
 }
 
-fn returns(Address) Internal_GlobalAllocate parameters(DataSize _sizeOfAllocation)
+Address Internal_GlobalAllocate(size_t _sizeOfAllocation)
 {
 	if (GlobalMemory.Array == NULL)
 	{
-		GlobalMemory.Array = Heap() AllocateMemory(sizeof(Ptr(MemoryBlock)));
+		GlobalMemory.Array = AllocateMemory(sizeof(MemoryBlock*));
 
 		GlobalMemory.Length = 1;
 	}
 	else
 	{
-		Stack()
-			Address resizeIntermediary = Heap() Reallocate(GlobalMemory.Array, sizeof(Ptr(MemoryBlock)) * (GlobalMemory.Length + 1));
+		Address resizeIntermediary = Reallocate(GlobalMemory.Array, sizeof(MemoryBlock*) * (GlobalMemory.Length + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -166,13 +160,12 @@ fn returns(Address) Internal_GlobalAllocate parameters(DataSize _sizeOfAllocatio
 		}
 	}
 
-	GlobalMemory.Array[GlobalMemory.Length -1] = Heap() AllocateMemory(sizeof(MemoryBlock));
+	GlobalMemory.Array[GlobalMemory.Length -1] = AllocateMemory(sizeof(MemoryBlock));
 
-	Stack()
-		Ptr(MemoryBlock) newBlock = GlobalMemory.Array[GlobalMemory.Length -1];
+	MemoryBlock* newBlock = GlobalMemory.Array[GlobalMemory.Length -1];
 		
 	newBlock->Size     = _sizeOfAllocation;
-	newBlock->Location = Heap() AllocateMemory(_sizeOfAllocation);
+	newBlock->Location = AllocateMemory(_sizeOfAllocation);
 
 	if (newBlock->Location != NULL)
 	{
@@ -186,14 +179,13 @@ fn returns(Address) Internal_GlobalAllocate parameters(DataSize _sizeOfAllocatio
 	}
 }
 
-fn returns(Address) Internal_GlobalReallocate parameters(Address _location, DataSize _sizeForReallocation)
+Address Internal_GlobalReallocate(Address _location, size_t _sizeForReallocation)
 {
-	for (DataSize index = 0; index < GlobalMemory.Length; index++)
+	for (size_t index = 0; index < GlobalMemory.Length; index++)
 	{
 		if (GlobalMemory.Array[index]->Location == _location)
 		{
-			Stack()
-				Address resizeIntermediary = Reallocate(_location, _sizeForReallocation);
+			Address resizeIntermediary = Reallocate(_location, _sizeForReallocation);
 
 			if (resizeIntermediary != NULL)
 			{
@@ -211,9 +203,9 @@ fn returns(Address) Internal_GlobalReallocate parameters(Address _location, Data
 	return NULL;
 }
 
-fn returns(void) GlobalDeallocate parameters(void)
+void GlobalDeallocate(void)
 {
-	for (DataSize index = 0; index < GlobalMemory.Length; index++)
+	for (size_t index = 0; index < GlobalMemory.Length; index++)
 	{
 		Deallocate(GlobalMemory.Array[index]->Location);
 

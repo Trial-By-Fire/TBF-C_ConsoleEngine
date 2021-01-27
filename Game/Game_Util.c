@@ -9,33 +9,29 @@
 
 // Character
 
-fn returns(bool) Character_AtFinish parameters(Ptr(Character) _character, Ptr(Level) _level)
+bool Character_AtFinish(Character* _character, Level* _level)
 {
-	Stack()
-		Vector2D collisionPostion = _character->Position;
+	Vector2D collisionPostion = _character->Position;
 
 	collisionPostion.Y -= 0.085f;
 
-	Stack()
-		sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
+	sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
 	return cellCollided == LevelCell_Finish;
 }
 
-fn returns(bool) Character_IsGrounded parameters(Ptr(Character) _character, Ptr(Level) _level)
+bool Character_IsGrounded(Character* _character, Level* _level)
 {
-	Stack() 
-		Vector2D collisionPostion = _character->Position;
+	Vector2D collisionPostion = _character->Position;
 
 	collisionPostion.Y -= 0.085f;
 
-	Stack() 
-		sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
+	sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
 	return cellCollided == LevelCell_Ground || cellCollided == LevelCell_Finish;
 }
 
-fn returns(void) Character_Load parameters(Ptr(Character) _character)
+void Character_Load(Character* _character)
 {
 	_character->Sprite.Char.UnicodeChar = 0;
 	_character->Sprite.Attributes       = BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
@@ -52,24 +48,21 @@ fn returns(void) Character_Load parameters(Ptr(Character) _character)
 	_character->Active_MoveState = ECharacter_DontMove;
 }
 
-fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Level) _level)
+void Character_Update(Character* _character, Level* _level)
 {
 	if (_character->Fell == true) return;
 
-	Stack()
 
-		float32 deltaTime = (float32)Timing_GetContext()->DeltaTime;
+	float32 deltaTime = (float32)Timing_GetContext()->DeltaTime;
 
-		unbound float32 velocity = 1.0f;
-		unbound float32 gravity  = 0.00004f;
+	static float32 velocity = 1.0f;
+	static float32 gravity  = 0.00004f;
 
-		Vector2D collisionPostion = _character->Position;
+	Vector2D collisionPostion = _character->Position;
 
 	collisionPostion.Y -= 0.085f;
 
-	Stack()
-
-		sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
+	sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
 	if (cellCollided == LevelCell_Ground || cellCollided == LevelCell_Finish)
 	{
@@ -100,7 +93,7 @@ fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Leve
 	{
 		Renderer_WriteToLog(L"Giving character jump velocity");
 
-		_character->VerticalVelocity = 0.065 * deltaTime;
+		_character->VerticalVelocity = 0.075 * deltaTime;
 
 		_character->Position.Y = -0.75f;
 
@@ -130,12 +123,11 @@ fn returns(void) Character_Update parameters(Ptr(Character) _character, Ptr(Leve
 	}
 }
 
-fn returns(void) Character_Render parameters(Ptr(Character) _character)
+void Character_Render(Character* _character)
 {
 	if (_character->Fell) return;
 
-	Stack()
-		COORD renderCoord = Convert_Vector2D_ToRenderCoord(_character->Position);
+	COORD renderCoord = Convert_Vector2D_ToRenderCoord(_character->Position);
 
 	Renderer_WriteToPersistentSection(1, L"Pos X: %f", _character->Position.X);
 	Renderer_WriteToPersistentSection(3, L"Pos Y: %f", _character->Position.Y);
@@ -146,21 +138,19 @@ fn returns(void) Character_Render parameters(Ptr(Character) _character)
 	if (renderCoord.Y < 0                ) renderCoord.Y = 0;
 	if (renderCoord.Y > ERenderer_GameEnd) renderCoord.Y = ERenderer_GameEnd;
 
-	Renderer_WriteToBufferCells(getAddress(_character->Sprite), renderCoord, renderCoord);
+	Renderer_WriteToBufferCells(&_character->Sprite, renderCoord, renderCoord);
 
 #ifdef Debug
 
-	Stack()
+	static Cell colliderView = 
+	{
+		0,
+		BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN
+	};
 
-		unbound Cell colliderView = 
-		{
-			0,
-			BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN
-		};
+	COORD colliderViewCoord;
 
-		COORD colliderViewCoord;
-
-		Vector2D collisionPostion = _character->Position;
+	Vector2D collisionPostion = _character->Position;
 
 	collisionPostion.Y -= 0.085f;
 
@@ -169,43 +159,41 @@ fn returns(void) Character_Render parameters(Ptr(Character) _character)
 	if (colliderViewCoord.Y < 0                ) colliderViewCoord.Y = 0;
 	if (colliderViewCoord.Y > ERenderer_GameEnd) colliderViewCoord.Y = ERenderer_GameEnd;
 
-	Renderer_WriteToBufferCells(getAddress(colliderView), colliderViewCoord, colliderViewCoord);
+	Renderer_WriteToBufferCells(&colliderView, colliderViewCoord, colliderViewCoord);
 #endif
 }
 
 // Level
 
-fn returns(sInt) Level_GetCellAtPosition parameters(Ptr(Level) _level, Vector2D _position)
+sInt Level_GetCellAtPosition(Level* _level, Vector2D _position)
 {
-	Stack()
-		COORD renderCoord = Convert_Vector2D_ToRenderCoord(_position);
+	COORD renderCoord = Convert_Vector2D_ToRenderCoord(_position);
 
-		Ptr(Cell) cellBuffer = (Ptr(Cell))_level;
+	Cell* cellBuffer = (Cell*)_level;
 
-		DataSize lineOffset = renderCoord.Y * ERenderer_Width;
-		DataSize colOffset  = renderCoord.X;
+	size_t lineOffset = renderCoord.Y * ERenderer_Width;
+	size_t colOffset  = renderCoord.X;
 
-		DataSize totalOffset = lineOffset + colOffset;
+	size_t totalOffset = lineOffset + colOffset;
 
 	return cellBuffer[totalOffset].Attributes;
 }
 
-fn returns(void) Level_SetCells parameters(Ptr(Level) _level, COORD _firstCell, COORD _lastCell, sInt _cellType) 
+void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, sInt _cellType) 
 
 SmartScope
 {
-	Stack()
 
-		DataSize lineOffset = _firstCell.Y * ERenderer_Width;
-		DataSize colOffset  = _firstCell.X;
+	size_t lineOffset = _firstCell.Y * ERenderer_Width;
+	size_t colOffset  = _firstCell.X;
 
-		DataSize totalOffset = lineOffset + colOffset;
+	size_t totalOffset = lineOffset + colOffset;
 
-		Ptr(Cell) levelCellBuffer = (Ptr(Cell))_level;
+	Cell* levelCellBuffer = (Cell*)_level;
 
-		Ptr(void) bufferOffset = getAddress(levelCellBuffer[totalOffset]);
+	void* bufferOffset = &levelCellBuffer[totalOffset];
 
-		DataSize dataSize = totalOffset;
+	size_t dataSize = totalOffset;
 
 	lineOffset = _lastCell.Y * ERenderer_Width;
 
@@ -217,45 +205,40 @@ SmartScope
 
 	if (dataSize == 0) dataSize = 1;
 
-	Stack()
+	Cell* setCellBuffer = ScopedAllocate(Cell, dataSize);
 
-		Ptr(Cell) setCellBuffer = ScopedAllocate(Cell, dataSize);
-
-	for (DataSize index = 0; index < dataSize; index++)
+	for (size_t index = 0; index < dataSize; index++)
 	{
 		setCellBuffer[index].Char.UnicodeChar = 0;
 		setCellBuffer[index].Attributes       = _cellType;
 	}
 
-	Memory_FormatWithData(bufferOffset, (Ptr(void))setCellBuffer, dataSize * sizeof(Cell));
+	Memory_FormatWithData(bufferOffset, (void*)setCellBuffer, dataSize * sizeof(Cell));
 }
 SmartScope_End
 
-fn returns(void) Level_Render parameters(Ptr(Level) _level)
+void Level_Render(Level* _level)
 {
-	Stack()
-		COORD 
+	COORD 
 		screenStart = {               0,                 0 }, 
 		screenEnd   = { ERenderer_Width, ERenderer_GameEnd } ;
 
-	Renderer_WriteToBufferCells((Ptr(Cell))_level, screenStart, screenEnd);
+	Renderer_WriteToBufferCells((Cell*)_level, screenStart, screenEnd);
 }
 
 // Space
 
-fn returns(COORD) Convert_Vector2D_ToRenderCoord parameters(Vector2D _vector)
+COORD Convert_Vector2D_ToRenderCoord(Vector2D _vector)
 {
-	Stack()
-		unbound float32 
-			offsetX = (float32)ERenderer_Width   / 2.0f, 
-			offsetY = (float32)ERenderer_GameEnd / 2.0f;
+	static float32 
+		offsetX = (float32)ERenderer_Width   / 2.0f, 
+		offsetY = (float32)ERenderer_GameEnd / 2.0f;
 
 	float32 
 		convertedX = _vector.X * ((float32)ERenderer_Width   / 2.0f), 
 		convertedY = _vector.Y * ((float32)ERenderer_GameEnd / 2.0f);
 
-	Stack()
-		COORD renderingCoord;
+	COORD renderingCoord;
 
 	renderingCoord.X = (sInt16)(convertedX + offsetX   );	
 	renderingCoord.Y = (sInt16)(offsetY    - convertedY);
@@ -268,17 +251,17 @@ fn returns(COORD) Convert_Vector2D_ToRenderCoord parameters(Vector2D _vector)
 
 // General Rendering
 
-fn returns(void) ChangeCellsTo_Grey parameters(Ptr(Cell) _renderCells, DataSize _length)
+void ChangeCellsTo_Grey(Cell* _renderCells, size_t _length)
 {
-	for (DataSize cellIndex = 0; cellIndex < _length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _length; cellIndex++)
 	{
 		_renderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
 }
 
-fn returns(void) ChangeCellsTo_White parameters(Ptr(Cell) _renderCells, DataSize _length)
+void ChangeCellsTo_White(Cell* _renderCells, size_t _length)
 {
-	for (DataSize cellIndex = 0; cellIndex < _length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _length; cellIndex++)
 	{
 		_renderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
@@ -289,15 +272,13 @@ fn returns(void) ChangeCellsTo_White parameters(Ptr(Cell) _renderCells, DataSize
 
 // Text
 
-fn returns(void) UI_Text_Create 
-
-parameters
+void UI_Text_Create 
 (
-	   Ptr(UI_Text)  _uiText, 
-	   Ptr(WideChar) _content, 
-	       COORD     _startingCell, 
-	       COORD     _endingCell,
-	       bool      _shouldCenter
+	UI_Text*  _uiText, 
+	WideChar* _content, 
+	COORD     _startingCell, 
+	COORD     _endingCell,
+	bool      _shouldCenter
 )
 {
 	// Get length of contents.
@@ -312,7 +293,7 @@ parameters
 
 	_uiText->RenderCells = GlobalAllocate(Cell, _uiText->Length);
 
-	for (DataSize cellIndex = 0; cellIndex < _uiText->Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _uiText->Length; cellIndex++)
 	{
 		_uiText->RenderCells[cellIndex].Char.UnicodeChar = _uiText->Content[cellIndex];
 		_uiText->RenderCells[cellIndex].Attributes       = Console_WhiteCell;
@@ -335,7 +316,7 @@ parameters
 	}
 }
 
-fn returns(void) UI_Text_Render parameters(ro Ptr(UI_Text) _uiText)
+void UI_Text_Render(const UI_Text* _uiText)
 {
 	Renderer_WriteToBufferCells(_uiText->RenderCells, _uiText->StartingCell, _uiText->EndingCell);
 }
@@ -343,16 +324,14 @@ fn returns(void) UI_Text_Render parameters(ro Ptr(UI_Text) _uiText)
 
 // Button
 
-fn returns(void) UI_Button_Create 
-
-parameters
+void UI_Button_Create 
 (
-	   Ptr(UI_Button)     _button, 
-	ro Ptr(WideChar)      _text, 
-	       COORD          _startingCell, 
-	       COORD          _endingCell, 
-	       bool           _shouldCenter,
-	   Ptr(Void_Function) _callback
+	      UI_Button*     _button, 
+	const WideChar*      _text, 
+	      COORD          _startingCell, 
+	      COORD          _endingCell, 
+	      bool           _shouldCenter,
+	      Void_Function* _callback
 )
 {
 	// Get length of contents.
@@ -367,7 +346,7 @@ parameters
 
 	_button->Text.RenderCells = GlobalAllocate(Cell, _button->Text.Length);
 
-	for (DataSize cellIndex = 0; cellIndex < _button->Text.Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < _button->Text.Length; cellIndex++)
 	{
 		_button->Text.RenderCells[cellIndex].Char.UnicodeChar = _button->Text.Content[cellIndex];
 		_button->Text.RenderCells[cellIndex].Attributes       = Console_WhiteCell;
@@ -392,12 +371,12 @@ parameters
 	_button->Callback = _callback;
 }
 
-fn returns(void) UI_Button_Press parameters(ro Ptr(UI_Button) _uiButton)
+void UI_Button_Press(const UI_Button* _uiButton)
 {
 	_uiButton->Callback();
 }
 
-fn returns(void) UI_Button_Render parameters(ro Ptr(UI_Button) _uiButton)
+void UI_Button_Render(const UI_Button* _uiButton)
 {
 	Renderer_WriteToBufferCells(_uiButton->Text.RenderCells, _uiButton->Text.StartingCell, _uiButton->Text.EndingCell);
 }
@@ -405,16 +384,14 @@ fn returns(void) UI_Button_Render parameters(ro Ptr(UI_Button) _uiButton)
 
 // Grid
 
-fn returns(void) UI_Grid_Add 
-
-parameters
+void UI_Grid_Add 
 (
-	   Ptr(UI_Grid)       _uiGrid, 
-	ro Ptr(WideChar)      _text, 
-	       COORD          _startingCell, 
-	       COORD          _endingCell, 
-	       bool           _shouldCenter,
-	   Ptr(Void_Function) _callback
+	      UI_Grid*       _uiGrid, 
+	const WideChar*      _text, 
+	      COORD          _startingCell, 
+	      COORD          _endingCell, 
+	      bool           _shouldCenter,
+	      Void_Function* _callback
 )
 {
 	if (_uiGrid->Num == 0)
@@ -425,8 +402,7 @@ parameters
 	}
 	else
 	{
-		Stack()
-			Address resizeIntermediary = GlobalReallocate(UI_Button, _uiGrid->Buttons, (_uiGrid->Num + 1));
+		Address resizeIntermediary = GlobalReallocate(UI_Button, _uiGrid->Buttons, (_uiGrid->Num + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -444,7 +420,7 @@ parameters
 
 	UI_Button_Create
 	(
-		getAddress(_uiGrid->Buttons[_uiGrid->Num - 1]), 
+		&_uiGrid->Buttons[_uiGrid->Num - 1], 
 		
 		_text, 
 		_startingCell, 
@@ -463,71 +439,65 @@ parameters
 	}
 }
 
-fn returns(void) UI_Grid_MoveUp parameters(Ptr(UI_Grid) _uiGrid)
+void UI_Grid_MoveUp(UI_Grid* _uiGrid)
 {
-	Stack()
+	size_t* currentIndex = &_uiGrid->CurrentIndex;
 
-		Ptr(DataSize) currentIndex = getAddress(_uiGrid->CurrentIndex);
+	UI_Text* buttonText = &_uiGrid->Buttons[*currentIndex].Text;
 
-		Ptr(UI_Text) buttonText = getAddress(_uiGrid->Buttons[val(currentIndex)].Text);
-
-	if (val(currentIndex) > 0)
+	if (*currentIndex > 0)
 	{
 		ChangeCellsTo_Grey(buttonText->RenderCells, buttonText->Length);
 
-		val(currentIndex) =  val(currentIndex) - 1;
+		*currentIndex =  *currentIndex - 1;
 
-		buttonText = getAddress(_uiGrid->Buttons[val(currentIndex)].Text);
+		buttonText = &_uiGrid->Buttons[*currentIndex].Text;
 
 		ChangeCellsTo_White(buttonText->RenderCells, buttonText->Length);
 	}
 }
 
-fn returns(void) UI_Grid_MoveDown parameters(Ptr(UI_Grid) _uiGrid)
+void UI_Grid_MoveDown(UI_Grid* _uiGrid)
 {
-	Stack()
+	size_t* currentIndex = &_uiGrid->CurrentIndex;
 
-		Ptr(DataSize) currentIndex = getAddress(_uiGrid->CurrentIndex);
+	UI_Text* buttonText = &_uiGrid->Buttons[*currentIndex].Text;
 
-		Ptr(UI_Text) buttonText = getAddress(_uiGrid->Buttons[val(currentIndex)].Text);
-
-	if (val(currentIndex) < (_uiGrid->Num - 1))
+	if (*currentIndex < (_uiGrid->Num - 1))
 	{
 		ChangeCellsTo_Grey(buttonText->RenderCells, buttonText->Length);
 
-		val(currentIndex) = val(currentIndex) + 1;
+		*currentIndex = *currentIndex + 1;
 
-		buttonText = getAddress(_uiGrid->Buttons[val(currentIndex)].Text);
+		buttonText = &_uiGrid->Buttons[*currentIndex].Text;
 
 		ChangeCellsTo_White(buttonText->RenderCells, buttonText->Length);
 	}
 }
 
-fn returns(void) UI_Grid_Select parameters(Ptr(UI_Grid) _uiGrid)
+void UI_Grid_Select(UI_Grid* _uiGrid)
 {
-	UI_Button_Press(getAddress(_uiGrid->Buttons[_uiGrid->CurrentIndex]));
+	UI_Button_Press(&_uiGrid->Buttons[_uiGrid->CurrentIndex]);
 }
 
-fn returns(void) UI_Grid_Render parameters(Ptr(UI_Grid) _uiGrid)
+void UI_Grid_Render(UI_Grid* _uiGrid)
 {
-	for (DataSize index = 0; index < _uiGrid->Num; index++)
+	for (size_t index = 0; index < _uiGrid->Num; index++)
 	{
-		UI_Button_Render(getAddress(_uiGrid->Buttons[index]));
+		UI_Button_Render(&_uiGrid->Buttons[index]);
 	}
 }
 
 
 // Grid
 
-fn returns(void) UI_Widget_AddText
-
-parameters
+void UI_Widget_AddText
 (
-	   Ptr(UI_Widget)     _uiWidget,
-	ro Ptr(WideChar)      _text,
-	       COORD          _startingCell,
-	       COORD          _endingCell,
-	       bool           _shouldCenter
+	      UI_Widget* _uiWidget,
+	const WideChar*  _text,
+	       COORD     _startingCell,
+	       COORD     _endingCell,
+	       bool      _shouldCenter
 )
 {
 	if (_uiWidget->Num_TextUIs == 0)
@@ -538,8 +508,7 @@ parameters
 	}
 	else
 	{
-		Stack()
-			Address resizeIntermediary = GlobalReallocate(UI_Text, _uiWidget->TextUIs, (_uiWidget->Num_TextUIs + 1));
+		Address resizeIntermediary = GlobalReallocate(UI_Text, _uiWidget->TextUIs, (_uiWidget->Num_TextUIs + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -557,7 +526,7 @@ parameters
 
 	UI_Text_Create
 	(
-		getAddress(_uiWidget->TextUIs[_uiWidget->Num_TextUIs - 1]), 
+		&_uiWidget->TextUIs[_uiWidget->Num_TextUIs - 1], 
 		
 		_text, 
 		_startingCell, 
@@ -566,21 +535,19 @@ parameters
 	);
 }
 
-fn returns(void) UI_Widget_AddButton 
-
-parameters
+void UI_Widget_AddButton 
 (
-	   Ptr(UI_Widget)     _uiWidget,
-	ro Ptr(WideChar)      _text,
+	      UI_Widget*      _uiWidget,
+	const WideChar*       _text,
 	       COORD          _startingCell,
 	       COORD          _endingCell,
 	       bool           _shouldCenter,
-	   Ptr(Void_Function) _callback
+	       Void_Function* _callback
 )
 {
 	UI_Grid_Add
 	(
-		getAddress(_uiWidget->Grid), 
+		&_uiWidget->Grid, 
 		
 		_text, 
 		_startingCell, 
@@ -590,27 +557,27 @@ parameters
 	);
 }
 
-fn returns(void) UI_Widget_MoveUp parameters(Ptr(UI_Widget) _uiWidget)
+void UI_Widget_MoveUp(UI_Widget* _uiWidget)
 {
-	UI_Grid_MoveUp(getAddress(_uiWidget->Grid));
+	UI_Grid_MoveUp(&_uiWidget->Grid);
 }
 
-fn returns(void) UI_Widget_MoveDown parameters(Ptr(UI_Widget) _uiWidget)
+void UI_Widget_MoveDown(UI_Widget* _uiWidget)
 {
-	UI_Grid_MoveDown(getAddress(_uiWidget->Grid));
+	UI_Grid_MoveDown(&_uiWidget->Grid);
 }
 
-fn returns(void) UI_Widget_Select parameters(Ptr(UI_Widget) _uiWidget)
+void UI_Widget_Select(UI_Widget* _uiWidget)
 {
-	UI_Grid_Select(getAddress(_uiWidget->Grid));
+	UI_Grid_Select(&_uiWidget->Grid);
 }
 
-fn returns(void) UI_Widget_Render parameters(Ptr(UI_Widget) _uiWidget)
+void UI_Widget_Render(UI_Widget* _uiWidget)
 {
-	for (DataSize index = 0; index < _uiWidget->Num_TextUIs; index++)
+	for (size_t index = 0; index < _uiWidget->Num_TextUIs; index++)
 	{
-		UI_Text_Render(getAddress(_uiWidget->TextUIs[index]));
+		UI_Text_Render(&_uiWidget->TextUIs[index]);
 	}
 
-	UI_Grid_Render(getAddress(_uiWidget->Grid));
+	UI_Grid_Render(&_uiWidget->Grid);
 }

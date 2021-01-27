@@ -20,14 +20,12 @@
 
 // Static Data
 
-Data()
+CTS_CString SConsole_In   = "CONIN$";
+CTS_CString SConsole_Out  = "CONOUT$";
+CTS_CString SConsole_Null = "NUL:";
 
-	CTS_CString SConsole_In   = "CONIN$";
-	CTS_CString SConsole_Out  = "CONOUT$";
-	CTS_CString SConsole_Null = "NUL:";
-
-	CTS_CString SReadCode  = "r";
-	CTS_CString SWriteCode = "w";
+CTS_CString SReadCode  = "r";
+CTS_CString SWriteCode = "w";
 
 
 
@@ -36,21 +34,19 @@ Data()
 
 // Public
 
-fn returns(bool) Bind_IOBufferTo_Console parameters(void)
+bool Bind_IOBufferTo_Console(void)
 {
-	Stack()
-
-		Ptr(FILE) dummyFile = NULL;
+	FILE* dummyFile = NULL;
 
 
-	freopen_s(getAddress(dummyFile), SConsole_In , SReadCode , STANDARD_INPUT );
-	freopen_s(getAddress(dummyFile), SConsole_Out, SWriteCode, STANDARD_OUTPUT);
-	freopen_s(getAddress(dummyFile), SConsole_Out, SWriteCode, STANDARD_ERROR );
+	freopen_s(&dummyFile, SConsole_In , SReadCode , STANDARD_INPUT );
+	freopen_s(&dummyFile, SConsole_Out, SWriteCode, STANDARD_OUTPUT);
+	freopen_s(&dummyFile, SConsole_Out, SWriteCode, STANDARD_ERROR );
 
 	// Redirect STDIN if the console has an input handle	
 	if (GetStdHandle(STD_INPUT_HANDLE) != INVALID_HANDLE_VALUE)
 	{
-		if (freopen_s(getAddress(dummyFile), SConsole_In , SReadCode , STANDARD_INPUT) != 0)
+		if (freopen_s(&dummyFile, SConsole_In , SReadCode , STANDARD_INPUT) != 0)
 		{
 			return false;
 		}
@@ -63,7 +59,7 @@ fn returns(bool) Bind_IOBufferTo_Console parameters(void)
 	// Redirect STDOUT if the console has an output handle
 	if (GetStdHandle(STD_OUTPUT_HANDLE) != INVALID_HANDLE_VALUE)
 	{
-		if (freopen_s(getAddress(dummyFile), SConsole_Out, SWriteCode, STANDARD_OUTPUT) != 0)
+		if (freopen_s(&dummyFile, SConsole_Out, SWriteCode, STANDARD_OUTPUT) != 0)
 		{
 			return false;
 		}
@@ -76,7 +72,7 @@ fn returns(bool) Bind_IOBufferTo_Console parameters(void)
 	// Redirect STDERR if the console has an error handle
 	if (GetStdHandle(STD_ERROR_HANDLE) != INVALID_HANDLE_VALUE)
 	{
-		if (freopen_s(getAddress(dummyFile), SConsole_Out, SWriteCode, STANDARD_ERROR) != 0)
+		if (freopen_s(&dummyFile, SConsole_Out, SWriteCode, STANDARD_ERROR) != 0)
 		{
 			return false;
 		}
@@ -89,22 +85,20 @@ fn returns(bool) Bind_IOBufferTo_Console parameters(void)
 	return true;
 }
 
-fn returns(bool) RequestConsole parameters(void)
+bool RequestConsole(void)
 {
 	return AllocConsole();
 }
 
-fn returns(bool) Unbind_IOBufferTo_Console parameters(void)
+bool Unbind_IOBufferTo_Console(void)
 {
-	Stack()
-
-		Ptr(FILE) dummyFile;
+	FILE* dummyFile;
 
 
 	// Just to be safe, redirect standard IO to NUL before releasing.
 
 	// Redirect STDIN to NUL
-	if (freopen_s(getAddress(dummyFile), SConsole_Null, SReadCode, STANDARD_INPUT) != 0)
+	if (freopen_s(&dummyFile, SConsole_Null, SReadCode, STANDARD_INPUT) != 0)
 	{
 		return false;
 	}
@@ -114,7 +108,7 @@ fn returns(bool) Unbind_IOBufferTo_Console parameters(void)
 	}
 
 	// Redirect STDOUT to NUL
-	if (freopen_s(getAddress(dummyFile), SConsole_Null, SWriteCode, STANDARD_OUTPUT) != 0)
+	if (freopen_s(&dummyFile, SConsole_Null, SWriteCode, STANDARD_OUTPUT) != 0)
 	{
 		return false;
 	}
@@ -124,7 +118,7 @@ fn returns(bool) Unbind_IOBufferTo_Console parameters(void)
 	}
 
 	// Redirect STDERR to NUL
-	if (freopen_s(getAddress(dummyFile), SConsole_Null, SWriteCode, STANDARD_ERROR) != 0)
+	if (freopen_s(&dummyFile, SConsole_Null, SWriteCode, STANDARD_ERROR) != 0)
 	{
 		return false;
 	}
@@ -136,7 +130,7 @@ fn returns(bool) Unbind_IOBufferTo_Console parameters(void)
 	return true;
 }
 
-fn returns(bool) GetKeySignal parameters(EKeyCode _key)
+bool GetKeySignal(EKeyCode _key)
 {
 	if (GetAsyncKeyState(_key) & 0x8000)
 	{
@@ -152,7 +146,7 @@ fn returns(bool) GetKeySignal parameters(EKeyCode _key)
 
 // Private
 
-fn returns(INT) WinMain parameters(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
+INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
 {	
 	EntryPoint();
 

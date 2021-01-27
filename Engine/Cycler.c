@@ -15,9 +15,7 @@
 
 // Private
 
-BSS()
-
-	bool Exist;   // Sentinel value use to exist core engine loop.
+bool Exist;   // Sentinel value use to exist core engine loop.
 
 
 
@@ -25,12 +23,12 @@ BSS()
 
 // Public
 
-fn returns(void) Cycler_Lapse parameters(void)
+void Cycler_Lapse(void)
 {
 	Exist = false;
 }
 
-fn returns(void) Cycler_Initialize parameters(void)
+void Cycler_Initialize(void)
 {
 	while (Exist == true)
 	{
@@ -66,12 +64,12 @@ fn returns(void) Cycler_Initialize parameters(void)
 	}
 }
 
-fn returns(void) Cycler_LoadModule parameters(void)
+void Cycler_LoadModule(void)
 {
 	Exist = true;
 }
 
-fn returns(void) Cycler_Quit parameters(void)
+void Cycler_Quit(void)
 {
 	Exist = false;
 }
@@ -80,7 +78,6 @@ fn returns(void) Cycler_Quit parameters(void)
 
 // Private
 
-fn returns(bool) ShouldQuit parameters(void)
+bool ShouldQuit(void)
 {
-	//unbound 
 }

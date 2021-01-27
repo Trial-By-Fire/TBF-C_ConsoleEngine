@@ -10,38 +10,35 @@
 
 
 
-BSS()
+StateObj IntroState;
 
-	StateObj IntroState;
+TimerData IntroTimer;
 
-	TimerData IntroTimer;
+TimerData Timer_TillTitle;
+TimerData Timer_TillVersion;
+TimerData Timer_TillIntroFadeToGrey;
 
-	TimerData Timer_TillTitle;
-	TimerData Timer_TillVersion;
-	TimerData Timer_TillIntroFadeToGrey;
+TimerData Timer_TillTitle_ToWhite;
+TimerData Timer_TillVersion_ToWhite;
 
-	TimerData Timer_TillTitle_ToWhite;
-	TimerData Timer_TillVersion_ToWhite;
+TimerData Timer_Till_FadeOut;
 
-	TimerData Timer_Till_FadeOut;
 
-Data()
+bool Intro_DoneOnce = false;
 
-	bool Intro_DoneOnce = false;
+CTS_CWString IntroTitle    = L"Trial By Fire Engine";
+CTS_CWString EngineVersion = L"Type C Phase 14"     ;
 
-	CTS_CWString IntroTitle    = L"Trial By Fire Engine";
-	CTS_CWString EngineVersion = L"Type C Phase 13"     ;
+bool 
+	RenderTitle   = false, 
+	RenderVersion = false ;
 
-	bool 
-		RenderTitle   = false, 
-		RenderVersion = false ;
+Cell* IntroTitle_RenderCells = NULL;
+Cell* Version_RenderCells    = NULL;
 
-	Ptr( Cell) IntroTitle_RenderCells = NULL;
-	Ptr( Cell) Version_RenderCells    = NULL;
-
-	DataSize 
-		Title_Length         = 0,
-		EngineVersion_Length = 0 ;
+size_t 
+	Title_Length         = 0,
+	EngineVersion_Length = 0 ;
 
 
 
@@ -49,33 +46,33 @@ Data()
 
 // Private
 
-fn returns(void) ChangeTitleTo_Grey()
+void ChangeTitleTo_Grey()
 {
-	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 	{
 		IntroTitle_RenderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
 }
 
-fn returns(void) ChangeEngineVerTo_Grey()
+void ChangeEngineVerTo_Grey()
 {
-	for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
 	{
 		Version_RenderCells[cellIndex].Attributes = FOREGROUND_INTENSITY;
 	}
 }
 
-fn returns(void) ChangeTitleTo_White()
+void ChangeTitleTo_White()
 {
-	for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 	{
 		IntroTitle_RenderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
 }
 
-fn returns(void) ChangeEngineVerTo_White()
+void ChangeEngineVerTo_White()
 {
-	for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+	for (size_t cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
 	{
 		Version_RenderCells[cellIndex].Attributes = Console_WhiteCell;
 	}
@@ -84,7 +81,7 @@ fn returns(void) ChangeEngineVerTo_White()
 
 // Class Public
 
-fn returns(void) IntroState_Load parameters(void)
+void IntroState_Load(void)
 {
 	Renderer_WriteToLog(L"Intro State: Loaded");
 
@@ -108,12 +105,12 @@ fn returns(void) IntroState_Load parameters(void)
 		IntroTitle_RenderCells = GlobalAllocate(Cell, Title_Length        );
 		Version_RenderCells    = GlobalAllocate(Cell, EngineVersion_Length);
 
-		for (DataSize cellIndex = 0; cellIndex < Title_Length; cellIndex++)
+		for (size_t cellIndex = 0; cellIndex < Title_Length; cellIndex++)
 		{
 			IntroTitle_RenderCells[cellIndex].Char.UnicodeChar = IntroTitle[cellIndex];
 		}
 
-		for (DataSize cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
+		for (size_t cellIndex = 0; cellIndex < EngineVersion_Length; cellIndex++)
 		{
 			Version_RenderCells[cellIndex].Char.UnicodeChar = EngineVersion[cellIndex];
 		}
@@ -126,33 +123,32 @@ fn returns(void) IntroState_Load parameters(void)
 	ChangeEngineVerTo_Grey();
 }
 
-fn returns(void) IntroState_Unload parameters(void)
+void IntroState_Unload(void)
 {
 	Renderer_WriteToLog(L"Intro State: Unloaded");
 }
 
-fn returns(void) IntroState_Update parameters(void)
+void IntroState_Update(void)
 {
-	Stack()
-		unbound bool 
-			LogTitle   = true, 
-			LogVersion = true, 
-			LogFade    = true, 
-			LogEnd     = true,
+	static bool 
+		LogTitle   = true, 
+		LogVersion = true, 
+		LogFade    = true, 
+		LogEnd     = true,
 
-			Log_ChangeToWhite_Title   = true,
-			Log_ChangeToWhite_Version = true,
+		Log_ChangeToWhite_Title   = true,
+		Log_ChangeToWhite_Version = true,
 
-			Log_FadeToGrey = true;
+		Log_FadeToGrey = true;
 
 
-	Timer_Tick(getAddress(IntroTimer));
+	Timer_Tick(&IntroTimer);
 
-	Timer_Tick(getAddress(Timer_TillTitle));
+	Timer_Tick(&Timer_TillTitle);
 
 	Renderer_WriteToPersistentSection(4, L"Intro Time Elapsed: %.7Lf", IntroTimer.Elapsed);
 
-	if (Timer_Ended(getAddress(Timer_TillTitle)))
+	if (Timer_Ended(&Timer_TillTitle))
 	{
 		if (LogTitle)
 		{
@@ -163,9 +159,9 @@ fn returns(void) IntroState_Update parameters(void)
 			LogTitle = false;
 		}
 
-		Timer_Tick(getAddress(Timer_TillTitle_ToWhite));
+		Timer_Tick(&Timer_TillTitle_ToWhite);
 
-		if (Log_ChangeToWhite_Title &&  Timer_Ended(getAddress(Timer_TillTitle_ToWhite)))
+		if (Log_ChangeToWhite_Title &&  Timer_Ended(&Timer_TillTitle_ToWhite))
 		{
 			ChangeTitleTo_White();
 
@@ -174,9 +170,9 @@ fn returns(void) IntroState_Update parameters(void)
 			Log_ChangeToWhite_Title = false;
 		}
 
-		Timer_Tick(getAddress(Timer_TillVersion));
+		Timer_Tick(&Timer_TillVersion);
 
-		if (LogVersion && Timer_Ended(getAddress(Timer_TillVersion)))
+		if (LogVersion && Timer_Ended(&Timer_TillVersion))
 		{
 			Renderer_WriteToLog(L"Version should show up now.");
 
@@ -187,9 +183,9 @@ fn returns(void) IntroState_Update parameters(void)
 
 		if (RenderVersion)
 		{
-			Timer_Tick(getAddress(Timer_TillVersion_ToWhite));
+			Timer_Tick(&Timer_TillVersion_ToWhite);
 
-			if (Log_ChangeToWhite_Version && Timer_Ended(getAddress(Timer_TillVersion_ToWhite)))
+			if (Log_ChangeToWhite_Version && Timer_Ended(&Timer_TillVersion_ToWhite))
 			{
 				ChangeEngineVerTo_White();
 
@@ -200,9 +196,9 @@ fn returns(void) IntroState_Update parameters(void)
 		}
 	}
 
-	Timer_Tick(getAddress(Timer_TillIntroFadeToGrey));
+	Timer_Tick(&Timer_TillIntroFadeToGrey);
 
-	if (Timer_Ended(getAddress(Timer_TillIntroFadeToGrey)))
+	if (Timer_Ended(&Timer_TillIntroFadeToGrey))
 	{
 		ChangeTitleTo_Grey();
 
@@ -215,9 +211,9 @@ fn returns(void) IntroState_Update parameters(void)
 			Log_FadeToGrey = false;
 		}
 
-		Timer_Tick(getAddress(Timer_Till_FadeOut));
+		Timer_Tick(&Timer_Till_FadeOut);
 
-		if (LogFade && Timer_Ended(getAddress(Timer_Till_FadeOut)))
+		if (LogFade && Timer_Ended(&Timer_Till_FadeOut))
 		{
 			Renderer_WriteToLog(L"Title should fade out now.");
 
@@ -228,7 +224,7 @@ fn returns(void) IntroState_Update parameters(void)
 		}
 	}
 
-	if (LogEnd && Timer_Ended(getAddress(IntroTimer)) )
+	if (LogEnd && Timer_Ended(&IntroTimer) )
 	{
 		Renderer_WriteToLog(L"Intro Ends now.");
 
@@ -238,12 +234,11 @@ fn returns(void) IntroState_Update parameters(void)
 	}
 }
 
-fn returns(void) IntroState_Render parameters(void)
+void IntroState_Render(void)
 {
-	Stack()
-		unbound COORD
-			startingCell = { 0, 9 },
-			endingCell   = { 0, 9 };
+	static COORD
+		startingCell = { 0, 9 },
+		endingCell   = { 0, 9 };
 
 	// Render Title
 	if (RenderTitle)
@@ -274,21 +269,19 @@ fn returns(void) IntroState_Render parameters(void)
 
 // Public
 
-fn returns( Ptr(StateObj)) GetIntroState parameters(void)
+StateObj* GetIntroState(void)
 {
-	Stack()
-
-		unbound firstGet = true;
+	static firstGet = true;
 
 	if (firstGet) 
 	{
-		IntroState.Load   = getAddress(IntroState_Load  );
-		IntroState.Unload = getAddress(IntroState_Unload);
-		IntroState.Update = getAddress(IntroState_Update);
-		IntroState.Render = getAddress(IntroState_Render);
+		IntroState.Load   = &IntroState_Load  ;
+		IntroState.Unload = &IntroState_Unload;
+		IntroState.Update = &IntroState_Update;
+		IntroState.Render = &IntroState_Render;
 
 		firstGet = false;
 	}
 
-	return getAddress(IntroState);
+	return &IntroState;
 }

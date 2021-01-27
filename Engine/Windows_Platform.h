@@ -41,17 +41,16 @@ enum EKeyCode_Def
 
 // Aliases (Typedefs)
 
-alias(enum EKeyCode_Def) as EKeyCode;
+typedef enum EKeyCode_Def EKeyCode;
 
 
 
 // Functions
 
-fn returns(bool) Bind_IOBufferTo_Console parameters(void);
+bool Bind_IOBufferTo_Console(void);
 
-fn returns(bool) RequestConsole parameters(void);
+bool RequestConsole(void);
 
-fn returns(bool) Unbind_IOBufferTo_Console parameters(void);
+bool Unbind_IOBufferTo_Console(void);
 
-
-fn returns(bool) GetKeySignal parameters(EKeyCode _key);
+bool GetKeySignal(EKeyCode _key);

@@ -38,17 +38,17 @@ enum ERenderer
 
 // Aliases (Typedefs)
 
-alias(CONSOLE_SCREEN_BUFFER_INFO) as CSBI;
+typedef CONSOLE_SCREEN_BUFFER_INFO CSBI;
 
-alias(CHAR_INFO) as Cell;
+typedef CHAR_INFO Cell;
 
-alias(Cell) as Line[ERenderer_Width];
+typedef Cell Line[ERenderer_Width];
 
-alias(struct RendererData_Def) as RendererData;
-alias(struct ScreenInfo_Def  ) as ScreenInfo;
+typedef struct RendererData_Def RendererData;
+typedef struct ScreenInfo_Def   ScreenInfo;
 
 
-alias (struct Vec2D_Int_Def) as Vec2D_Int;
+typedef struct Vec2D_Int_Def Vec2D_Int;
 
 
 
@@ -95,38 +95,38 @@ struct ScreenInfo_Def
 
 // Functions
 
-fn returns(void) Renderer_Clear parameters(void);
+void Renderer_Clear(void);
 
-fn returns(bool) Renderer_FillCellsWithWhitespace parameters(void);
+bool Renderer_FillCellsWithWhitespace(void);
 
-fn returns(bool) Renderer_FormatCells parameters(void);
+bool Renderer_FormatCells(void);
 
-fn returns(ro Ptr(RendererData)) Renderer_GetContext(void);
+const RendererData* Renderer_GetContext(void);
 
-fn returns(void) Renderer_LoadModule parameters(void);
+void Renderer_LoadModule(void);
 
-fn returns(void) Renderer_ProcessTiming parameters(float64 _deltaTime);
+void Renderer_ProcessTiming(float64 _deltaTime);
 
-fn returns(void) Renderer_RenderFrame parameters(void);
+void Renderer_RenderFrame(void);
 
-fn returns(void) Renderer_ResetDrawPosition parameters(void);
+void Renderer_ResetDrawPosition(void);
 
-fn returns(void) Renderer_UnloadModule parameters(void);
+void Renderer_UnloadModule(void);
 
-fn returns(void) Renderer_Update parameters(void);
+void Renderer_Update(void);
 
-fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cells, COORD _initalCell, COORD _finalCell);
+void Renderer_WriteToBufferCells(Cell* _cells, COORD _initalCell, COORD _finalCell);
 
 // BS Fix for now:
-alias(wchar_t) WideChar;   // From C_String.h
+typedef wchar_t WideChar;   // From C_String.h
 
-fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString);
+void Renderer_WriteToLog(WideChar* _logString);
 
-fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(WideChar) _lineformat, ...);
+void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...);
 
-fn returns(void) Renderer_Logs_ScrollUp parameters(void);
+void Renderer_Logs_ScrollUp(void);
 
-fn returns(void) Renderer_Logs_ScrollDown parameters(void);
+void Renderer_Logs_ScrollDown(void);
 
 
 

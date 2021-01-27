@@ -19,15 +19,13 @@
 
 // Static Data
 
-BSS()
-
 
 
 // Functions
 
 // Public
 
-fn returns(void) CString_LoadModule parameters(void)
+void CString_LoadModule(void)
 {
 	return;
 }

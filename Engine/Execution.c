@@ -17,7 +17,7 @@
 
 // Functions
 
-fn returns(void) PrepareModules parameters(void)
+void PrepareModules(void)
 {
 	Cycler_LoadModule  ();
 	CString_LoadModule ();
@@ -27,23 +27,23 @@ fn returns(void) PrepareModules parameters(void)
 	State_LoadModule   ();
 }
 
-fn returns(void) PrintStartMessage parameters(void)
+void PrintStartMessage(void)
 {
 	Renderer_WriteToLog(L"TBF C Engine");
 
 	Renderer_WriteToLog(L"");
 
-	Renderer_WriteToLog(L"Version: Phase 13");
+	Renderer_WriteToLog(L"Version: Phase 14");
 }
 
-fn returns(void) UnloadModules parameters(void)
+void UnloadModules(void)
 {
 	Renderer_UnloadModule();
 }
 
 // Entry Point
 
-fn returns(ExecFlags) EntryPoint parameters(void)
+ExecFlags EntryPoint(void)
 {
 	// Setup engine components.
 

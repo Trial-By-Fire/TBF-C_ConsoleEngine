@@ -11,13 +11,13 @@
 
 // Functions
 
-fn returns(void) Cycler_Initialize parameters(void);
+void Cycler_Initialize(void);
 
-fn returns(void) Cycler_Lapse parameters(void);
+void Cycler_Lapse(void);
 
-fn returns(void) Cycler_LoadModule parameters(void);
+void Cycler_LoadModule(void);
 
-fn returns(void) Cycler_Quit parameters(void);
+void Cycler_Quit(void);
 
 
 

@@ -10,19 +10,19 @@
 
 
 
-BSS()
+// Static Data
 
-	StateObj MainMenu;
+// Private
 
-	UI_Widget MenuWidget;
+StateObj MainMenu;
 
-Data()
+UI_Widget MenuWidget;
 
-	bool Menu_DoneOnce = false;
+bool Menu_DoneOnce = false;
 
-	bool 
-		Log_Load   = true;
-		Log_Unload = true;
+bool 
+	Log_Load   = true;
+	Log_Unload = true;
 
 
 
@@ -30,19 +30,19 @@ Data()
 
 // Public Class
 
-fn returns(void) MainMenu_PressStart parameters(void)
+void MainMenu_PressStart(void)
 {
 	Renderer_WriteToLog(L"UI Start Selected");
 
 	State_SetState(GetLevelState());
 }
 
-fn returns(void) MainMenu_PressQuit parameters(void)
+void MainMenu_PressQuit(void)
 {
 	Cycler_Quit();
 }
 
-fn returns(void) Game_EntryState_OnKeyArrowUp parameters(EInputState _state)
+void Game_EntryState_OnKeyArrowUp(EInputState _state)
 {
 	switch (_state)
 	{
@@ -50,14 +50,14 @@ fn returns(void) Game_EntryState_OnKeyArrowUp parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"EntryState: On Key Up");
 
-			UI_Widget_MoveUp(getAddress(MenuWidget));
+			UI_Widget_MoveUp(&MenuWidget);
 
 			break;
 		}
 	}
 }
 
-fn returns(void) Game_EntryState_OnKeyArrowDown parameters(EInputState _state)
+void Game_EntryState_OnKeyArrowDown(EInputState _state)
 {
 	switch (_state)
 	{
@@ -65,14 +65,14 @@ fn returns(void) Game_EntryState_OnKeyArrowDown parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"EntryState: On Key Down");
 
-			UI_Widget_MoveDown(getAddress(MenuWidget));
+			UI_Widget_MoveDown(&MenuWidget);
 
 			break;
 		}
 	}
 }
 
-fn returns(void) Game_EntryState_OnKeyEnter parameters(EInputState _state)
+void Game_EntryState_OnKeyEnter(EInputState _state)
 {
 	switch (_state)
 	{
@@ -80,14 +80,14 @@ fn returns(void) Game_EntryState_OnKeyEnter parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"EntryState: On Key Enter");
 
-			UI_Widget_Select(getAddress(MenuWidget));
+			UI_Widget_Select(&MenuWidget);
 
 			break;
 		}
 	}
 }
 
-fn returns(void) MainMenu_Load parameters(void)
+void MainMenu_Load(void)
 {
 	if (! Menu_DoneOnce)
 	{
@@ -97,18 +97,15 @@ fn returns(void) MainMenu_Load parameters(void)
 		MenuWidget.Grid.Num          = 0;
 		MenuWidget.Grid.CurrentIndex = 0;
 
-		Stack() 
-
-			COORD startCell, endCell;
+		COORD startCell, endCell;
 
 		startCell.X = 0; endCell.X = 0;
 		startCell.Y = 9; endCell.Y = 9;
 
 
-
 		UI_Widget_AddText
 		(
-			getAddress(MenuWidget),
+			&MenuWidget,
 
 			L"Generic Platformer Demo\0",
 			startCell, 
@@ -120,12 +117,12 @@ fn returns(void) MainMenu_Load parameters(void)
 
 		UI_Widget_AddButton
 		(
-			getAddress(MenuWidget),
+			&MenuWidget,
 
 			L"Start\0",
 			startCell, endCell,
 			true,
-			getAddress(MainMenu_PressStart)
+			&MainMenu_PressStart
 		);
 
 		startCell.X = -1; endCell.X = -1;
@@ -133,20 +130,20 @@ fn returns(void) MainMenu_Load parameters(void)
 
 		UI_Widget_AddButton
 		(
-			getAddress(MenuWidget),
+			&MenuWidget,
 
 			L"Quit\0",
 			startCell, endCell,
 			true,
-			getAddress(MainMenu_PressQuit)
+			&MainMenu_PressQuit
 		);
 
 		Menu_DoneOnce = true;
 	}
 
-	Input_SubscribeTo(Key_Arrow_Up  , getAddress(Game_EntryState_OnKeyArrowUp  ));
-	Input_SubscribeTo(Key_Arrow_Down, getAddress(Game_EntryState_OnKeyArrowDown));
-	Input_SubscribeTo(Key_Enter     , getAddress(Game_EntryState_OnKeyEnter    ));
+	Input_SubscribeTo(Key_Arrow_Up  , &Game_EntryState_OnKeyArrowUp  );
+	Input_SubscribeTo(Key_Arrow_Down, &Game_EntryState_OnKeyArrowDown);
+	Input_SubscribeTo(Key_Enter     , &Game_EntryState_OnKeyEnter    );
 
 	if (Log_Load)
 	{
@@ -156,11 +153,11 @@ fn returns(void) MainMenu_Load parameters(void)
 	}
 }
 
-fn returns(void) MainMenu_Unload parameters(void)
+void MainMenu_Unload(void)
 {
-	Input_Unsubscribe(Key_Arrow_Up  , getAddress(Game_EntryState_OnKeyArrowUp  ));
-	Input_Unsubscribe(Key_Arrow_Down, getAddress(Game_EntryState_OnKeyArrowDown));
-	Input_Unsubscribe(Key_Enter     , getAddress(Game_EntryState_OnKeyEnter    ));
+	Input_Unsubscribe(Key_Arrow_Up  , &Game_EntryState_OnKeyArrowUp  );
+	Input_Unsubscribe(Key_Arrow_Down, &Game_EntryState_OnKeyArrowDown);
+	Input_Unsubscribe(Key_Enter     , &Game_EntryState_OnKeyEnter    );
 
 	if (Log_Unload)
 	{
@@ -170,34 +167,34 @@ fn returns(void) MainMenu_Unload parameters(void)
 	}
 }
 
-fn returns(void) MainMenu_Update parameters(void)
+void MainMenu_Update(void)
 {
 }
 
-fn returns(void) MainMenu_Render parameters(void)
+void MainMenu_Render(void)
 {
-	UI_Widget_Render(getAddress(MenuWidget));
+	UI_Widget_Render(&MenuWidget);
 }
 
 
 
 // Engine Entrypoint
 
-fn returns(Ptr(StateObj)) LoadGame parameters(void)
+StateObj* LoadGame(void)
 {
-	unbound bool stateConstructed = false;
+	static bool stateConstructed = false;
 
 	if (! stateConstructed)
 	{
-		MainMenu.Load   = getAddress(MainMenu_Load  );
-		MainMenu.Unload = getAddress(MainMenu_Unload);
-		MainMenu.Update = getAddress(MainMenu_Update);
-		MainMenu.Render = getAddress(MainMenu_Render);
+		MainMenu.Load   = &MainMenu_Load  ;
+		MainMenu.Unload = &MainMenu_Unload;
+		MainMenu.Update = &MainMenu_Update;
+		MainMenu.Render = &MainMenu_Render;
 
 		stateConstructed = true;
 	}
 
-	return getAddress(MainMenu);
+	return &MainMenu;
 }
 
 

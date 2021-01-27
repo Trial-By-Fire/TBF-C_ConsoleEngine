@@ -19,11 +19,11 @@ Language Abstraction Layer
 // Aliasing
 
 // Allows the aliasing of a data structure to a different typename.
-#define alias(_typeToAlias) \
+//#define alias(_typeToAlias) \
 typedef _typeToAlias
 
 // A way to show relationship to alias...
-#define as 
+//#define as 
 
 
 // Functions
@@ -31,14 +31,14 @@ typedef _typeToAlias
 //#define EntryPoint \
 main
 
-#define fn \
+//#define fn \
 
-#define parameters \
+//#define parameters \
 
-#define returns(_returnType) \
+//#define returns(_returnType) \
 _returnType
 
-#define FunctionType(_identifier, _returnType, ...) \
+//#define FunctionType(_identifier, _returnType, ...) \
 _returnType (_identifier) (__VA_ARGS__)
 
 
@@ -49,45 +49,45 @@ Used for defining a non-compile time constant.
 Where something is really just said to not be changeable instead of being a true constant.
 const are put in read only memory.
 */
-#define ro \
+//#define ro \
 const
 
 // Stores the address for a data instance of the specified type. (Pointer declaration, using indirection operator)
-#define Ptr(_type) \
+//#define Ptr(_type) \
 _type*
 
 //Provides a more explicit method for getting a reference.
-#define getAddress(_instance) \
+//#define getAddress(_instance) \
 &_instance
 
 // Gets the data instance from the specified address (AKA Dereference, using indirection operator)
-#define val(_address) \
+//#define val(_address) \
 *_address
 
 // Specifies that this datatype is intended to be allocated within the data segment. 
 // (It will allocate and format the memory for you before starting the program)
-#define Data()
+//#define Data()
 //__VA_ARGS__
 
 // Specifies that this datatype is intended to be allocated within the BSS segment. 
 // (It will allocate the memory only but will not format it for you before starting the program)
-#define BSS()
+//#define BSS()
 //__VA_ARGS__
 
 // Specify that this datatype is intended to allocated (and possibly formatted if specified to) within the stack. 
 // (To be used within the function its within scope for)
-#define Stack()
+//#define Stack()
 //__VA_ARGS__
 
 // Specify that you are interfacing with the heap. (Directly managing unmanaged memory given by the operating system)
-#define Heap(_heapOperation) \
+//#define Heap(_heapOperation) \
 _heapOperation
 
 // Creates a static duration variable accessible to any file or linkage. (Global/File scope Only)
-#define foreign \
+//#define foreign \
 extern
 
-#define unbound \
+//#define unbound \
 static
 
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
@@ -96,23 +96,21 @@ static
 
 // Aliases (Typedefs) ------------------------------------------------------------------------------
 
-alias(char) as Byte;
+typedef char Byte;
 
-alias(signed           short) as sInt16;
-alias(signed long long int  ) as sInt64;
+typedef signed           short sInt16;
+typedef signed long long int   sInt64;
 
-alias(unsigned           int) as uInt  ;
-alias(unsigned long long int) as uInt64;
+typedef unsigned           int uInt  ;
+typedef unsigned long long int uInt64;
 
-alias(signed int) as sInt;
+typedef signed int sInt;
 
-alias(char) as Key;
+typedef char Key;
 
-alias(float ) as float32;
-alias(double) as float64;
+typedef float  float32;
+typedef double float64;
 
-alias(size_t) as DataSize;
-
-alias( FunctionType(Void_Function, void, void) );
+typedef void (Void_Function)(void);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -11,13 +11,13 @@
 
 
 
-BSS()
+// Static Data
 
-	StateObj LevelState;
+// Private
 
-Data()
+StateObj LevelState;
 
-	Ptr(StateObj) LevelState_CurrentSubstate = NULL;
+StateObj* LevelState_CurrentSubstate = NULL;
 
 
 
@@ -25,24 +25,24 @@ Data()
 
 // Class Public
 
-fn returns(void) Load_Level parameters(void)
+void* Load_Level(void)
 {
 	LevelState_SetSubstate(GetIngameState());
 }
 
-fn returns(void) Unload_Level parameters(void)
+void Unload_Level(void)
 {
 	LevelState_CurrentSubstate->Unload();
 
 	LevelState_CurrentSubstate = NULL;
 }
 
-fn returns(void) Update_Level parameters(void)
+void Update_Level(void)
 {
 	LevelState_CurrentSubstate->Update();
 }
 
-fn returns(void) Render_Level parameters(void)
+void Render_Level(void)
 {
 	LevelState_CurrentSubstate->Render();
 }
@@ -51,24 +51,24 @@ fn returns(void) Render_Level parameters(void)
 
 // Public
 
-fn returns( Ptr(StateObj)) GetLevelState parameters(void)
+StateObj* GetLevelState(void)
 {
-	unbound bool stateConstructed = false;
+	static bool stateConstructed = false;
 
-	if (!stateConstructed)
+	if (! stateConstructed)
 	{
-		LevelState.Load   = getAddress(Load_Level  );
-		LevelState.Unload = getAddress(Unload_Level);
-		LevelState.Update = getAddress(Update_Level);
-		LevelState.Render = getAddress(Render_Level);
+		LevelState.Load   = &Load_Level  ;
+		LevelState.Unload = &Unload_Level;
+		LevelState.Update = &Update_Level;
+		LevelState.Render = &Render_Level;
 
 		stateConstructed = true;
 	}
 
-	return getAddress(LevelState);
+	return &LevelState;
 }
 
-fn returns(void) LevelState_SetSubstate parameters( Ptr(StateObj) _state)
+void LevelState_SetSubstate(StateObj* _state)
 {
 	if (LevelState_CurrentSubstate != NULL)
 	{

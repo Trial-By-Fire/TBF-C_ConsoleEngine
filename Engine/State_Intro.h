@@ -10,4 +10,4 @@
 
 // Functions
 
-fn returns( Ptr(StateObj)) GetIntroState parameters(void);
+StateObj* GetIntroState(void);

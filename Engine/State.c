@@ -20,11 +20,9 @@ enum
 
 // State
 
-Data()
+StateObj* CurrentState = NULL;
 
-	Ptr(StateObj) CurrentState = NULL;
-
-	uInt FocusState = EFocusState_Game;
+uInt FocusState = EFocusState_Game;
 
 
 
@@ -32,7 +30,7 @@ Data()
 
 // Public
 
-fn returns(void) State_OnKeyArrowUp parameters(EInputState _state)
+void State_OnKeyArrowUp(EInputState _state)
 {
 	switch (_state)
 	{
@@ -53,7 +51,7 @@ fn returns(void) State_OnKeyArrowUp parameters(EInputState _state)
 	}
 }
 
-fn returns(void) State_OnKeyArrowDown parameters(EInputState _state)
+void State_OnKeyArrowDown(EInputState _state)
 {
 	switch (_state)
 	{
@@ -74,7 +72,7 @@ fn returns(void) State_OnKeyArrowDown parameters(EInputState _state)
 	}
 }
 
-fn returns(void) State_OnKeyTab parameters(EInputState _state)
+void State_OnKeyTab(EInputState _state)
 {
 	switch (_state)
 	{
@@ -102,18 +100,18 @@ fn returns(void) State_OnKeyTab parameters(EInputState _state)
 }
 
 
-fn returns(void) State_LoadModule parameters(void)
+void State_LoadModule(void)
 {
 	CurrentState = GetIntroState();
 
 	CurrentState->Load();
 
-	Input_SubscribeTo(Key_Arrow_Up  , getAddress(State_OnKeyArrowUp  ));
-	Input_SubscribeTo(Key_Arrow_Down, getAddress(State_OnKeyArrowDown));
-	Input_SubscribeTo(Key_Tab       , getAddress(State_OnKeyTab      ));
+	Input_SubscribeTo(Key_Arrow_Up  , &State_OnKeyArrowUp  );
+	Input_SubscribeTo(Key_Arrow_Down, &State_OnKeyArrowDown);
+	Input_SubscribeTo(Key_Tab       , &State_OnKeyTab      );
 }
 
-fn returns(void) State_SetState parameters(Ptr(StateObj) _state)
+void State_SetState(StateObj* _state)
 {
 	if (CurrentState != NULL)
 	{
@@ -125,7 +123,7 @@ fn returns(void) State_SetState parameters(Ptr(StateObj) _state)
 	CurrentState->Load();
 }
 
-fn returns(void) State_Update parameters(void)
+void State_Update(void)
 {
 	if (CurrentState != NULL)
 	{
@@ -133,7 +131,7 @@ fn returns(void) State_Update parameters(void)
 	}
 }
 
-fn returns(void) State_Render parameters(void)
+void State_Render(void)
 {
 	if (CurrentState != NULL)
 	{
@@ -141,7 +139,7 @@ fn returns(void) State_Render parameters(void)
 	}
 }
 
-fn returns(void) State_LoadGame parameters(void)
+void State_LoadGame(void)
 {
 	State_SetState(LoadGame());
 }
