@@ -54,7 +54,7 @@ struct MemoryBlockArray_Def
 
 
 
-// Forward Declarations
+// Functions
 
 // C-API
 

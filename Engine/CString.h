@@ -40,6 +40,6 @@ struct CString_Def
 
 
 
-// Forward Declarations
+// Functions
 
 fn returns(void) CString_LoadModule parameters(void);

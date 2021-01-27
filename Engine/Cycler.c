@@ -7,6 +7,7 @@
 #include "Memory.h"
 #include "Renderer.h"
 #include "Timing.h"
+#include "State.h"
 
 
 
@@ -20,7 +21,7 @@ BSS()
 
 
 
-// Function
+// Functions
 
 // Public
 
@@ -35,6 +36,8 @@ fn returns(void) Cycler_Initialize parameters(void)
 	{
 		Timing_TakeInitialSnapshot();
 
+		// Update Input
+
 		Input_Update();
 
 		// Update UI
@@ -43,20 +46,15 @@ fn returns(void) Cycler_Initialize parameters(void)
 
 		// Update State
 
-		//sGlobal stateLoaded = false;
-
-		if (Input_GetKeyTap(Key_Arrow_Down, 3))
-		{
-			Exist = false;
-		}
-
+		State_Update();
+		
 		// Update Renderer
 
 		Stack()
 
-			ro Ptr(InputData   ) inputContext    = Input_GetContext();
+			ro Ptr(InputData   ) inputContext    = Input_GetContext   ();
 			ro Ptr(RendererData) rendererContext = Renderer_GetContext();
-			ro Ptr(TimingData  ) timingContext   = Timing_GetContext();
+			ro Ptr(TimingData  ) timingContext   = Timing_GetContext  ();
 
 		Renderer_WriteToPersistentSection(1, L"Tick Elapsed        : %llu" , timingContext  ->Cycle_TicksElapsed);
 		Renderer_WriteToPersistentSection(2, L"Timer      (Seconds): %.7Lf", rendererContext->RefeshTimer       );
@@ -78,16 +76,16 @@ fn returns(void) Cycler_LoadModule parameters(void)
 	Exist = true;
 }
 
+fn returns(void) Cycler_Quit parameters(void)
+{
+	Exist = false;
+}
+
 
 
 // Private
 
 fn returns(bool) ShouldQuit parameters(void)
 {
-	//sGlobal 
-}
-
-fn returns(void) Quit parameters(void)
-{
-	Exist = false;
+	//unbound 
 }

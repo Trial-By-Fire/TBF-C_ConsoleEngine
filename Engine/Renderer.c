@@ -9,6 +9,7 @@
 #include "Input.h"
 #include "Memory.h"
 #include "Timing.h"
+#include "State.h"
 
 
 
@@ -167,33 +168,35 @@ fn returns(void) Renderer_Update parameters(void)
 
 		DrawGameScanlines();
 
+		State_Render();
+
 		Stack()
 
 		COORD 
-			borderInitial = { 0              , ERenderer_BorderLine}, 
-			borderFinal   = { ERenderer_Width, ERenderer_BorderLine};
+			startingCell = { 0              , ERenderer_BorderLine}, 
+			finalCell    = { ERenderer_Width, ERenderer_BorderLine};
 
-		Renderer_WriteToBufferCells(getAddress(Border_GameDebug), borderInitial, borderFinal);
+		Renderer_WriteToBufferCells(getAddress(Border_GameDebug), startingCell, finalCell);
 
-		borderInitial.Y = ERenderer_DebugPersistentStart - 1;
-		borderFinal  .Y = ERenderer_DebugPersistentStart - 1;
+		startingCell.Y = ERenderer_DebugPersistentStart - 1;
+		finalCell   .Y = ERenderer_DebugPersistentStart - 1;
 
-		Renderer_WriteToBufferCells(getAddress(Border_LogPersistent), borderInitial, borderFinal);
+		Renderer_WriteToBufferCells(getAddress(Border_LogPersistent), startingCell, finalCell);
 
 		for (DataSize index = 0; index < ERenderer_DebugLogSize; index++)
 		{
-			borderInitial.Y = ERenderer_DebugStart + index;
-			borderFinal  .Y = ERenderer_DebugStart + index;
+			startingCell.Y = ERenderer_DebugStart + index;
+			finalCell   .Y = ERenderer_DebugStart + index;
 
-			Renderer_WriteToBufferCells(getAddress(DebugLogSection[index]), borderInitial, borderFinal);
+			Renderer_WriteToBufferCells(getAddress(DebugLogSection[index]), startingCell, finalCell);
 		}
 
 		for (DataSize index = 0; index < ERenderer_PersistentSectionSize; index++)
 		{
-			borderInitial.Y = ERenderer_DebugPersistentStart + index;
-			borderFinal  .Y = ERenderer_DebugPersistentStart + index;
+			startingCell.Y = ERenderer_DebugPersistentStart + index;
+			finalCell   .Y = ERenderer_DebugPersistentStart + index;
 
-			Renderer_WriteToBufferCells(getAddress(PersistentSection[index]), borderInitial, borderFinal);
+			Renderer_WriteToBufferCells(getAddress(PersistentSection[index]), startingCell, finalCell);
 		}
 
 		Renderer_RenderFrame();
@@ -233,7 +236,7 @@ fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 {
 	Stack()
 
-		sGlobal uInt nextLine = 0;
+		unbound uInt nextLine = 0;
 
 		DataSize logLength = wcslen(_logString);
 		DataSize linePos   = 0;
@@ -335,14 +338,14 @@ fn returns(void) DrawGameScanlines parameters(void)
 {
 	Stack()
 
-		sGlobal COORD cellIndex = { 0, 0 };
+		unbound COORD cellIndex = { 0, 0 };
 
 		ro WideChar blockChar = '-';
 
 		Cell cellUnit;
 
 	cellUnit.Char.UnicodeChar = blockChar;
-	cellUnit.Attributes       = FOREGROUND_INTENSITY | FOREGROUND_GREEN;
+	cellUnit.Attributes       = FOREGROUND_INTENSITY;
 
 	Stack()
 
@@ -387,7 +390,7 @@ fn returns(void) InitalizeData parameters(void)
 	Renderer.ScreenPosition.Y = (Screen.Center.Y - ((ERenderer_Height / 2) * 8)) - 200;
 
 	Renderer.RefeshTimer    = 0.0L;
-	Renderer.RefeshInterval = 0.033L;
+	Renderer.RefeshInterval = 0.1L;
 
 	Renderer.CoordSize.X = ERenderer_Width ;
 	Renderer.CoordSize.Y = ERenderer_Height;

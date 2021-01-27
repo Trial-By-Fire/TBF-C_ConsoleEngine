@@ -7,7 +7,7 @@
 #include <conio.h>
 #include <Windows.h>
 
-
+// Engine
 
 #include "LAL.h"
 
@@ -43,7 +43,7 @@ alias(enum EKeyCode_Def) as EKeyCode;
 
 
 
-// Forward Declarations
+// Functions
 
 fn returns(bool) Bind_IOBufferTo_Console parameters(void);
 

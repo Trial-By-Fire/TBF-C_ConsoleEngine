@@ -11,6 +11,7 @@
 #include "Input.h"
 #include "Memory.h"
 #include "Renderer.h"
+#include "State.h"
 
 
 
@@ -23,23 +24,16 @@ fn returns(void) PrepareModules parameters(void)
 	Timing_LoadModule  ();
 	Input_LoadModule   ();
 	Renderer_LoadModule();
+	State_LoadModule   ();
 }
 
 fn returns(void) PrintStartMessage parameters(void)
 {
-	Stack()
-
-		//CTS_CWString EntryMessage = L"TBF C EngineVersion: Phase 5\0";
-
-	// Print Start Message
-
-	//print(EntryMessage);
-
 	Renderer_WriteToLog(L"TBF C Engine");
 
 	Renderer_WriteToLog(L"");
 
-	Renderer_WriteToLog(L"Version: Phase 5");
+	Renderer_WriteToLog(L"Version: Phase 7");
 }
 
 fn returns(void) UnloadModules parameters(void)
@@ -51,10 +45,6 @@ fn returns(void) UnloadModules parameters(void)
 
 fn returns(ExecFlags) EntryPoint parameters(void)
 {
-	// Allocate our data array.
-
-	//Heap(Data_Alloc());
-
 	// Setup engine components.
 
 	PrepareModules();
@@ -70,10 +60,6 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 	printf("Exiting Game Engine: Press enter key to continue.");
 
 	getchar();
-
-	// Now that were done before we leave we deallocate the data array.
-
-	//Heap(Data_Dealloc());
 
 	UnloadModules();
 

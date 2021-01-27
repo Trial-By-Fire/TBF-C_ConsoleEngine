@@ -10,6 +10,8 @@
 
 
 
+// Enums
+
 enum ERenderer
 {
 	ERenderer_Width                 = 80,
@@ -84,7 +86,7 @@ struct ScreenInfo_Def
 
 
 
-// Forward Declarations
+// Functions
 
 fn returns(void) Renderer_Clear parameters(void);
 

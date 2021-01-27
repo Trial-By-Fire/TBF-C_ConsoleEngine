@@ -21,7 +21,7 @@ enum ExecFlags_Def
 
 
 
-// Forward Declarations
+// Functions
 
 fn returns(ExecFlags) EntryPoint parameters(void);
 

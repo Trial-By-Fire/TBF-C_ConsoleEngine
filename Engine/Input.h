@@ -106,7 +106,7 @@ struct InputData_Def
 
 
 
-// Forward Declarations
+// Functions
 
 fn returns(Ptr(ro InputData)) Input_GetContext(void);
 

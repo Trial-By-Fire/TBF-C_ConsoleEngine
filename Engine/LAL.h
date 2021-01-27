@@ -25,6 +25,7 @@ typedef _typeToAlias
 // A way to show relationship to alias...
 #define as 
 
+
 // Functions
 
 //#define EntryPoint \
@@ -36,6 +37,9 @@ main
 
 #define returns(_returnType) \
 _returnType
+
+#define FunctionType(_identifier, _returnType, ...) \
+_returnType (_identifier) (__VA_ARGS__)
 
 
 // Memory
@@ -80,16 +84,11 @@ _type*
 _heapOperation
 
 // Creates a static duration variable accessible to any file or linkage. (Global/File scope Only)
-#define eGlobal \
+#define foreign \
 extern
 
-#define sGlobal \
+#define unbound \
 static
-
-// Functions
-#define FunctionPtr(_function) \
-(*FPtr_##_function)
-
 
 //////////////////////////////////// End of Macros   ///////////////////////////////////////////////
 
@@ -111,5 +110,7 @@ alias(char) as Key;
 alias(double) as float64;
 
 alias(size_t) as DataSize;
+
+alias( FunctionType(Void_Function, void, void) );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

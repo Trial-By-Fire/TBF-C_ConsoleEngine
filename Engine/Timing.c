@@ -25,7 +25,7 @@ fn returns(void) Timing_InitalizeData parameters(void);
 
 
 
-// Function
+// Functions
 
 // Public
 
@@ -72,4 +72,40 @@ fn returns(void) Timing_InitalizeData parameters(void)
 	QueryPerformanceFrequency(getAddress(Timing.TimeFrequency));
 
 	return;
+}
+
+
+
+// Timer Class
+
+// Functions
+
+// Public
+
+fn returns(bool) Timer_Ended parameters(Ptr(TimerData) _timer)
+{
+	return 
+		Float64_ApproxGreater(_timer->Elapsed, _timer->EndTime) || 
+		Float64_ApproxEqual  (_timer->Elapsed, _timer->EndTime)   ;
+}
+
+fn returns(void) Timer_Reset parameters(Ptr(TimerData) _timer)
+{
+	_timer->Elapsed = 0.0L;
+}
+
+fn returns(void) Timer_Tick parameters(Ptr(TimerData) _timer)
+{
+	if (Float64_ApproxEqual(Timing.DeltaTime, 0.000001L) || Float64_ApproxLess(Timing.DeltaTime, 0.000001L))
+	{
+		_timer->Elapsed = _timer->Elapsed + 0.000001L;
+
+		return;
+	}
+	else
+	{
+		_timer->Elapsed = _timer->Elapsed + Timing.DeltaTime;
+
+		return;
+	}
 }
