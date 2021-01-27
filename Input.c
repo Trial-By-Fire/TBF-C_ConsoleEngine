@@ -13,12 +13,11 @@
 
 // Private
 
-BSS
-(
-	Ptr(InputData) Input;
+BSS()
 
-	Ptr(char) LastKeyPressed;
-)
+	InputData Input;
+
+	char LastKeyPressed;
 
 
 
@@ -28,14 +27,12 @@ BSS
 
 fn returns(void) Input_LoadModule parameters(void)
 {
-	Input = Data_AssignMemory(SizeOf_InputSystem);
-
-	Input->LastPressedKey = '\0';
+	Input.LastPressedKey = '\0';
 }
 
 fn returns(Ptr(ro InputData)) GetInputContext(void)
 {
-	return Input;
+	return getAddress(Input);
 }
 
 fn returns(Key) GetKeyPress parameters(void)
@@ -52,10 +49,10 @@ fn returns(void) ProcessInput parameters(void)
 {
 	if (KeyboardHit())
 	{
-		Input->LastPressedKey = GetKeyPress();
+		Input.LastPressedKey = GetKeyPress();
 	}
 
-	if (Input->LastPressedKey == 'q')
+	if (Input.LastPressedKey == 'q')
 	{
 		Cycler_Lapse();	
 	}

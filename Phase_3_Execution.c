@@ -24,6 +24,9 @@ enum ExecFlags_Def
 };
 
 
+
+// Functions
+
 fn returns(void) PrepareModules parameters(void)
 {
 	Cycler_LoadModule  ();
@@ -33,6 +36,16 @@ fn returns(void) PrepareModules parameters(void)
 	Renderer_LoadModule();
 }
 
+fn returns(void) PrintStartMessage parameters(void)
+{
+	Stack()
+
+		CTS_CString EntryMessage = "TBF C Engine\n\nVersion: Phase 5\0";
+
+	// Print Start Message
+
+	print(EntryMessage);
+}
 
 // Entry Point
 
@@ -40,13 +53,13 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 {
 	// Allocate our data array.
 
-	Heap(Data_Alloc());
+	//Heap(Data_Alloc());
 
 	// Setup engine components.
 
 	PrepareModules();
 
-	CString_PrintStartMessage();	
+	PrintStartMessage();	
 
 	// Core Engine Loop
 
@@ -60,7 +73,9 @@ fn returns(ExecFlags) EntryPoint parameters(void)
 
 	// Now that were done before we leave we deallocate the data array.
 
-	Heap(Data_Dealloc());
+	//Heap(Data_Dealloc());
+
+	GlobalDeallocate();
 
 	return ExecFlags_Sucess;
 }

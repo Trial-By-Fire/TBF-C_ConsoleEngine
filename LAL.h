@@ -62,18 +62,18 @@ _type*
 
 // Specifies that this datatype is intended to be allocated within the data segment. 
 // (It will allocate and format the memory for you before starting the program)
-#define Data(...) \
-__VA_ARGS__
+#define Data()
+//__VA_ARGS__
 
 // Specifies that this datatype is intended to be allocated within the BSS segment. 
 // (It will allocate the memory only but will not format it for you before starting the program)
-#define BSS(...) \
-__VA_ARGS__
+#define BSS()
+//__VA_ARGS__
 
 // Specify that this datatype is intended to allocated (and possibly formatted if specified to) within the stack. 
 // (To be used within the function its within scope for)
-#define Stack(...) \
-__VA_ARGS__
+#define Stack()
+//__VA_ARGS__
 
 // Specify that you are interfacing with the heap. (Directly managing unmanaged memory given by the operating system)
 #define Heap(_heapOperation) \
