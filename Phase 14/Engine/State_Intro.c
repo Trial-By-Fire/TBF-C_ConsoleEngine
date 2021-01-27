@@ -27,7 +27,7 @@ TimerData Timer_Till_FadeOut;
 bool Intro_DoneOnce = false;
 
 CTS_CWString IntroTitle    = L"Trial By Fire Engine";
-CTS_CWString EngineVersion = L"Type C Phase 13"     ;
+CTS_CWString EngineVersion = L"Type C Phase 14"     ;
 
 bool 
 	RenderTitle   = false, 

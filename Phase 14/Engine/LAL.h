@@ -108,10 +108,8 @@ typedef signed int sInt;
 
 typedef char Key;
 
-typedef float float32;
+typedef float  float32;
 typedef double float64;
-
-typedef size_t DataSize;
 
 typedef void (Void_Function)(void);
 

@@ -33,7 +33,7 @@ void PrintStartMessage(void)
 
 	Renderer_WriteToLog(L"");
 
-	Renderer_WriteToLog(L"Version: Phase 13");
+	Renderer_WriteToLog(L"Version: Phase 14");
 }
 
 void UnloadModules(void)

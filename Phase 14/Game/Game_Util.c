@@ -93,7 +93,7 @@ void Character_Update(Character* _character, Level* _level)
 	{
 		Renderer_WriteToLog(L"Giving character jump velocity");
 
-		_character->VerticalVelocity = 0.065 * deltaTime;
+		_character->VerticalVelocity = 0.075 * deltaTime;
 
 		_character->Position.Y = -0.75f;
 
