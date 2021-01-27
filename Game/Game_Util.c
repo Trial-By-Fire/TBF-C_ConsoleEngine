@@ -7,6 +7,33 @@
 
 // Public
 
+// Space
+
+fn returns(COORD) Convert_Vector2D_ToRenderCoord parameters(Vector2D _vector)
+{
+	Stack()
+		unbound float32 
+			offsetX = (float32)ERenderer_Width   / 2.0f, 
+			offsetY = (float32)ERenderer_GameEnd / 2.0f;
+
+	float32 
+		convertedX = _vector.X * ((float32)ERenderer_Width   / 2.0f), 
+		convertedY = _vector.Y * ((float32)ERenderer_GameEnd / 2.0f);
+
+	Stack()
+		COORD renderingCoord;
+
+	renderingCoord.X = (sInt16)(convertedX + offsetX   );	
+	renderingCoord.Y = (sInt16)(offsetY    - convertedY);
+
+	if (renderingCoord.X >= ERenderer_Width) renderingCoord.X = ERenderer_Width - 1;
+
+	return renderingCoord;
+}
+
+
+// General Rendering
+
 fn returns(void) ChangeCellsTo_Grey parameters(Ptr(Cell) _renderCells, DataSize _length)
 {
 	for (DataSize cellIndex = 0; cellIndex < _length; cellIndex++)

@@ -48,7 +48,7 @@ BSS()
 
 Data()
 
-	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 9";
+	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 10";
 
 	ro COORD Console_ScreenPos_00 = 
 	{
@@ -184,7 +184,7 @@ fn returns(void) Renderer_Update parameters(void)
 
 		State_Render();
 
-		Renderer_WriteToPersistentSection(1, L"Relative Last Line: %u", DebugLogSection_RelativeLastLine);
+		//Renderer_WriteToPersistentSection(1, L"Relative Last Line: %u", DebugLogSection_RelativeLastLine);
 
 		Stack()
 
@@ -439,7 +439,7 @@ fn returns(void) InitalizeData parameters(void)
 	Renderer.ScreenPosition.Y = (Screen.Center.Y - ((ERenderer_Height / 2) * 8)) - 200;
 
 	Renderer.RefeshTimer    = 0.0L;
-	Renderer.RefeshInterval = 0.1L;
+	Renderer.RefeshInterval = 1.0L / 60.0L;
 
 	Renderer.CoordSize.X = ERenderer_Width ;
 	Renderer.CoordSize.Y = ERenderer_Height;

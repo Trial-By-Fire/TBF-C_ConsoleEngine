@@ -30,7 +30,7 @@ Data()
 	bool Intro_DoneOnce = false;
 
 	CTS_CWString IntroTitle    = L"Trial By Fire Engine";
-	CTS_CWString EngineVersion = L"Type C Phase 9"      ;
+	CTS_CWString EngineVersion = L"Type C Phase 10"     ;
 
 	bool 
 		RenderTitle   = false, 
@@ -103,7 +103,7 @@ fn returns(void) IntroState_Load parameters(void)
 		Timer_TillVersion_ToWhite.EndTime = 0.134L;
 
 		Title_Length = wcslen(IntroTitle);
-		EngineVersion_Length = wcslen(EngineVersion);
+		EngineVersion_Length = wcslen(EngineVersion) + 1;
 
 		IntroTitle_RenderCells = GlobalAllocate(Cell, Title_Length        );
 		Version_RenderCells    = GlobalAllocate(Cell, EngineVersion_Length);

@@ -132,7 +132,7 @@ fn returns(void) Load_Paused parameters(void)
 			getAddress(Level_State_Paused_PressResume)
 		);
 
-		startCell.X = 0; endCell.X = 0;
+		startCell.X = 0;  endCell.X = 0;
 		startCell.Y = 17; endCell.Y = 17;
 
 		UI_Widget_AddButton

@@ -8,8 +8,14 @@
 
 
 
-
 // Aliases
+
+// Space
+
+alias(struct Vector2D_Def) as Vector2D;
+
+
+// UI
 
 alias(struct UI_Text_Def  ) as UI_Text;
 alias(struct UI_Button_Def) as UI_Button;
@@ -19,6 +25,16 @@ alias(struct UI_Widget_Def) as UI_Widget;
 
 
 // Structs
+
+// Space
+
+struct Vector2D_Def
+{
+	float32 X;
+	float32 Y;
+};
+
+// UI
 
 struct UI_Text_Def
 {
@@ -61,6 +77,10 @@ struct UI_Widget_Def
 
 
 // Functions
+
+// Space
+
+fn returns(COORD) Convert_Vector2D_ToRenderCoord parameters(Vector2D _vector);
 
 // General Rendering
 

@@ -98,7 +98,7 @@ Internal_Memory_FormatByFill(_memoryAddress, _fillValue, sizeof(_type) * _sizeOf
 #define SmartScope                  \
 {					                \
 	MemoryBlockArray scopedMemory = \
-	{ NULL, { NULL, 0U }, 0U };
+	{ NULL, 0U };
 
 
 #define SmartScope_End                              \

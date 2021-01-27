@@ -108,6 +108,7 @@ alias(signed int) as sInt;
 
 alias(char) as Key;
 
+alias(float ) as float32;
 alias(double) as float64;
 
 alias(size_t) as DataSize;
