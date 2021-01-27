@@ -117,5 +117,9 @@ fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString);
 
 fn returns(void) Renderer_WriteToPersistentSection parameters(sInt _row, Ptr(WideChar) _lineformat, ...);
 
+fn returns(void) Renderer_Logs_ScrollUp parameters(void);
+
+fn returns(void) Renderer_Logs_ScrollDown parameters(void);
+
 
 

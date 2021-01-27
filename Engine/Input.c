@@ -195,6 +195,10 @@ fn returns(EKeyCode) GetKeyCodeAtIndex(DataSize _index)
 		{
 			return Key_Enter;
 		}
+		case 5:
+		{
+			return Key_Tab;
+		}
 	}
 }
 
@@ -221,6 +225,10 @@ fn returns(DataSize) GetKeyIndexFromCode(EKeyCode _key)
 		case Key_Enter:
 		{
 			return 4;
+		}
+		case Key_Tab:
+		{
+			return 5;
 		}
 	}
 }

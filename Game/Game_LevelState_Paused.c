@@ -14,35 +14,13 @@ BSS()
 
 	StateObj Paused_State;
 
+	UI_Widget PauseWidget;
+
 Data()
 
 	bool Paused_DoneOnce = false;
 
 	uInt PauseUI_Index = 0;
-
-	// Title
-
-	CTS_CWString PauseTitle_Text = L"Paused";
-
-	DataSize PauseTitle_Text_Length = 0;
-
-	Ptr(Cell) PauseTitle_RenderCells = NULL;
-
-	// Resume button
-
-	CTS_CWString Resume_Text = L"Resume";
-
-	DataSize Resume_Text_Length = 0;
-
-	Ptr(Cell) Reusme_RenderCells = NULL;
-
-	// Quit to Menu button
-
-	CTS_CWString QuitToMenu_Text = L"Quit to Menu";
-
-	DataSize QuitToMenu_Text_Length = 0;
-
-	Ptr(Cell) QuitToMenu_RenderCells = NULL;
 
 
 
@@ -60,27 +38,23 @@ enum
 
 // Class Public
 
+fn returns(void) Level_State_Paused_PressResume parameters(void)
+{
+	LevelState_SetSubstate(GetIngameState());
+}
+
+fn returns(void) Level_State_Paused_PressQuitToMenu parameters(void)
+{
+	State_SetState(LoadGame());
+}
+
 fn returns(void) LevelState_Paused_OnKeyEnter parameters(EInputState _state)
 {
 	switch (_state)
 	{
 		case EInput_Pressed:
 		{
-			switch (PauseUI_Index)
-			{
-				case EUI_Resume:
-				{
-					LevelState_SetSubstate(GetIngameState());
-
-					break;
-				}
-				case EUI_QuitToMenu:
-				{
-					State_SetState(LoadGame());
-
-					break;
-				}
-			}
+			UI_Widget_Select(getAddress(PauseWidget));
 
 			break;
 		}
@@ -95,15 +69,7 @@ fn returns(void) LevelState_Paused_OnKeyArrowUp parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"Pause: On Key Up");
 
-			if (PauseUI_Index == 1)
-			{
-				PauseUI_Index--;
-
-				Renderer_WriteToLog(L"Pause UI Resume Active");
-
-				ChangeCellsTo_White(Reusme_RenderCells    , Resume_Text_Length    );
-				ChangeCellsTo_Grey (QuitToMenu_RenderCells, QuitToMenu_Text_Length);
-			}
+			UI_Widget_MoveUp(getAddress(PauseWidget));
 
 			break;
 		}
@@ -118,15 +84,7 @@ fn returns(void) LevelState_Paused_OnKeyArrowDown parameters(EInputState _state)
 		{
 			Renderer_WriteToLog(L"Pause: On Key Down");
 
-			if (PauseUI_Index == 0)
-			{
-				PauseUI_Index++;
-
-				Renderer_WriteToLog(L"Pause UI Quit to Menu Active");
-
-				ChangeCellsTo_Grey (Reusme_RenderCells    , Resume_Text_Length    );
-				ChangeCellsTo_White(QuitToMenu_RenderCells, QuitToMenu_Text_Length);
-			}
+			UI_Widget_MoveDown(getAddress(PauseWidget));
 
 			break;
 		}
@@ -139,45 +97,56 @@ fn returns(void) Load_Paused parameters(void)
 
 	if (! Paused_DoneOnce)
 	{
-		// Title
+		PauseWidget.TextUIs           = NULL;
+		PauseWidget.Num_TextUIs       = 0;
+		PauseWidget.Grid.Buttons      = NULL;
+		PauseWidget.Grid.Num          = 0;
+		PauseWidget.Grid.CurrentIndex = 0;
 
-		PauseTitle_Text_Length = wcslen(PauseTitle_Text) + 1;
+		Stack() 
 
-		PauseTitle_RenderCells = GlobalAllocate(Cell, PauseTitle_Text_Length);
+			COORD startCell, endCell;
 
-		for (DataSize cellIndex = 0; cellIndex < PauseTitle_Text_Length; cellIndex++)
-		{
-			PauseTitle_RenderCells[cellIndex].Char.UnicodeChar = PauseTitle_Text[cellIndex];
-		}
+		startCell.X = 0; endCell.X = 0;
+		startCell.Y = 9; endCell.Y = 9;
 
-		// Resume button
+		UI_Widget_AddText
+		(
+			getAddress(PauseWidget),
 
-		Resume_Text_Length = wcslen(Resume_Text) + 1;
+			L"Paused\0",
+			startCell, 
+			endCell,
+			true   // Should Center
+		);
 
-		Reusme_RenderCells = GlobalAllocate(Cell, Resume_Text_Length);
+		startCell.Y = 15; endCell.Y = 15;
 
-		for (DataSize cellIndex = 0; cellIndex < Resume_Text_Length; cellIndex++)
-		{
-			Reusme_RenderCells[cellIndex].Char.UnicodeChar = Resume_Text[cellIndex];
-		}
+		UI_Widget_AddButton
+		(
+			getAddress(PauseWidget),
 
-		// Quite to Menu button
+			L"Resume\0",
+			startCell, endCell,
+			true,
+			getAddress(Level_State_Paused_PressResume)
+		);
 
-		QuitToMenu_Text_Length = wcslen(QuitToMenu_Text) + 1;
+		startCell.X = 0; endCell.X = 0;
+		startCell.Y = 17; endCell.Y = 17;
 
-		QuitToMenu_RenderCells = GlobalAllocate(Cell, QuitToMenu_Text_Length);
+		UI_Widget_AddButton
+		(
+			getAddress(PauseWidget),
 
-		for (DataSize cellIndex = 0; cellIndex < QuitToMenu_Text_Length; cellIndex++)
-		{
-			QuitToMenu_RenderCells[cellIndex].Char.UnicodeChar = QuitToMenu_Text[cellIndex];
-		}
+			L"Quit to Menu\0",
+			startCell, endCell,
+			true,
+			getAddress(Level_State_Paused_PressQuitToMenu)
+		);
 
 		Paused_DoneOnce = true;
 	}
-
-	ChangeCellsTo_White(PauseTitle_RenderCells, PauseTitle_Text_Length);
-	ChangeCellsTo_White(Reusme_RenderCells    , Resume_Text_Length    );
-	ChangeCellsTo_Grey (QuitToMenu_RenderCells, QuitToMenu_Text_Length);
 
 	Input_SubscribeTo(Key_Enter     , getAddress(LevelState_Paused_OnKeyEnter    ));
 	Input_SubscribeTo(Key_Arrow_Up  , getAddress(LevelState_Paused_OnKeyArrowUp  ));
@@ -197,38 +166,7 @@ fn returns(void) Update_Paused parameters(void)
 
 fn returns(void) Render_Paused parameters(void)
 {
-	Stack()
-		unbound COORD startingCell, endingCell;
-
-	// Title
-
-	startingCell.X = (ERenderer_Width / 2) - (PauseTitle_Text_Length / 2) - 1;
-	endingCell  .X = (ERenderer_Width / 2) + (PauseTitle_Text_Length / 2) - 1;
-
-	startingCell.Y = 9;
-	endingCell  .Y = 9;
-
-	Renderer_WriteToBufferCells(PauseTitle_RenderCells, startingCell, endingCell);
-
-	// Resume button cell
-
-	startingCell.X = (ERenderer_Width / 2) - (Resume_Text_Length / 2) - 1;
-	endingCell  .X = (ERenderer_Width / 2) + (Resume_Text_Length / 2) - 1;
-
-	startingCell.Y = 15;
-	endingCell  .Y = 15;
-
-	Renderer_WriteToBufferCells(Reusme_RenderCells, startingCell, endingCell);
-
-	// Quit to Menu cells
-
-	startingCell.X = (ERenderer_Width / 2) - (QuitToMenu_Text_Length / 2) - 1;
-	endingCell  .X = (ERenderer_Width / 2) + (QuitToMenu_Text_Length / 2) - 1;
-
-	startingCell.Y = 17;
-	endingCell  .Y = 17;
-
-	Renderer_WriteToBufferCells(QuitToMenu_RenderCells, startingCell, endingCell);
+	UI_Widget_Render(getAddress(PauseWidget));
 }
 
 

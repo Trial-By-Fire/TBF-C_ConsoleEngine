@@ -14,17 +14,11 @@ BSS()
 
 	StateObj Ingame_State;
 
+	UI_Text Ingame_Text;
+
 Data()
 
 	bool Ingame_DoneOnce = false;
-
-	// Title
-
-	CTS_CWString Ingame_Text = L"In-game";
-
-	DataSize Ingame_Text_Length = 0;
-
-	Ptr(Cell) Ingame_RenderCells = NULL;
 
 
 
@@ -49,19 +43,22 @@ fn returns(void) Load_Ingame parameters(void)
 {
 	if (! Ingame_DoneOnce)
 	{
-		Ingame_Text_Length = wcslen(Ingame_Text) + 1;
+		Stack()
+			COORD 
+				start = { 1, 1 }, 
+				end   = { 1, 1 } ;
 
-		Ingame_RenderCells = GlobalAllocate(Cell, Ingame_Text_Length);
+		UI_Text_Create
+		(
+			getAddress(Ingame_Text),
 
-		for (DataSize cellIndex = 0; cellIndex < Ingame_Text_Length; cellIndex++)
-		{
-			Ingame_RenderCells[cellIndex].Char.UnicodeChar = Ingame_Text[cellIndex];
-		}
+			L"In-game\0",
+			start, end,
+			false
+		);
 
 		Ingame_DoneOnce = true;
 	}
-
-	ChangeCellsTo_White(Ingame_RenderCells, Ingame_Text_Length);
 
 	Input_SubscribeTo(Key_Enter, getAddress(LevelState_Ingame_OnKeyEnter));
 }
@@ -69,8 +66,6 @@ fn returns(void) Load_Ingame parameters(void)
 fn returns(void) Unload_Ingame parameters(void)
 {
 	Input_Unsubscribe(Key_Enter, getAddress(LevelState_Ingame_OnKeyEnter));
-
-	ChangeCellsTo_Grey(Ingame_RenderCells, Ingame_Text_Length);
 }
 
 fn returns(void) Update_Ingame parameters(void)
@@ -79,18 +74,7 @@ fn returns(void) Update_Ingame parameters(void)
 
 fn returns(void) Render_Ingame parameters(void)
 {
-	Stack()
-		unbound COORD startingCell, endingCell;
-
-	// In-game
-
-	startingCell.X = 1;
-	endingCell  .X = 1 + Ingame_Text_Length;
-
-	startingCell.Y = 1;
-	endingCell  .Y = 1;
-
-	Renderer_WriteToBufferCells(Ingame_RenderCells, startingCell, endingCell);
+	UI_Text_Render(getAddress(Ingame_Text));
 }
 
 

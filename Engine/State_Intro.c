@@ -30,7 +30,7 @@ Data()
 	bool Intro_DoneOnce = false;
 
 	CTS_CWString IntroTitle    = L"Trial By Fire Engine";
-	CTS_CWString EngineVersion = L"Type C Phase 8"      ;
+	CTS_CWString EngineVersion = L"Type C Phase 9"      ;
 
 	bool 
 		RenderTitle   = false, 

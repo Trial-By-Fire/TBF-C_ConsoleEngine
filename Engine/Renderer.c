@@ -29,12 +29,26 @@ BSS()
 
 	// Eliminate these?
 
-	Line DebugLogSection  [ERenderer_DebugLogSize         ];
+	typedef 
+		
+	struct Lines_Def
+	{
+		Ptr(Line) Array;
+
+		DataSize Num;
+	}
+
+	Lines;
+	
+	Lines DebugLogSection_Dynamic;
+
+	uInt DebugLogSection_RelativeLastLine = 1;
+
 	Line PersistentSection[ERenderer_PersistentSectionSize];
 
 Data()
 
-	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 8";
+	ro CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 9";
 
 	ro COORD Console_ScreenPos_00 = 
 	{
@@ -170,11 +184,13 @@ fn returns(void) Renderer_Update parameters(void)
 
 		State_Render();
 
+		Renderer_WriteToPersistentSection(1, L"Relative Last Line: %u", DebugLogSection_RelativeLastLine);
+
 		Stack()
 
-		COORD 
-			startingCell = { 0              , ERenderer_BorderLine}, 
-			finalCell    = { ERenderer_Width, ERenderer_BorderLine};
+			COORD 
+				startingCell = { 0              , ERenderer_BorderLine}, 
+				finalCell    = { ERenderer_Width, ERenderer_BorderLine};
 
 		Renderer_WriteToBufferCells(getAddress(Border_GameDebug), startingCell, finalCell);
 
@@ -183,12 +199,28 @@ fn returns(void) Renderer_Update parameters(void)
 
 		Renderer_WriteToBufferCells(getAddress(Border_LogPersistent), startingCell, finalCell);
 
-		for (DataSize index = 0; index < ERenderer_DebugLogSize; index++)
+		if (DebugLogSection_Dynamic.Num <= 18)
 		{
-			startingCell.Y = ERenderer_DebugStart + index;
-			finalCell   .Y = ERenderer_DebugStart + index;
+			for (DataSize index = 0; index < DebugLogSection_Dynamic.Num - 1; index++)
+			{
+				startingCell.Y = ERenderer_DebugStart + index;
+				finalCell   .Y = ERenderer_DebugStart + index;
 
-			Renderer_WriteToBufferCells(getAddress(DebugLogSection[index]), startingCell, finalCell);
+				Renderer_WriteToBufferCells(DebugLogSection_Dynamic.Array[index], startingCell, finalCell);
+			}
+		}
+		else
+		{
+			Stack()
+				DataSize LogStart = DebugLogSection_Dynamic.Num - 18 - DebugLogSection_RelativeLastLine;
+
+			for (DataSize index = 0; index < ERenderer_DebugLogSize; index++)
+			{
+				startingCell.Y = ERenderer_DebugStart + index;
+				finalCell   .Y = ERenderer_DebugStart + index;
+
+				Renderer_WriteToBufferCells(DebugLogSection_Dynamic.Array[LogStart + index], startingCell, finalCell);
+			}
 		}
 
 		for (DataSize index = 0; index < ERenderer_PersistentSectionSize; index++)
@@ -232,6 +264,34 @@ fn returns(void) Renderer_WriteToBufferCells parameters(Ptr(Cell) _cell, COORD _
 	return;
 }
 
+fn returns(void) Renderer_DebugLogDynamic_AddLine parameters(void)
+{
+	if (DebugLogSection_Dynamic.Num == 0)
+	{
+		DebugLogSection_Dynamic.Array = GlobalAllocate(Line, 1);
+
+		DebugLogSection_Dynamic.Num++;
+	}
+	else
+	{
+		Stack()
+			Address resizeIntermediary = GlobalReallocate(Line, DebugLogSection_Dynamic.Array, (DebugLogSection_Dynamic.Num + 1));
+
+		if (resizeIntermediary != NULL)
+		{
+			DebugLogSection_Dynamic.Array = resizeIntermediary;
+
+			DebugLogSection_Dynamic.Num++;
+		}
+		else
+		{
+			perror("Failed to globally reallocate log line array.");
+
+			exit(1);
+		}
+	}
+}
+
 fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 {
 	Stack()
@@ -241,50 +301,39 @@ fn returns(void) Renderer_WriteToLog parameters(Ptr(WideChar) _logString)
 		DataSize logLength = wcslen(_logString);
 		DataSize linePos   = 0;
 
+	if (nextLine == 0)
+	{
+		Renderer_DebugLogDynamic_AddLine();
+	}
+
 	for (DataSize index = 0; index < logLength; index++)
 	{
 		if (linePos > ERenderer_Width - 1)
 		{
 			nextLine++;
 
+			Renderer_DebugLogDynamic_AddLine();
+
 			linePos = 0;
 		}
 
-		if (nextLine == 18)
-		{
-			nextLine = 0;
-		}
-
-		DebugLogSection[nextLine][linePos].Char.UnicodeChar = _logString[index];
-		DebugLogSection[nextLine][linePos].Attributes       = Console_WhiteCell;
+		DebugLogSection_Dynamic.Array[nextLine][linePos].Char.UnicodeChar = _logString[index];
+		DebugLogSection_Dynamic.Array[nextLine][linePos].Attributes       = Console_WhiteCell;
 
 		linePos++;
 	}
 
 	for (DataSize index = linePos; index < ERenderer_Width; index++)
 	{
-		DebugLogSection[nextLine][index].Char.UnicodeChar = 0;
-		DebugLogSection[nextLine][index].Attributes       = 0;
+		DebugLogSection_Dynamic.Array[nextLine][index].Char.UnicodeChar = 0;
+		DebugLogSection_Dynamic.Array[nextLine][index].Attributes       = 0;
 	}
 
 	nextLine++;
 
-	if (nextLine == 18)
-	{
-		nextLine = 0;
-	}
+	Renderer_DebugLogDynamic_AddLine();
 
-	Stack()
-
-		Cell fillInfo;
-
-	fillInfo.Char.UnicodeChar = L'-';
-	fillInfo.Attributes       = Console_WhiteCell;
-
-	for (DataSize index = 0; index < ERenderer_Width; index++)
-	{
-		DebugLogSection[nextLine][index] = fillInfo;
-	}
+	DebugLogSection_RelativeLastLine = 1;
 }
 
 // Note: Row starts at 1.
@@ -424,6 +473,9 @@ fn returns(void) InitalizeData parameters(void)
 		Border_LogPersistent[index] = borderCell;
 	}
 
+	DebugLogSection_Dynamic.Array = NULL;
+	DebugLogSection_Dynamic.Num = 0;
+
 	return;
 }
 
@@ -484,4 +536,20 @@ fn returns(void) UpdateSizeAndPosition parameters(void)
 	);
 
 	return;
+}
+
+fn returns(void) Renderer_Logs_ScrollUp parameters(void)
+{
+	if (DebugLogSection_RelativeLastLine < DebugLogSection_Dynamic.Num)
+	{
+		DebugLogSection_RelativeLastLine++;
+	}
+}
+
+fn returns(void) Renderer_Logs_ScrollDown parameters(void)
+{
+	if (DebugLogSection_RelativeLastLine > 1)
+	{
+		DebugLogSection_RelativeLastLine --;
+	}
 }

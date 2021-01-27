@@ -14,7 +14,7 @@
 
 enum EInput_Constants
 {
-	Keys_NumTracked = 5,
+	Keys_NumTracked = 6,
 
 	InputState_BufferSize = 10
 };
@@ -59,6 +59,7 @@ struct StructOf_KeySignals_Def
 	bool Left;
 	bool Right;
 	bool Enter;
+	bool Tab;
 };
 
 struct Input_SignalState_Def

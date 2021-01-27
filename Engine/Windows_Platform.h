@@ -34,7 +34,8 @@ enum EKeyCode_Def
 	Key_Arrow_Down  = VK_DOWN,
 	Key_Arrow_Left  = VK_LEFT,
 	Key_Arrow_Right = VK_RIGHT,
-	Key_Enter       = VK_RETURN
+	Key_Enter       = VK_RETURN,
+	Key_Tab         = VK_TAB,
 };
 
 
