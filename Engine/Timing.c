@@ -64,8 +64,8 @@ void Timing_Update(void)
 void Timing_InitalizeData(void)
 {
 	Timing.Cycle_TicksElapsed = 0;
-	Timing.Cycle_Microseconds = 0.0L;
-	Timing.DeltaTime          = 0.0L;
+	Timing.Cycle_Microseconds = 0.0;	
+	Timing.DeltaTime          = 0.0;
 
 	QueryPerformanceFrequency(&Timing.TimeFrequency);
 
@@ -89,14 +89,14 @@ bool Timer_Ended(TimerData* _timer)
 
 void Timer_Reset(TimerData* _timer)
 {
-	_timer->Elapsed = 0.0L;
+	_timer->Elapsed = 0.01;
 }
 
 void Timer_Tick(TimerData* _timer)
 {
-	if (Float64_ApproxEqual(Timing.DeltaTime, 0.000001L) || Float64_ApproxLess(Timing.DeltaTime, 0.000001L))
+	if (Float64_ApproxEqual(Timing.DeltaTime, 0.000001) || Float64_ApproxLess(Timing.DeltaTime, 0.0000011))
 	{
-		_timer->Elapsed = _timer->Elapsed + 0.000001L;
+		_timer->Elapsed = _timer->Elapsed + 0.000001;
 
 		return;
 	}

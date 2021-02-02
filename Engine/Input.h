@@ -12,9 +12,9 @@
 
 // Enums
 
-enum EInput_Constants
+enum Input_Constants
 {
-	Keys_NumTracked = 6,
+	Input_NumKeysTracked = 6,
 
 	InputState_BufferSize = 10
 };
@@ -33,7 +33,7 @@ enum EInputState_Def
 
 typedef enum EInputState_Def EInputState;
 
-typedef bool BoolArray_KeySignals[Keys_NumTracked];
+typedef bool BoolArray_KeySignals[Input_NumKeysTracked];
 
 typedef struct StructOf_KeySignals_Def StructOf_KeySignals;
 
@@ -94,19 +94,12 @@ struct InputData_Def
 	Input_SignalState CurrentSignalState ;
 	Input_SignalState PreviousSignalState;
 
-	EInputState KeyStates[Keys_NumTracked];
+	EInputState KeyStates[Input_NumKeysTracked];
 
 	// Key Event Subscriptions
 
-	Subscriptions KeyEventSubs[Keys_NumTracked];
+	Subscriptions KeyEventSubs[Input_NumKeysTracked];
 };
-
-
-
-// Constants
-
-#define SizeOf_InputSystem \
-	sizeof(InputData)
 
 
 

@@ -4,6 +4,7 @@
 
 
 // Include
+#include "Memory.h"
 #include "Renderer.h"
 #include "Cycler.h"
 #include "Timing.h"
@@ -89,15 +90,15 @@ void IntroState_Load(void)
 	{
 		IntroTimer.EndTime = 7.0L;
 
-		Timer_TillTitle    .EndTime = 2.0L;
-		Timer_TillVersion  .EndTime = 1.2L;
+		Timer_TillTitle    .EndTime = 2.0;
+		Timer_TillVersion  .EndTime = 1.2;
 
-		Timer_TillIntroFadeToGrey.EndTime = Timer_TillTitle.EndTime + 4.2L;
+		Timer_TillIntroFadeToGrey.EndTime = Timer_TillTitle.EndTime + 4.2;
 
-		Timer_Till_FadeOut.EndTime = 0.134L;
+		Timer_Till_FadeOut.EndTime = 0.134;
 
-		Timer_TillTitle_ToWhite  .EndTime = 0.134L;
-		Timer_TillVersion_ToWhite.EndTime = 0.134L;
+		Timer_TillTitle_ToWhite  .EndTime = 0.134;
+		Timer_TillVersion_ToWhite.EndTime = 0.134;
 
 		Title_Length         = wcslen(IntroTitle);
 		EngineVersion_Length = wcslen(EngineVersion) + 1;
@@ -243,8 +244,8 @@ void IntroState_Render(void)
 	// Render Title
 	if (RenderTitle)
 	{
-		startingCell.X = (ERenderer_Width / 2) - (Title_Length / 2);
-		endingCell  .X = (ERenderer_Width / 2) + (Title_Length / 2);
+		startingCell.X = (Renderer_Width / 2) - ((uInt16)Title_Length / 2);
+		endingCell  .X = (Renderer_Width / 2) + ((uInt16)Title_Length / 2);
 
 		startingCell.Y = 9;
 		endingCell  .Y = 9;
@@ -255,8 +256,8 @@ void IntroState_Render(void)
 	// Render Version
 	if (RenderVersion)
 	{
-		startingCell.X = (ERenderer_Width / 2) - (EngineVersion_Length / 2);
-		endingCell  .X = (ERenderer_Width / 2) + (EngineVersion_Length / 2);
+		startingCell.X = (Renderer_Width / 2) - ((uInt16)EngineVersion_Length / 2);
+		endingCell  .X = (Renderer_Width / 2) + ((uInt16)EngineVersion_Length / 2);
 
 		startingCell.Y = 11;
 		endingCell  .Y = 11;
@@ -271,7 +272,7 @@ void IntroState_Render(void)
 
 StateObj* GetIntroState(void)
 {
-	static firstGet = true;
+	static bool firstGet = true;
 
 	if (firstGet) 
 	{

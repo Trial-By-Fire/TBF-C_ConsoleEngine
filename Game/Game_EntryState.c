@@ -21,8 +21,8 @@ UI_Widget MenuWidget;
 bool Menu_DoneOnce = false;
 
 bool 
-	Log_Load   = true;
-	Log_Unload = true;
+	Log_Load   = true,
+	Log_Unload = true ;
 
 
 
@@ -39,7 +39,7 @@ void MainMenu_PressStart(void)
 
 void MainMenu_PressQuit(void)
 {
-	Cycler_Quit();
+	Cycler_Lapse();
 }
 
 void Game_EntryState_OnKeyArrowUp(EInputState _state)

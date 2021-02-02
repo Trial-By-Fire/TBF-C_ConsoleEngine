@@ -13,25 +13,25 @@
 
 // Enums
 
-enum ERenderer
+enum Renderer_Constants
 {
-	ERenderer_Width                 = 80,
+	Renderer_Width                 = 80,
 
 #ifdef Debug
-	ERenderer_Height                = 48,
+	Renderer_Height                = 48,
 
-	ERenderer_BorderLine            = 24,
+	Renderer_BorderLine            = 24,
 
-	ERenderer_DebugStart            = 25,
-	ERenderer_DebugLogSize          = 18,
+	Renderer_DebugStart            = 25,
+	Renderer_DebugLogSize          = 18,
 
-	ERenderer_DebugPersistentStart  = 44,
-	ERenderer_PersistentSectionSize = 4 ,
+	Renderer_DebugPersistentStart  = 44,
+	Renderer_PersistentSectionSize = 4 ,
 #else
-	ERenderer_Height                = 24,
+	Renderer_Height                = 24,
 #endif
 
-	ERenderer_GameEnd               = 23,	
+	Renderer_GameEnd               = 23,	
 };
 
 
@@ -42,7 +42,7 @@ typedef CONSOLE_SCREEN_BUFFER_INFO CSBI;
 
 typedef CHAR_INFO Cell;
 
-typedef Cell Line[ERenderer_Width];
+typedef Cell Line[Renderer_Width];
 
 typedef struct RendererData_Def RendererData;
 typedef struct ScreenInfo_Def   ScreenInfo;
@@ -115,14 +115,11 @@ void Renderer_UnloadModule(void);
 
 void Renderer_Update(void);
 
-void Renderer_WriteToBufferCells(Cell* _cells, COORD _initalCell, COORD _finalCell);
+void Renderer_WriteToBufferCells(const Cell* _cells, COORD _initalCell, COORD _finalCell);
 
-// BS Fix for now:
-typedef wchar_t WideChar;   // From C_String.h
+void Renderer_WriteToLog(const WideChar* _logString);
 
-void Renderer_WriteToLog(WideChar* _logString);
-
-void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...);
+void Renderer_WriteToPersistentSection(sInt _row, const WideChar* _lineformat, ...);
 
 void Renderer_Logs_ScrollUp(void);
 

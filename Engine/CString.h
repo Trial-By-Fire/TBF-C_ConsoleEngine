@@ -4,7 +4,6 @@
 // Includes
 
 #include "LAL.h"
-#include "Memory.h"
 
 
 
@@ -19,27 +18,3 @@ typedef char CTS_CString[];
 typedef wchar_t WideChar;
 
 typedef wchar_t CTS_CWString[];
-
-
-
-// Structures
-
-struct CString_Def
-{
-	char* Array;
-
-	uInt64 Length;
-};
-
-
-
-// Constants
-
-#define SizeOf_CString \
-	sizeof(CString)
-
-
-
-// Functions
-
-void CString_LoadModule(void);

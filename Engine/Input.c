@@ -19,8 +19,8 @@ InputData Input;
 
 // Forward Declarations
 
-EKeyCode GetKeyCodeAtIndex  (size_t _index);
-size_t GetKeyIndexFromCode(EKeyCode _key);
+EKeyCode GetKeyCodeAtIndex  (size_t   _index);
+size_t   GetKeyIndexFromCode(EKeyCode _key  );
 
 
 
@@ -42,7 +42,7 @@ void Input_Update(void)
 {
 	size_t index = 0; 
 
-	for (; index < Keys_NumTracked; index++)
+	for (; index < Input_NumKeysTracked; index++)
 	{
 		bool Current, Previous;
 
@@ -60,7 +60,7 @@ void Input_Update(void)
 
 		EInputState* CurrentState = &Input.KeyStates[index];
 				
-		EInputState latestState;
+		EInputState latestState = EInput_None;
 
 		if (Current == Previous)
 		{
@@ -109,7 +109,7 @@ void Input_SubscribeTo(EKeyCode _key, InputEvent_Function* _callbackFunction)
 
 	if (subs->Num == 0)
 	{
-		subs->Array = GlobalAllocate(InputEvent_FunctionPtr*, 1);
+		subs->Array = GlobalAllocate(InputEvent_FunctionPtr, 1);
 
 		subs->Num++;
 	}
@@ -126,7 +126,7 @@ void Input_SubscribeTo(EKeyCode _key, InputEvent_Function* _callbackFunction)
 		}
 
 
-		Address resizeIntermediary = GlobalReallocate( InputEvent_FunctionPtr*, subs->Array, (subs->Num + 1) );
+		void* resizeIntermediary = GlobalReallocate( InputEvent_FunctionPtr, subs->Array, (subs->Num + 1) );
 
 		if (resizeIntermediary != NULL)
 		{
@@ -191,6 +191,8 @@ EKeyCode GetKeyCodeAtIndex(size_t _index)
 			return Key_Tab;
 		}
 	}
+
+	return Key_None;
 }
 
 size_t GetKeyIndexFromCode(EKeyCode _key)
@@ -222,4 +224,6 @@ size_t GetKeyIndexFromCode(EKeyCode _key)
 			return 5;
 		}
 	}
+
+	return ULONG_MAX;
 }

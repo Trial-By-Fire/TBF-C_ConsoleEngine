@@ -155,87 +155,87 @@ void Load_Ingame(void)
 
 		// Level 1
 
-		start.X = 0;                    start.Y = ERenderer_GameEnd - 1;
-		end  .X = ERenderer_Width - 70; end  .Y = ERenderer_GameEnd - 1;
+		start.X = 0;                    start.Y = Renderer_GameEnd - 1;
+		end  .X = Renderer_Width - 70; end  .Y = Renderer_GameEnd - 1;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Ground);
 
-		start.X = 0;                    start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 70; end  .Y = ERenderer_GameEnd;
+		start.X = 0;                    start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 70; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Ground);
 
-		start.X = ERenderer_Width - 70; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 60; end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 70; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 60; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Pit);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Pit);
 
-		start.X = ERenderer_Width - 60; start.Y = ERenderer_GameEnd -1;
-		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd -1;
+		start.X = Renderer_Width - 60; start.Y = Renderer_GameEnd -1;
+		end  .X = Renderer_Width - 40; end  .Y = Renderer_GameEnd -1;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Ground);
 
-		start.X = ERenderer_Width - 60; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 60; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 40; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Ground);
 
-		start.X = ERenderer_Width - 40; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 20; end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 40; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 20; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Pit);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Pit);
 
-		start.X = ERenderer_Width - 20; start.Y = ERenderer_GameEnd - 1;
-		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd - 1;
+		start.X = Renderer_Width - 20; start.Y = Renderer_GameEnd - 1;
+		end  .X = Renderer_Width;      end  .Y = Renderer_GameEnd - 1;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Ground);
 
-		start.X = ERenderer_Width - 20; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 20; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width;      end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level1, start, end, LevelCell_Ground);
+		Level_SetCells(&Level1, start, end, ELevelCellType_Ground);
 
 		// Level 2
 
-		start.X = 0;                    start.Y = ERenderer_GameEnd - 1;
-		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd - 1;
+		start.X = 0;                    start.Y = Renderer_GameEnd - 1;
+		end  .X = Renderer_Width - 40; end  .Y = Renderer_GameEnd - 1;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Ground);
 
-		start.X = 0;                    start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 40; end  .Y = ERenderer_GameEnd;
+		start.X = 0;                    start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 40; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Ground);
 
-	 	start.X = ERenderer_Width - 40; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 25; end  .Y = ERenderer_GameEnd;
+	 	start.X = Renderer_Width - 40; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 25; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Pit);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Pit);
 
-		start.X = ERenderer_Width - 25; start.Y = ERenderer_GameEnd -1;
-		end  .X = ERenderer_Width - 20; end  .Y = ERenderer_GameEnd -1;
+		start.X = Renderer_Width - 25; start.Y = Renderer_GameEnd -1;
+		end  .X = Renderer_Width - 20; end  .Y = Renderer_GameEnd -1;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Ground);
 
-		start.X = ERenderer_Width - 25; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 20; end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 25; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 20; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Ground);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Ground);
 	 
-		start.X = ERenderer_Width - 20; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width - 10; end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 20; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width - 10; end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Pit);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Pit);
 
-		start.X = ERenderer_Width - 10; start.Y = ERenderer_GameEnd - 1;
-		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd - 1;
+		start.X = Renderer_Width - 10; start.Y = Renderer_GameEnd - 1;
+		end  .X = Renderer_Width;      end  .Y = Renderer_GameEnd - 1;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Finish);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Finish);
 
-		start.X = ERenderer_Width - 10; start.Y = ERenderer_GameEnd;
-		end  .X = ERenderer_Width;      end  .Y = ERenderer_GameEnd;
+		start.X = Renderer_Width - 10; start.Y = Renderer_GameEnd;
+		end  .X = Renderer_Width;      end  .Y = Renderer_GameEnd;
 
-		Level_SetCells(&Level2, start, end, LevelCell_Finish);
+		Level_SetCells(&Level2, start, end, ELevelCellType_Finish);
 
 
 		Ingame_DoneOnce = true;

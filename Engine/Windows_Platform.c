@@ -146,7 +146,7 @@ bool GetKeySignal(EKeyCode _key)
 
 // Private
 
-INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
+INT WinMain()
 {	
 	EntryPoint();
 

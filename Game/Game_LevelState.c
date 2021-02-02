@@ -25,7 +25,7 @@ StateObj* LevelState_CurrentSubstate = NULL;
 
 // Class Public
 
-void* Load_Level(void)
+void Load_Level(void)
 {
 	LevelState_SetSubstate(GetIngameState());
 }

@@ -20,7 +20,6 @@
 void PrepareModules(void)
 {
 	Cycler_LoadModule  ();
-	CString_LoadModule ();
 	Timing_LoadModule  ();
 	Input_LoadModule   ();
 	Renderer_LoadModule();

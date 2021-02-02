@@ -18,7 +18,7 @@ MemoryBlockArray GlobalMemory =
 
 // C-API
 
-void* AllocateMemory(size_t _amountToAllocate)
+void* Internal_AllocateMemory(size_t _amountToAllocate)
 {
 	return malloc(_amountToAllocate);
 }
@@ -30,34 +30,37 @@ void Deallocate(void* _memoryToDeallocate)
 	return;
 }
 
-void* Reallocate(void* _memoryToReallocate, size_t _sizeDesired)
+void* Internal_Reallocate(void* _memoryToReallocate, size_t _sizeDesired)
 {
 	return realloc(_memoryToReallocate, _sizeDesired);
 }
+
+#define Reallocate(_type, _memoryToReallocate, _numberDesired) \
+(_type*)Internal_Reallocate(_memoryToReallocate, _numberDesired * sizeof(_type))
 
 void* Internal_Memory_FormatByFill(void* _memoryAddress, sInt _fillValue, size_t _sizeOfData)
 {
 	return memset(_memoryAddress, _fillValue, _sizeOfData);
 }
 
-void* Memory_FormatWithData(void* _memoryAddress, const void* _dataSource, size_t _sizeOfData)
+void* Internal_Memory_FormatWithData(void* _memoryAddress, const void* _dataSource, size_t _sizeOfData)
 {
 	return memcpy(_memoryAddress, _dataSource, _sizeOfData);
 }
 
 // Memory Allocation Array
 
-void MemoryBlockArray_Add(MemoryBlockArray* _memoryArray, MemoryBlock* _memoryAllocation)
+MemoryBlock* MemoryBlockArray_Add(MemoryBlockArray* _memoryArray)
 {
 	if (_memoryArray->Array == NULL)
 	{
-		_memoryArray->Array = AllocateMemory(sizeof(MemoryBlock));
+		_memoryArray->Array = AllocateMemory(MemoryBlock*, 1);
 
 		_memoryArray->Length = 1;
 	}
 	else
 	{
-		Address resizeIntermediary = Reallocate(_memoryArray->Array, _memoryArray->Length + 1);
+		MemoryBlock** resizeIntermediary = Reallocate(MemoryBlock*, _memoryArray->Array, (_memoryArray->Length + 1) );
 
 		if (resizeIntermediary != NULL)
 		{
@@ -68,47 +71,29 @@ void MemoryBlockArray_Add(MemoryBlockArray* _memoryArray, MemoryBlock* _memoryAl
 		else
 		{
 			perror("Failed to reallocate the global memory array. Exiting...");
+
+			exit(1);
 		}
 	}
+
+	_memoryArray->Array[_memoryArray->Length - 1] = AllocateMemory(MemoryBlock, 1);
+
+	return _memoryArray->Array[_memoryArray->Length - 1];
 }
 
 MemoryBlock* MemoryBlockArray_LastEntry(MemoryBlockArray* _memoryArray)
 {
-	return &_memoryArray->Array[_memoryArray->Length - 1];
+	return _memoryArray->Array[_memoryArray->Length - 1];
 }
 
 // Memory Management
 
-Address Internal_ScopedAllocate(MemoryBlockArray* _scopedMemory, size_t _sizeOfAllocation)
+void* Internal_ScopedAllocate(MemoryBlockArray* _scopedMemory, size_t _sizeOfAllocation)
 {
-	if (_scopedMemory->Array == NULL)
-	{
-		_scopedMemory->Array = AllocateMemory(sizeof(MemoryBlock*));
-
-		_scopedMemory->Length = 1;
-	}
-	else
-	{
-		Address resizeIntermediary = Reallocate(_scopedMemory->Array, sizeof(MemoryBlock*) * (_scopedMemory->Length + 1));
-
-		if (resizeIntermediary != NULL)
-		{
-			_scopedMemory->Array = resizeIntermediary;
-
-			_scopedMemory->Length++;
-		}
-		else
-		{
-			perror("Failed to reallocate the scoped memory array. Exiting...");
-		}
-	}
-
-	_scopedMemory->Array[_scopedMemory->Length - 1] = AllocateMemory(sizeof(MemoryBlock));
-
-	MemoryBlock* newBlock = _scopedMemory->Array[_scopedMemory->Length - 1];
+	MemoryBlock* newBlock = MemoryBlockArray_Add(_scopedMemory);
 
 	newBlock->Size     = _sizeOfAllocation;
-	newBlock->Location = AllocateMemory(_sizeOfAllocation);
+	newBlock->Location = AllocateMemory(Byte, _sizeOfAllocation);
 
 	if (newBlock->Location != NULL)
 	{
@@ -136,36 +121,12 @@ void ScopedDeallocate(MemoryBlockArray* _scopedMemory)
 	return;
 }
 
-Address Internal_GlobalAllocate(size_t _sizeOfAllocation)
+void* Internal_GlobalAllocate(size_t _sizeOfAllocation)
 {
-	if (GlobalMemory.Array == NULL)
-	{
-		GlobalMemory.Array = AllocateMemory(sizeof(MemoryBlock*));
-
-		GlobalMemory.Length = 1;
-	}
-	else
-	{
-		Address resizeIntermediary = Reallocate(GlobalMemory.Array, sizeof(MemoryBlock*) * (GlobalMemory.Length + 1));
-
-		if (resizeIntermediary != NULL)
-		{
-			GlobalMemory.Array = resizeIntermediary;
-
-			GlobalMemory.Length++;
-		}
-		else
-		{
-			perror("Failed to reallocate the global memory array. Exiting...");
-		}
-	}
-
-	GlobalMemory.Array[GlobalMemory.Length -1] = AllocateMemory(sizeof(MemoryBlock));
-
-	MemoryBlock* newBlock = GlobalMemory.Array[GlobalMemory.Length -1];
+	MemoryBlock* newBlock = MemoryBlockArray_Add(&GlobalMemory);
 		
 	newBlock->Size     = _sizeOfAllocation;
-	newBlock->Location = AllocateMemory(_sizeOfAllocation);
+	newBlock->Location = AllocateMemory(Byte, _sizeOfAllocation);
 
 	if (newBlock->Location != NULL)
 	{
@@ -179,13 +140,13 @@ Address Internal_GlobalAllocate(size_t _sizeOfAllocation)
 	}
 }
 
-Address Internal_GlobalReallocate(Address _location, size_t _sizeForReallocation)
+void* Internal_GlobalReallocate(void* _location, size_t _sizeForReallocation)
 {
 	for (size_t index = 0; index < GlobalMemory.Length; index++)
 	{
 		if (GlobalMemory.Array[index]->Location == _location)
 		{
-			Address resizeIntermediary = Reallocate(_location, _sizeForReallocation);
+			void* resizeIntermediary = Reallocate(Byte, _location, _sizeForReallocation);
 
 			if (resizeIntermediary != NULL)
 			{

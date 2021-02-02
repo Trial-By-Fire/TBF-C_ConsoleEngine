@@ -11,16 +11,19 @@
 
 // Enums
 
-enum 
+enum ECharacter_MoveState_Def
 {
 	ECharacter_DontMove ,
 	ECharacter_MoveLeft ,
 	ECharacter_MoveRight,
+};
 
-	LevelCell_Empty  = 0,
-	LevelCell_Pit    = BACKGROUND_BLUE,
-	LevelCell_Ground = BACKGROUND_GREEN,
-	LevelCell_Finish = BACKGROUND_RED
+enum ELevelCellType_Def
+{
+	ELevelCellType_Empty  = 0,
+	ELevelCellType_Pit    = BACKGROUND_BLUE,
+	ELevelCellType_Ground = BACKGROUND_GREEN,
+	ELevelCellType_Finish = BACKGROUND_RED
 };
 
 
@@ -29,18 +32,21 @@ enum
 
 // Character
 
+typedef enum ECharacter_MoveState_Def ECharacter_MoveState;
+
 typedef struct Character_Def Character;
 
 // Level
 
-typedef Line GameScreenBuffer[ERenderer_GameEnd + 1];
+typedef enum ELevelCellType_Def ELevelCellType;
+
+typedef Line GameScreenBuffer[Renderer_GameEnd + 1];
 
 typedef GameScreenBuffer Level;
 
 // Space
 
 typedef struct Vector2D_Def Vector2D;
-
 
 // UI
 
@@ -137,7 +143,7 @@ void Character_Render(Character* _character);
 
 sInt Level_GetCellAtPosition(Level* _level, Vector2D _position);
 
-void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, sInt _cellType);
+void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, ELevelCellType _cellType);
 
 void Level_Render(Level* _level);
 
@@ -155,11 +161,11 @@ void ChangeCellsTo_White(Cell* _renderCells, size_t _length);
 
 void UI_Text_Create 
 (
-	UI_Text*  _uiText, 
-	WideChar* _content, 
-	COORD     _startingCell, 
-	COORD     _endingCell,
-	bool      _shouldCenter
+	      UI_Text*  _uiText, 
+	const WideChar* _content, 
+	      COORD     _startingCell, 
+	      COORD     _endingCell,
+	      bool      _shouldCenter
 );
 
 void UI_Text_Render(const UI_Text* _uiText);

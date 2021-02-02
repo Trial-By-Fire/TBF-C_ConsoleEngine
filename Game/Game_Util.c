@@ -17,7 +17,7 @@ bool Character_AtFinish(Character* _character, Level* _level)
 
 	sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
-	return cellCollided == LevelCell_Finish;
+	return cellCollided == ELevelCellType_Finish;
 }
 
 bool Character_IsGrounded(Character* _character, Level* _level)
@@ -28,7 +28,7 @@ bool Character_IsGrounded(Character* _character, Level* _level)
 
 	sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
-	return cellCollided == LevelCell_Ground || cellCollided == LevelCell_Finish;
+	return cellCollided == ELevelCellType_Ground || cellCollided == ELevelCellType_Finish;
 }
 
 void Character_Load(Character* _character)
@@ -64,7 +64,7 @@ void Character_Update(Character* _character, Level* _level)
 
 	sInt cellCollided = Level_GetCellAtPosition(_level, collisionPostion);
 
-	if (cellCollided == LevelCell_Ground || cellCollided == LevelCell_Finish)
+	if (cellCollided == ELevelCellType_Ground || cellCollided == ELevelCellType_Finish)
 	{
 		_character->VerticalVelocity = 0.0f;
 
@@ -72,7 +72,7 @@ void Character_Update(Character* _character, Level* _level)
 
 		_character->Active_MoveState = _character->MoveState;
 	}
-	else if (cellCollided == LevelCell_Pit)
+	else if (cellCollided == ELevelCellType_Pit)
 	{
 		_character->VerticalVelocity = 0.0f;
 
@@ -87,13 +87,13 @@ void Character_Update(Character* _character, Level* _level)
 		_character->Position.Y += _character->VerticalVelocity;
 	}
 
-	if (cellCollided == LevelCell_Finish) return;
+	if (cellCollided == ELevelCellType_Finish) return;
 
-	if (_character->ShouldJump && cellCollided == LevelCell_Ground)
+	if (_character->ShouldJump && cellCollided == ELevelCellType_Ground)
 	{
 		Renderer_WriteToLog(L"Giving character jump velocity");
 
-		_character->VerticalVelocity = 0.075 * deltaTime;
+		_character->VerticalVelocity = 0.075f * deltaTime;
 
 		_character->Position.Y = -0.75f;
 
@@ -135,8 +135,8 @@ void Character_Render(Character* _character)
 	Renderer_WriteToPersistentSection(2, L"RC  X: %u", renderCoord.X);
 	Renderer_WriteToPersistentSection(4, L"RC  Y: %u", renderCoord.Y);
 
-	if (renderCoord.Y < 0                ) renderCoord.Y = 0;
-	if (renderCoord.Y > ERenderer_GameEnd) renderCoord.Y = ERenderer_GameEnd;
+	if (renderCoord.Y < 0               ) renderCoord.Y = 0;
+	if (renderCoord.Y > Renderer_GameEnd) renderCoord.Y = Renderer_GameEnd;
 
 	Renderer_WriteToBufferCells(&_character->Sprite, renderCoord, renderCoord);
 
@@ -156,8 +156,8 @@ void Character_Render(Character* _character)
 
 	colliderViewCoord = Convert_Vector2D_ToRenderCoord(collisionPostion);
 
-	if (colliderViewCoord.Y < 0                ) colliderViewCoord.Y = 0;
-	if (colliderViewCoord.Y > ERenderer_GameEnd) colliderViewCoord.Y = ERenderer_GameEnd;
+	if (colliderViewCoord.Y < 0               ) colliderViewCoord.Y = 0;
+	if (colliderViewCoord.Y > Renderer_GameEnd) colliderViewCoord.Y = Renderer_GameEnd;
 
 	Renderer_WriteToBufferCells(&colliderView, colliderViewCoord, colliderViewCoord);
 #endif
@@ -171,7 +171,7 @@ sInt Level_GetCellAtPosition(Level* _level, Vector2D _position)
 
 	Cell* cellBuffer = (Cell*)_level;
 
-	size_t lineOffset = renderCoord.Y * ERenderer_Width;
+	size_t lineOffset = renderCoord.Y * Renderer_Width;
 	size_t colOffset  = renderCoord.X;
 
 	size_t totalOffset = lineOffset + colOffset;
@@ -179,23 +179,23 @@ sInt Level_GetCellAtPosition(Level* _level, Vector2D _position)
 	return cellBuffer[totalOffset].Attributes;
 }
 
-void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, sInt _cellType) 
+void Level_SetCells(Level* _level, COORD _firstCell, COORD _lastCell, ELevelCellType _cellType) 
 
 SmartScope
 {
 
-	size_t lineOffset = _firstCell.Y * ERenderer_Width;
+	size_t lineOffset = _firstCell.Y * Renderer_Width;
 	size_t colOffset  = _firstCell.X;
 
 	size_t totalOffset = lineOffset + colOffset;
 
 	Cell* levelCellBuffer = (Cell*)_level;
 
-	void* bufferOffset = &levelCellBuffer[totalOffset];
+	Cell* bufferOffset = &levelCellBuffer[totalOffset];
 
 	size_t dataSize = totalOffset;
 
-	lineOffset = _lastCell.Y * ERenderer_Width;
+	lineOffset = _lastCell.Y * Renderer_Width;
 
 	colOffset  = _lastCell.X;
 
@@ -213,7 +213,7 @@ SmartScope
 		setCellBuffer[index].Attributes       = _cellType;
 	}
 
-	Memory_FormatWithData(bufferOffset, (void*)setCellBuffer, dataSize * sizeof(Cell));
+	Memory_FormatWithData(Cell, bufferOffset, (void*)setCellBuffer, dataSize);
 }
 SmartScope_End
 
@@ -221,7 +221,7 @@ void Level_Render(Level* _level)
 {
 	COORD 
 		screenStart = {               0,                 0 }, 
-		screenEnd   = { ERenderer_Width, ERenderer_GameEnd } ;
+		screenEnd   = { Renderer_Width, Renderer_GameEnd } ;
 
 	Renderer_WriteToBufferCells((Cell*)_level, screenStart, screenEnd);
 }
@@ -231,19 +231,19 @@ void Level_Render(Level* _level)
 COORD Convert_Vector2D_ToRenderCoord(Vector2D _vector)
 {
 	static float32 
-		offsetX = (float32)ERenderer_Width   / 2.0f, 
-		offsetY = (float32)ERenderer_GameEnd / 2.0f;
+		offsetX = (float32)Renderer_Width   / 2.0f, 
+		offsetY = (float32)Renderer_GameEnd / 2.0f;
 
 	float32 
-		convertedX = _vector.X * ((float32)ERenderer_Width   / 2.0f), 
-		convertedY = _vector.Y * ((float32)ERenderer_GameEnd / 2.0f);
+		convertedX = _vector.X * ((float32)Renderer_Width   / 2.0f), 
+		convertedY = _vector.Y * ((float32)Renderer_GameEnd / 2.0f);
 
 	COORD renderingCoord;
 
 	renderingCoord.X = (sInt16)(convertedX + offsetX   );	
 	renderingCoord.Y = (sInt16)(offsetY    - convertedY);
 
-	if (renderingCoord.X >= ERenderer_Width) renderingCoord.X = ERenderer_Width - 1;
+	if (renderingCoord.X >= Renderer_Width) renderingCoord.X = Renderer_Width - 1;
 
 	return renderingCoord;
 }
@@ -274,11 +274,11 @@ void ChangeCellsTo_White(Cell* _renderCells, size_t _length)
 
 void UI_Text_Create 
 (
-	UI_Text*  _uiText, 
-	WideChar* _content, 
-	COORD     _startingCell, 
-	COORD     _endingCell,
-	bool      _shouldCenter
+	      UI_Text*  _uiText, 
+	const WideChar* _content, 
+	      COORD     _startingCell, 
+	      COORD     _endingCell,
+	      bool      _shouldCenter
 )
 {
 	// Get length of contents.
@@ -304,15 +304,15 @@ void UI_Text_Create
 
 	if (_shouldCenter)
 	{
-		_uiText->StartingCell.X += (ERenderer_Width / 2) - (_uiText->Length / 2);
-		_uiText->EndingCell  .X += (ERenderer_Width / 2) + (_uiText->Length / 2);
+		_uiText->StartingCell.X += (Renderer_Width / 2) - ((uInt16)_uiText->Length / 2);
+		_uiText->EndingCell  .X += (Renderer_Width / 2) + ((uInt16)_uiText->Length / 2);
 
 		_uiText->StartingCell.X--;
 		_uiText->EndingCell  .X--;
 	}
 	else
 	{
-		_uiText->EndingCell.X += _uiText->Length;
+		_uiText->EndingCell.X += (uInt16)_uiText->Length;
 	}
 }
 
@@ -357,15 +357,15 @@ void UI_Button_Create
 
 	if (_shouldCenter)
 	{
-		_button->Text.StartingCell.X += (ERenderer_Width / 2) - (_button->Text.Length / 2);
-		_button->Text.EndingCell  .X += (ERenderer_Width / 2) + (_button->Text.Length / 2);
+		_button->Text.StartingCell.X += (Renderer_Width / 2) - ((uInt16)_button->Text.Length / 2);
+		_button->Text.EndingCell  .X += (Renderer_Width / 2) + ((uInt16)_button->Text.Length / 2);
 
 		_button->Text.StartingCell.X--;
 		_button->Text.EndingCell  .X--;
 	}
 	else
 	{
-		_button->Text.EndingCell.X += _button->Text.Length / 2;
+		_button->Text.EndingCell.X += (uInt16)_button->Text.Length / 2;
 	}
 
 	_button->Callback = _callback;
@@ -402,7 +402,7 @@ void UI_Grid_Add
 	}
 	else
 	{
-		Address resizeIntermediary = GlobalReallocate(UI_Button, _uiGrid->Buttons, (_uiGrid->Num + 1));
+		void* resizeIntermediary = GlobalReallocate(UI_Button, _uiGrid->Buttons, (_uiGrid->Num + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -508,7 +508,7 @@ void UI_Widget_AddText
 	}
 	else
 	{
-		Address resizeIntermediary = GlobalReallocate(UI_Text, _uiWidget->TextUIs, (_uiWidget->Num_TextUIs + 1));
+		void* resizeIntermediary = GlobalReallocate(UI_Text, _uiWidget->TextUIs, (_uiWidget->Num_TextUIs + 1));
 
 		if (resizeIntermediary != NULL)
 		{

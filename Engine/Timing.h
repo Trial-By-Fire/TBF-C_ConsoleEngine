@@ -10,6 +10,16 @@
 
 
 
+// Enums
+
+enum Timing_Constants
+{
+	TickToMicroseconds  = 1000000 ,
+	MicrosecondToSecond = 10000000
+};
+
+
+
 // Aliases (Typedefs)
 
 typedef struct TimingData_Def TimingData;
@@ -30,22 +40,8 @@ struct TimingData_Def
 
 
 
-// Constants
-
-#define TickToMicroseconds \
-	1000000
-
-#define MicrosecondToSecond \
-	10000000
-
-#define SizeOf_TimeData \
-	sizeof(TimingData)
-
-
 
 // Functions
-
-//fn returns(void) Timing_MakeTimer parameters(void);
 
 const TimingData* Timing_GetContext(void);
 

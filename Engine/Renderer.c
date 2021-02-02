@@ -44,7 +44,7 @@ uInt DebugLogSection_RelativeLastLine = 1;
 
 
 #ifdef Debug
-	Line PersistentSection[ERenderer_PersistentSectionSize];
+	Line PersistentSection[Renderer_PersistentSectionSize];
 #endif
 
 const CTS_CWString Renderer_ConsoleTitle = L"TBF C Engine: Phase 14";
@@ -76,7 +76,7 @@ void Renderer_Clear(void)
 {
 	if (UpdateConsoleInfo())
 	{
-		Memory_FormatByFill(CHAR_INFO, Buffer, 0, ERenderer_Width * ERenderer_Height);
+		Memory_FormatByFill(CHAR_INFO, Buffer, 0, Renderer_Width * Renderer_Height);
 	}
 }
 
@@ -127,9 +127,9 @@ void Renderer_LoadModule(void)
 
 void Renderer_ProcessTiming(float64 _deltaTime)
 {
-	if (Float64_ApproxEqual(_deltaTime, 0.000001L) || Float64_ApproxLess(_deltaTime, 0.000001L))
+	if (Float64_ApproxEqual(_deltaTime, 0.000001) || Float64_ApproxLess(_deltaTime, 0.000001))
 	{
-		Renderer.RefeshTimer = Renderer.RefeshTimer + 0.000001L;
+		Renderer.RefeshTimer = Renderer.RefeshTimer + 0.000001;
 
 		return;
 	}
@@ -189,22 +189,22 @@ void Renderer_Update(void)
 
 
 		COORD 
-			startingCell = { 0              , ERenderer_BorderLine}, 
-			finalCell    = { ERenderer_Width, ERenderer_BorderLine};
+			startingCell = { 0              , Renderer_BorderLine}, 
+			finalCell    = { Renderer_Width, Renderer_BorderLine};
 
-		Renderer_WriteToBufferCells(&Border_GameDebug, startingCell, finalCell);
+		Renderer_WriteToBufferCells((Cell*)&Border_GameDebug, startingCell, finalCell);
 
-		startingCell.Y = ERenderer_DebugPersistentStart - 1;
-		finalCell   .Y = ERenderer_DebugPersistentStart - 1;
+		startingCell.Y = Renderer_DebugPersistentStart - 1;
+		finalCell   .Y = Renderer_DebugPersistentStart - 1;
 
-		Renderer_WriteToBufferCells(&Border_LogPersistent, startingCell, finalCell);
+		Renderer_WriteToBufferCells((Cell*)&Border_LogPersistent, startingCell, finalCell);
 
 		if (DebugLogSection_Dynamic.Num <= 18)
 		{
 			for (size_t index = 0; index < DebugLogSection_Dynamic.Num - 1; index++)
 			{
-				startingCell.Y = ERenderer_DebugStart + index;
-				finalCell   .Y = ERenderer_DebugStart + index;
+				startingCell.Y = Renderer_DebugStart + (uInt16)index;
+				finalCell   .Y = Renderer_DebugStart + (uInt16)index;
 
 				Renderer_WriteToBufferCells(DebugLogSection_Dynamic.Array[index], startingCell, finalCell);
 			}
@@ -213,21 +213,21 @@ void Renderer_Update(void)
 		{
 			size_t LogStart = DebugLogSection_Dynamic.Num - 18 - DebugLogSection_RelativeLastLine;
 
-			for (size_t index = 0; index < ERenderer_DebugLogSize; index++)
+			for (size_t index = 0; index < Renderer_DebugLogSize; index++)
 			{
-				startingCell.Y = ERenderer_DebugStart + index;
-				finalCell   .Y = ERenderer_DebugStart + index;
+				startingCell.Y = Renderer_DebugStart + (uInt16)index;
+				finalCell   .Y = Renderer_DebugStart + (uInt16)index;
 
-				Renderer_WriteToBufferCells(DebugLogSection_Dynamic.Array[LogStart + index], startingCell, finalCell);
+				Renderer_WriteToBufferCells((Cell*)DebugLogSection_Dynamic.Array[LogStart + index], startingCell, finalCell);
 			}
 		}
 
-		for (size_t index = 0; index < ERenderer_PersistentSectionSize; index++)
+		for (size_t index = 0; index < Renderer_PersistentSectionSize; index++)
 		{
-			startingCell.Y = ERenderer_DebugPersistentStart + index;
-			finalCell   .Y = ERenderer_DebugPersistentStart + index;
+			startingCell.Y = Renderer_DebugPersistentStart + (uInt16)index;
+			finalCell   .Y = Renderer_DebugPersistentStart + (uInt16)index;
 
-			Renderer_WriteToBufferCells(&PersistentSection[index], startingCell, finalCell);
+			Renderer_WriteToBufferCells((Cell*)&PersistentSection[index], startingCell, finalCell);
 		}
 
 	#endif
@@ -238,18 +238,18 @@ void Renderer_Update(void)
 	}
 }
 
-void Renderer_WriteToBufferCells(Cell* _cell, COORD _initalCell, COORD _finalCell)
+void Renderer_WriteToBufferCells(const Cell* _cells, COORD _initalCell, COORD _finalCell)
 {
-	size_t lineOffset = _initalCell.Y * ERenderer_Width;
+	size_t lineOffset = _initalCell.Y * Renderer_Width;
 	size_t colOffset  = _initalCell.X;
 
 	size_t totalOffset = lineOffset + colOffset;
 
-	void* bufferOffset = &Buffer[totalOffset];
+	Cell* bufferOffset = &Buffer[totalOffset];
 
 	size_t dataSize = totalOffset;
 
-	lineOffset =  _finalCell.Y * ERenderer_Width;
+	lineOffset =  _finalCell.Y * Renderer_Width;
 	colOffset  =  _finalCell.X                  ;
 
 	totalOffset = lineOffset + colOffset;
@@ -258,7 +258,7 @@ void Renderer_WriteToBufferCells(Cell* _cell, COORD _initalCell, COORD _finalCel
 
 	if (dataSize == 0) dataSize = 1;
 
-	Memory_FormatWithData(bufferOffset, _cell, dataSize * sizeof(Cell));
+	Memory_FormatWithData(Cell, bufferOffset, _cells, dataSize);
 
 	return;
 }
@@ -275,7 +275,7 @@ void Renderer_DebugLogDynamic_AddLine(void)
 	}
 	else
 	{
-		Address resizeIntermediary = GlobalReallocate(Line, DebugLogSection_Dynamic.Array, (DebugLogSection_Dynamic.Num + 1));
+		void* resizeIntermediary = GlobalReallocate(Line, DebugLogSection_Dynamic.Array, (DebugLogSection_Dynamic.Num + 1));
 
 		if (resizeIntermediary != NULL)
 		{
@@ -294,7 +294,7 @@ void Renderer_DebugLogDynamic_AddLine(void)
 #endif
 }
 
-void Renderer_WriteToLog(WideChar* _logString)
+void Renderer_WriteToLog(const WideChar* _logString)
 {
 #ifdef Debug
 
@@ -311,7 +311,7 @@ void Renderer_WriteToLog(WideChar* _logString)
 
 	for (size_t index = 0; index < logLength; index++)
 	{
-		if (linePos > ERenderer_Width - 1)
+		if (linePos > Renderer_Width - 1)
 		{
 			nextLine++;
 
@@ -326,7 +326,7 @@ void Renderer_WriteToLog(WideChar* _logString)
 		linePos++;
 	}
 
-	for (size_t index = linePos; index < ERenderer_Width; index++)
+	for (size_t index = linePos; index < Renderer_Width; index++)
 	{
 		DebugLogSection_Dynamic.Array[nextLine][index].Char.UnicodeChar = 0;
 		DebugLogSection_Dynamic.Array[nextLine][index].Attributes       = 0;
@@ -342,11 +342,11 @@ void Renderer_WriteToLog(WideChar* _logString)
 }
 
 // Note: Row starts at 1.
-void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...)
+void Renderer_WriteToPersistentSection(sInt _row, const WideChar* _lineformat, ...)
 {
 #ifdef Debug
 
-	WideChar TranslationBuffer[ERenderer_Width];
+	WideChar TranslationBuffer[Renderer_Width];
 
 	Cell* PersistentSubSection = PersistentSection[_row - 1];
 
@@ -363,7 +363,7 @@ void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...)
 		_vswprintf_s_l
 		(
 			TranslationBuffer, 
-			ERenderer_Width, 
+			Renderer_Width, 
 			_lineformat, 
 			NULL,
 			argList
@@ -377,10 +377,10 @@ void Renderer_WriteToPersistentSection(sInt _row, WideChar* _lineformat, ...)
 		PersistentSubSection[index].Attributes       = Console_WhiteCell;
 	}
 
-	for (size_t index = CellsFormatted + 1; index < ERenderer_Width; index++)
+	for (size_t index = CellsFormatted + 1; index < Renderer_Width; index++)
 	{
-		PersistentSubSection[index].Char.UnicodeChar = NULL;
-		PersistentSubSection[index].Attributes       = NULL;
+		PersistentSubSection[index].Char.UnicodeChar = 0;
+		PersistentSubSection[index].Attributes       = 0;
 	}
 
 #endif
@@ -401,27 +401,27 @@ void DrawGameScanlines(void)
 	cellUnit.Char.UnicodeChar = blockChar;
 	cellUnit.Attributes       = FOREGROUND_INTENSITY;
 
-	Cell cellLine[ERenderer_Width];
+	Cell cellLine[Renderer_Width];
 
-	for (size_t index = 0; index < ERenderer_Width; index++)
+	for (size_t index = 0; index < Renderer_Width; index++)
 	{
 		cellLine[index] = cellUnit;
 	}
 
-	COORD cellIndex_End = { ERenderer_Width, cellIndex.Y };
+	COORD cellIndex_End = { Renderer_Width, cellIndex.Y };
 
-	Renderer_WriteToBufferCells(&cellLine, cellIndex, cellIndex_End);
+	Renderer_WriteToBufferCells((Cell*)&cellLine, cellIndex, cellIndex_End);
 
 	cellIndex.Y++;
 
-	if (cellIndex.X >= ERenderer_Width)
+	if (cellIndex.X >= Renderer_Width)
 	{
 		cellIndex.X = 0;
 
 		cellIndex.Y++;
 	}
 
-	if (cellIndex.Y > ERenderer_GameEnd)
+	if (cellIndex.Y > Renderer_GameEnd)
 	{
 		cellIndex.X = 0;
 
@@ -436,14 +436,14 @@ void InitalizeData(void)
 	Screen.Center.X = GetSystemMetrics(SM_CXSCREEN) / 2;
 	Screen.Center.Y = GetSystemMetrics(SM_CYSCREEN) / 2;
 
-	Renderer.ScreenPosition.X = (Screen.Center.X - ((ERenderer_Width  / 2) * 8)) - 20;
-	Renderer.ScreenPosition.Y = (Screen.Center.Y - ((ERenderer_Height / 2) * 8)) - 200;
+	Renderer.ScreenPosition.X = (Screen.Center.X - ((Renderer_Width  / 2) * 8)) - 20;
+	Renderer.ScreenPosition.Y = (Screen.Center.Y - ((Renderer_Height / 2) * 8)) - 200;
 
 	Renderer.RefeshTimer    = 0.0L;
 	Renderer.RefeshInterval = 1.0L / 60.0L;
 
-	Renderer.CoordSize.X = ERenderer_Width ;
-	Renderer.CoordSize.Y = ERenderer_Height;
+	Renderer.CoordSize.X = Renderer_Width ;
+	Renderer.CoordSize.Y = Renderer_Height;
 
 	Renderer.Output_Handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -451,15 +451,15 @@ void InitalizeData(void)
 
 	Renderer.Size.Left   = Console_ScreenPos_00.X;
 	Renderer.Size.Top    = Console_ScreenPos_00.Y;
-	Renderer.Size.Right  = ERenderer_Width  - 1;
-	Renderer.Size.Bottom = ERenderer_Height - 1;
+	Renderer.Size.Right  = Renderer_Width  - 1;
+	Renderer.Size.Bottom = Renderer_Height - 1;
 
 	Renderer.CursorSettings.dwSize   = Console_Cursor_MinSize;
 	Renderer.CursorSettings.bVisible = Console_Cursor_NotVisible;
 
-	Buffer = GlobalAllocate(CHAR_INFO, ERenderer_Width * ERenderer_Height);
+	Buffer = GlobalAllocate(CHAR_INFO, Renderer_Width * Renderer_Height);
 
-	Memory_FormatByFill(CHAR_INFO, Buffer, 0, ERenderer_Width * ERenderer_Height);
+	Memory_FormatByFill(CHAR_INFO, Buffer, 0, Renderer_Width * Renderer_Height);
 
 	Cell borderCell; 
 	
@@ -468,7 +468,7 @@ void InitalizeData(void)
 
 #ifdef Debug
 
-	for (size_t index = 0; index < ERenderer_Width; index++)
+	for (size_t index = 0; index < Renderer_Width; index++)
 	{
 		Border_GameDebug    [index] = borderCell;
 		Border_LogPersistent[index] = borderCell;

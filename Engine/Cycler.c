@@ -44,16 +44,6 @@ void Cycler_Initialize(void)
 		
 		// Update Renderer
 
-		//Stack()
-
-			//ro Ptr(InputData   ) inputContext    = Input_GetContext   ();
-			//ro Ptr(RendererData) rendererContext = Renderer_GetContext();
-			//ro Ptr(TimingData  ) timingContext   = Timing_GetContext  ();
-
-		//Renderer_WriteToPersistentSection(1, L"Tick Elapsed        : %llu" , timingContext  ->Cycle_TicksElapsed);
-		//Renderer_WriteToPersistentSection(2, L"Timer      (Seconds): %.7Lf", rendererContext->RefeshTimer       );
-		//Renderer_WriteToPersistentSection(3, L"Delta Time (Seconds): %.7Lf", timingContext  ->DeltaTime         );
-
 		Renderer_Update();
 
 		// Update Timing
@@ -67,17 +57,4 @@ void Cycler_Initialize(void)
 void Cycler_LoadModule(void)
 {
 	Exist = true;
-}
-
-void Cycler_Quit(void)
-{
-	Exist = false;
-}
-
-
-
-// Private
-
-bool ShouldQuit(void)
-{
 }
