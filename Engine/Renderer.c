@@ -127,18 +127,7 @@ void Renderer_LoadModule(void)
 
 void Renderer_ProcessTiming(float64 _deltaTime)
 {
-	if (Float64_ApproxEqual(_deltaTime, 0.000001) || Float64_ApproxLess(_deltaTime, 0.000001))
-	{
-		Renderer.RefeshTimer = Renderer.RefeshTimer + 0.000001;
-
-		return;
-	}
-	else
-	{
-		Renderer.RefeshTimer = Renderer.RefeshTimer + _deltaTime;
-
-		return;
-	}
+	Timer_Tick(&Renderer.RefreshTimer);
 }
 
 void Renderer_RenderFrame(void)
@@ -175,7 +164,7 @@ void Renderer_UnloadModule(void)
 
 void Renderer_Update(void)
 {
-	if (ShouldRender())
+	if (Timer_Ended(&Renderer.RefreshTimer))
 	{
 		Renderer_Clear();
 
@@ -189,8 +178,8 @@ void Renderer_Update(void)
 
 
 		COORD 
-			startingCell = { 0              , Renderer_BorderLine}, 
-			finalCell    = { Renderer_Width, Renderer_BorderLine};
+			startingCell = { 0             , Renderer_BorderLine }, 
+			finalCell    = { Renderer_Width, Renderer_BorderLine };
 
 		Renderer_WriteToBufferCells((Cell*)&Border_GameDebug, startingCell, finalCell);
 
@@ -234,7 +223,7 @@ void Renderer_Update(void)
 
 		Renderer_RenderFrame();
 
-		Renderer.RefeshTimer = 0.0L;
+		Timer_Reset(&Renderer.RefreshTimer);
 	}
 }
 
@@ -439,8 +428,8 @@ void InitalizeData(void)
 	Renderer.ScreenPosition.X = (Screen.Center.X - ((Renderer_Width  / 2) * 8)) - 20;
 	Renderer.ScreenPosition.Y = (Screen.Center.Y - ((Renderer_Height / 2) * 8)) - 200;
 
-	Renderer.RefeshTimer    = 0.0L;
-	Renderer.RefeshInterval = 1.0L / 60.0L;
+	Renderer.RefreshTimer.Elapsed = 0.0;
+	Renderer.RefreshTimer.EndTime = 1.0 / 60.0;
 
 	Renderer.CoordSize.X = Renderer_Width ;
 	Renderer.CoordSize.Y = Renderer_Height;
@@ -500,12 +489,6 @@ void SetupConsole(void)
 	}
 
 	return;
-}
-
-bool ShouldRender(void)
-{
-	return Float64_ApproxGreater(Renderer.RefeshTimer, Renderer.RefeshInterval) ||
-		   Float64_ApproxEqual  (Renderer.RefeshTimer, Renderer.RefeshInterval)   ;
 }
 
 bool UpdateConsoleInfo(void)

@@ -8,6 +8,7 @@
 #include "LAL.h"
 #include "CString.h"
 #include "OSPlatform.h"
+#include "Timing.h"
 
 
 
@@ -73,10 +74,7 @@ struct RendererData_Def
 
 	Vec2D_Int ScreenPosition;
 
-	// Render Timing
-
-	float64 RefeshTimer   ;
-	float64 RefeshInterval;
+	TimerData RefreshTimer;
 };
 
 struct ScreenInfo_Def
