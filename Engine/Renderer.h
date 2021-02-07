@@ -6,7 +6,6 @@
 
 #include "Config.h"
 #include "LAL.h"
-#include "CString.h"
 #include "OSPlatform.h"
 #include "Timing.h"
 
