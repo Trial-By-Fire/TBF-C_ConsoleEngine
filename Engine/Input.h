@@ -105,7 +105,8 @@ struct InputData_Def
 
 // Functions
 
-const InputData* Input_GetContext(void);
+const InputData* 
+Input_GetContext(void);
 
 void Input_LoadModule(void);
 

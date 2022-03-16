@@ -6,7 +6,6 @@
 #define _FLOATCMP
 
 
-
 // Includes
 
 #include <float.h>

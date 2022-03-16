@@ -28,17 +28,15 @@ size_t   GetKeyIndexFromCode(EKeyCode _key  );
 
 // Public
 
-void Input_LoadModule(void)
-{
+void Input_LoadModule(void) {
 	//Input.StateIndex = 0;
 }
 
-const InputData* Input_GetContext(void)
-{
+const InputData* Input_GetContext(void) {
 	return &Input;
 }
 
-void Input_Update(void)
+void Input_Update(void) 
 {
 	size_t index = 0; 
 

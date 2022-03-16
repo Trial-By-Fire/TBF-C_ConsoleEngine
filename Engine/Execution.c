@@ -16,7 +16,7 @@
 
 // Functions
 
-void PrepareModules(void)
+void PrepareModules(void) 
 {
 	Cycler_LoadModule  ();
 	Timing_LoadModule  ();

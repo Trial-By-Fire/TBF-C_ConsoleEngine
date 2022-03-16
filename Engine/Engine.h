@@ -15,4 +15,10 @@
 // Functions
 
 // Game must implement this function.
-StateObj* LoadGame(void);
+
+#if 	ModuleLinkage == ModuleLinkMode_Dynamic
+		StateObj* LoadGame(void);
+
+#elif 	ModuleLinkage == MoudleLinkMode_Static
+		extern StateObj* (LoadGame*)(void);
+#endif

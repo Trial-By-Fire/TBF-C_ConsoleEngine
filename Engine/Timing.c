@@ -51,8 +51,8 @@ void Timing_Update(void)
 {
 	Timing.Cycle_TicksElapsed = Timing.TimeSnapshot_End.QuadPart - Timing.TimeSnapshot_Initial.QuadPart;
 
-	Timing.Cycle_Microseconds = (float64)(Timing.Cycle_TicksElapsed * TickToMicroseconds);
-	Timing.Cycle_Microseconds = Timing.Cycle_Microseconds / (float64)Timing.TimeFrequency.QuadPart;
+	Timing.Cycle_Microseconds =  (float64)(Timing.Cycle_TicksElapsed * TickToMicroseconds);
+	Timing.Cycle_Microseconds /= (float64)Timing.TimeFrequency.QuadPart;
 
 	Timing.DeltaTime = (float64)Timing.Cycle_TicksElapsed / (float64)MicrosecondToSecond;
 

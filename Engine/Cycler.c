@@ -23,13 +23,11 @@ bool Exist;   // Sentinel value use to exist core engine loop.
 
 // Public
 
-void Cycler_Lapse(void)
-{
+void Cycler_Lapse(void) {
 	Exist = false;
 }
 
-void Cycler_Initialize(void)
-{
+void Cycler_Initialize(void) {
 	while (Exist == true)
 	{
 		Timing_TakeInitialSnapshot();
@@ -54,7 +52,6 @@ void Cycler_Initialize(void)
 	}
 }
 
-void Cycler_LoadModule(void)
-{
+void Cycler_LoadModule(void) {
 	Exist = true;
 }
